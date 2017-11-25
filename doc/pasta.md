@@ -182,7 +182,6 @@ end
 ### conditional statement
 if {condition} then
     {statement}
-end .
 
 if {condition} then
     {statement}
