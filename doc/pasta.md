@@ -1,9 +1,10 @@
 (* lexer rules *)
 type Token = 
-    | INT of int
-    | REAL of float
-    | BOOL of boolean
-    | STRING of string
+    | ICONST of int 
+    | RCONST of float
+    | BCONST of boolean
+    | SCONST of string
+    | CCONST of char
     | KEYWORD of string
     | ADD
     | SUB
@@ -81,9 +82,9 @@ type Token =
     | {try-except-statement}
     | {compound-statement}
     | {raise-statement}
-    | {empty-statement}
     | BREAK
     | CONTINUE
+    | (* empty statement *)
 
 {assignment-statement} ::= 
     | ID ASG {expression}
@@ -101,31 +102,33 @@ type Token =
     | CASE {expression} OF {case-part} {else-part} END
     | CASE {expression} OF {case-part} END
 
+(* sematic check: literals in list should have same type *)
 {case-part} ::= 
-    | {case} SCOLON {statement} {case-part}
-    | {case} SCOLON {statement}
+    | {literal-list} COLON {statement} SCOLON {case-part}
+    | {literal-list} COLON {statement} SCOLON 
 
-{case} ::=
-    | {literals} COLON {case}
-    | {literals}
+{literal-list} ::=
+    | {literal} COLON {literal-list}
+    | {literal}
 
-{literals} ::=
-    | INT
-    | REAL
-    | STRING
-    | BOOLEAN
+{literal} ::=
+    | ICONST
+    | RCONST
+    | BCONST
+    | SCONST
+    | CCONST
     | ID    (* enumerate type *)
 
 {else-part} ::= ELSE {statement-list}
 
 {if-then-else-statement} ::=
-    | IF {expression} THEN {statements}
-    | IF {expression} THEN {statements} ELSE {other-condition}
+    | IF {expression} THEN {statement}
+    | IF {expression} THEN {statement} ELSE {other-condition}
 
 {other-condition} ::=
     | {statement}
-    | IF {expression} THEN {statements}
-    | IF {expression} THEN {statements} ELSE {rest-condition}
+    | IF {expression} THEN {statement}
+    | IF {expression} THEN {statement} ELSE {other-condition}
 
 {while-do-statement} ::= 
     | WHILE {expression} DO {statement}
@@ -135,7 +138,7 @@ type Token =
     | FOR ID ASG {expression} DOWNTO {expression} DO {statement}
 
 {repeat-until-statement} ::= 
-    | REPEAT {statements} UNTIL {expression}
+    | REPEAT {statement} UNTIL {expression}
 
 (* {expression-list} is defined in expression part *)
 {raise-statement} ::= RAISE ID LPAR {expression-list} RPAR 
@@ -159,8 +162,6 @@ type Token =
 {statement-list} ::=
     | {statement}
     | {statement} SCOLON {statement-list}
-
-{empty-statement} ::= 
 
 
 (* expression *)
@@ -188,8 +189,8 @@ type Token =
 
 {not-expression} ::=
     | NOT {primitive-expression}
-    | REF {not-expression}    (* get object address *)
-    | DEREF {not-expression}  (* access refered object *)
+    | REF {not-expression}    (* get object's address *)
+    | DEREF {not-expression}  (* access refered object's value *)
     | {primitive-expression}
 
 {primitive-expression} ::= 
@@ -201,7 +202,7 @@ type Token =
     | LPAR {expression} RPAR
     | ID LBRA {expression-list} RBRA  (* array indexing *)
     | ID LPAR {expression-list} RPAR  (* function call *)
-    | ID DOT {field}   (* access record or exception instant field *)
+    | ID DOT {field}   (* access record or exception instance's field *)
 
 {field} ::= 
     | ID
@@ -216,6 +217,7 @@ type Token =
     | INTEGER
     | REAL
     | STRING
+    | CHARACTER
     | BOOLEAN
 
 {any-type} ::=
@@ -231,22 +233,24 @@ type Token =
     | {variable-initializer} SCOLON
 
 {variable-declaration} ::=
-    | {identifier-list} COLON {any-type}
+    | {id-list} COLON {any-type}
 
-{identifier-list} ::= 
-    | identifier , {identifier-list}
-    | identifier
 
-// should only a constant expression, no variables and function calls will involved!
+(* should be a constant expression, without any variables and function calls! *)
 {variable-initializer} ::= 
     | ID COLON {any-type} = {expression} 
 
 
 {procedure-definition} ::=
-    | PROCEDURE ID LPAR {parameter-sequence} RPAR SCOLON {variable-declaration} {compound-statement} SCOLON
+    | PROCEDURE ID LPAR {parameter-list} RPAR SCOLON {variable-declaration} {compound-statement} SCOLON
 
 {function-definition} ::= 
-    | FUNCTION ID LPAR {parameter-sequence} RPAR COLON {any-type} COLON {vaiable-declaration} {compund-statement} SCOLON
+    | FUNCTION ID LPAR {parameter-list} RPAR COLON {any-type} COLON {vaiable-declaration} {compund-statement} SCOLON
+
+{parameter-list} ::=
+    | {variable-declaration} scolon {parameter-list}
+    | {variable-declaration}
+    |
 
 {type-definition} ::= TYPE {type-definition-list}
 
@@ -298,6 +302,12 @@ type Token =
 {dynamic-array-type} ::=
     | ARRAY OF {any-type}
 
+{enumerate-type} ::= ENUMERATE {id-list} END;
+
+{exception-type} ::=
+    | EXCEPTION
+    | EXCEPTION {fixed-field-list} END
+    
 (* program structure *)
 {program} ::= 
     | {program-declaration} {global-variable-declaration} {procedure-and-function-definition-sequence} {main-block} DOT
@@ -316,11 +326,3 @@ type Token =
     | {procedure-definition}
     | {function-definition}
 
-{parameter-sequence} ::=
-    | {variable-declaration} scolon {rest-parameter-sequence}
-    | {variable-declaration}
-    | epsilon
-
-{rest-parameter-sequence} ::=
-    | {variable-declaration} scolon {variable-declaration}
-    | {variable-declaration}
