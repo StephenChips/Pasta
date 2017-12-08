@@ -210,7 +210,7 @@ The reason why I prefer to do this is that pasta determine if two types is same 
 A array is a array of variable that have same type. The length of array is fixed at compiling time. You can access the item of array through indexing. To define a array, use following syntax.
 
 
-array [<low>..<hi>] of <type>
+array [<low>..<hi>] of <type-identifier>
 
 Mention that both low and hi is integer literal constant.
 
@@ -284,6 +284,12 @@ Owing to unspecified index range of undetermined array, the compiler cannot know
 6. If you assigns an undetermined array that does not been initialized yet, to another array, the program should be terminated and raises a runtime error.
 
 7. If the index to access an array's item is out of range, the program should be termiated and raises a runtime error.
+
+
+**define customize type**
+```
+type <type-identifier> = ...
+```
 
 ##### Reference
 Reference is something like the pointer in C language, it store the address of certain object, and can access the object through dereferencing. But unlike dengerous and free pointer in C, the reference is save and restricted. The only operation allowed is assignment. Common arithmethic operation, such as addition , subtraction is prohibited.
@@ -367,13 +373,13 @@ e-3
 **keywords**
 the following word is keywords of Pasta, you cannot use them as identifier in porgram
 
-**Program** /**Function** /**Begin** /**End** /
-**For** /**While**/**Repeat**/**Integer** /
-**Until** /**If** /**Else** /**Inc**/**Dec**  /
+**Program** /**Function**/**Procedure**/**Begin** /**End** /
+**For** /**While**/**Repeat**/**Integer** /**Then**
+**Until** /**If** /**Else** /**Inc**/**Dec** / **Do**
 **Ref** /  **Real** /**String** /**Boolean** /
-**Character** /**Array** /
+**Character** /**Array** / **TO**/ **DOWNTO**/ **Var**/**Type**
 **Enumerate** / **Record**/ **Write**/ **Read**/ **Case**/ **Of**
-
+**Break** / **Continue** /**Raise**/**try**/**catch**/
 #### Arthmetic Operators
 the arthmetic operators are +, -, \*, /.
 The + and - operators have lower precedence than * and /, by convention, + means addition, - means subtraction, * means multiplication and / means division. all operands shoule be have a real type, and the result is a real number too.
@@ -403,10 +409,10 @@ between two side of logical operator `and`, `or` and `not` should be expressions
 3.0 and 5.1
 2.3 and false
 
-#### precedence list
-1. @ !
-2. not
-3 and, \*, /, mod
+#### operation precedence
+1. [] .
+2. @ ! not
+3 and, \*, /, %
 4 or, + -
 5 =, <>, <, >, <=, >=
 
@@ -440,8 +446,8 @@ and the value of i remain unchanged at last.
 #### output and input statements
 
 **syntax**
-write **x** ;
-read **x** ;
+write <expression-list>;
+read <variable-list> ;
 
 output statement in pasta is `write x`, and the input statement in pasta is `read x`, which x is a right-value expression that has type of integer, string, real, boolean and character. Write statement cannot output a entire array or record, so you have to define a function to deal with each fields inside a record. For the output statement, the x should be a variable having a type that output statement accepts.
 
@@ -478,9 +484,11 @@ write "Hello, John.", ;
 ~~~
 If you want to output many expression at once, you can write then after the keyword one by one, and seperate them with comma, for example:
 ~~~pascal
-write "3 + 2 = ", 5; 
+read x, y;
+write "x + y = ", x + y; 
 ~~~
 
+#### Break and Continue Statement
 #### Compound Statement
 Compound statement is a list of statement, enclosed by a begin...end keyword. For example:
 ~~~Pascal
@@ -638,7 +646,9 @@ Case <identity> of
      <Label>: <Statement>;
      <Label>: <Statement>;
     ...
-    else
+else
+     <statement>
+end
 ```pascal
 Var
     op: string;
@@ -650,13 +660,14 @@ Begin
         "-": write x - y;
         "*": write x * y;
         "/": write x / y;
-    else
-        write "unknown operator";
     end;
 end.
 ```
+Notice:
+1. The else ... end is optional.
+2. Labels' type: integer, real, boolean, enumerate, and string.
 
-The else ... end is optional, and the label should be capatible to the id.
+2. The label cannot be duplicated.
 ### Program Structure
 #### Functions And Procedures
 Both functions and procedures are subproblems that may take some argments, or does not take any, then execute some code. The difference between two of them is that function will return a value after it finished.
