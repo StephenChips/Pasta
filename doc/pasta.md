@@ -71,7 +71,7 @@ type Token =
 
 (* parser rules *)
 
-(* statements *)
+(** STATEMENTS **)
 {statement} ::=
     | {assignment-statement}
     | {procedure-statement}
@@ -171,7 +171,7 @@ type Token =
     | {statement} SCOLON {statement-list}
     | (* empty list *)
 
-(* expression *)
+(** EXPRESSION **)
 {expression} ::= 
     | {additional-expression} GT   {expression}
     | {additional-expression} LT   {expression}
@@ -220,7 +220,7 @@ type Token =
     | {expression} COMMA {expression-list}
     | (* empty list *)
 
-(* declarations and definitions *)
+(** DECLARATIONS AND DEFINITIONS **)
 {simple-type} ::=
     | INTEGER
     | REAL
@@ -306,8 +306,12 @@ type Token =
     | RECORD {fixed-field-list} END
 
 {fixed-field-list} ::=
-    | {id-list} COLON {any-type} SCOLON {fixed-field-list}
-    | {id-list} COLON {any-type} SCOLON
+    | {fixed-field} SCOLON {fixed-field-list}
+    | {fixed-field}
+
+{fixed-field} ::=
+    | {id-list} COLON {any-type}
+    | {id-list} COLON {array-type}
 
 {variant-part} ::=
     | CASE ID COLON {simple-type} OF {fixed-field-list} {variant-else-part} END
