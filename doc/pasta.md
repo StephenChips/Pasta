@@ -22,13 +22,14 @@ type Token =
     | NOTEQ
     | GTEQ
     | LTEQ
-    | REF
+    | GETADDR
     | DEREF
     | COLON
     | SCOLON
     | COMMA
     | DOT
     | RANGE
+    | AS
 (* keywords *)
     | PROGRAM
     | FUNCTION
@@ -82,21 +83,19 @@ type Token =
     | {try-except-statement}
     | {compound-statement}
     | {raise-statement}
+    | {write-statement}
+    | {read-statement}
+    | {inc-statement}
+    | {dec-statement}
     | BREAK
     | CONTINUE
     | (* empty statement *)
 
-{assignment-statement} ::= 
-    | ID ASG {expression}
+{assignment-statement} ::= ID ASG {expression}
 
 {procedure-statement} ::= ID LPAR {expression-list} RPAR
 
-{compound-statement} ::=
-    | BEGIN {statement-list} END
-
-{statement-list} ::=
-    | {statement} ; {statement-list}
-    | {statement}
+{compound-statement} ::= BEGIN {statement-list} END
 
 {case-of-statement} ::=
     | CASE {expression} OF {case-part} {else-part} END
@@ -104,8 +103,8 @@ type Token =
 
 (* sematic check: literals in list should have same type *)
 {case-part} ::= 
-    | {literal-list} COLON {statement} SCOLON {case-part}
-    | {literal-list} COLON {statement} SCOLON 
+    | {literal-or-enum-list} COLON {statement} SCOLON {case-part}
+    | {literal-or-enum-list} COLON {statement} SCOLON 
 
 {literal-list} ::=
     | {literal} COLON {literal-list}
@@ -117,7 +116,10 @@ type Token =
     | BCONST
     | SCONST
     | CCONST
-    | ID    (* enumerate type *)
+
+{literal-or-enum-list} ::= 
+    | {literal} {literal-or-enum-list}
+    | ID {literal-or-enum-list} (* enum *)
 
 {else-part} ::= ELSE {statement-list}
 
@@ -140,29 +142,34 @@ type Token =
 {repeat-until-statement} ::= 
     | REPEAT {statement} UNTIL {expression}
 
+{write-statement} ::= WRITE {expression-list}
+
+{read-statement} ::= READ {expression-list}
+
+{inc-statement} ::= INC {expression}
+
+{dec-statement} ::= DEC {expression}
+
 (* {expression-list} is defined in expression part *)
 {raise-statement} ::= RAISE ID LPAR {expression-list} RPAR 
 
 {try-except-satement} ::=
     | TRY {statement-list} EXCEPT {exception-part} DO {statement-list} END
     | TRY {statement-list} FINALLY {statement-list} END
-    | TRY {statement-list} EXCEPT {exception-part} DO {statement-list} FINALLY {statement-list} end;
+    | TRY {statement-list} EXCEPT {exception-part} DO {statement-list} FINALLY {statement-list} END;
 
 {exception-part} ::=
     | {id-list}
     | {id-list} AS ID
 
 {id-list} ::=
-    | ID {id-list}
+    | ID COLON {id-list}
     | ID
-
-{compound-statement} ::=
-    | BEGIN {statement-list} END
 
 {statement-list} ::=
     | {statement}
     | {statement} SCOLON {statement-list}
-
+    | (* empty list *)
 
 (* expression *)
 {expression} ::= 
@@ -189,7 +196,7 @@ type Token =
 
 {not-expression} ::=
     | NOT {primitive-expression}
-    | REF {not-expression}    (* get object's address *)
+    | GETADDR {not-expression}    (* get object's address *)
     | DEREF {not-expression}  (* access refered object's value *)
     | {primitive-expression}
 
@@ -200,7 +207,7 @@ type Token =
     | INTEGER
     | ID
     | LPAR {expression} RPAR
-    | ID LBRA {expression-list} RBRA  (* array indexing *)
+    | ID LBRA {expression-list} RBRA  (* array indexing, should has one expression in the list at less *)
     | ID LPAR {expression-list} RPAR  (* function call *)
     | ID DOT {field}   (* access record or exception instance's field *)
 
@@ -211,6 +218,7 @@ type Token =
 {expression-list} ::= 
     | {expression}
     | {expression} COMMA {expression-list}
+    | (* empty list *)
 
 (* declarations and definitions *)
 {simple-type} ::=
@@ -220,41 +228,58 @@ type Token =
     | CHARACTER
     | BOOLEAN
 
-{any-type} ::=
-    | ID
+{simple-or-enum-type} ::= 
+    | ID (* any enumerate type *)
     | {simple-type}
 
-{variable-declaration} ::= VAR {variable-declaration-list}
+{any-type} ::=
+    | ID (* any type except simple type *)
+    | {simple-type}
 
-{variable-declaration-list} ::=
-    | {variable-declaration} SCOLON {variable-declaration-list}
-    | {variable-initializer} SCOLON {variable-declaration-list}
-    | {variable-declaration} SCOLON
-    | {variable-initializer} SCOLON
+{variable-declaration} ::= VAR {var-declrs-and-inits}
 
-{variable-declaration} ::=
+{var-declrs-and-inits} ::=
+    | {var-declr-list} {var-declrs-or-inits}
+    | {var-init-list} {var-declrs-or-inits}
+    | {var-declr-list}
+    | {var-init-list}
+
+{var-declr-list} ::= 
+    | {var-declr} SCOLON {var-declr-list}
+    | {var-declr}
+
+{var-declr} ::= 
     | {id-list} COLON {any-type}
+    | {id-list} COLON {array-type}
 
+{var-init-list} ::= 
+    | {var-init} SCOLON {var-init-list}
+    | {var-init}
 
-(* should be a constant expression, without any variables and function calls! *)
-{variable-initializer} ::= 
-    | ID COLON {any-type} = {expression} 
-
+(* the result of expression should be a constant *)
+{var-init} ::= 
+    | ID COLON {simple-type} EQ {expression} 
+    | ID COLON ID EQ ID (* enumerate type *)
 
 {procedure-definition} ::=
-    | PROCEDURE ID LPAR {parameter-list} RPAR SCOLON {variable-declaration} {compound-statement} SCOLON
+    | PROCEDURE ID LPAR {parameter-list} RPAR SCOLON {var-declrs-or-inits} {compound-statement} SCOLON
+    | PROCEDURE ID LPAR {parameter-list} RPAR SCOLON {compound-statement} SCOLON
 
 {function-definition} ::= 
-    | FUNCTION ID LPAR {parameter-list} RPAR COLON {any-type} COLON {vaiable-declaration} {compund-statement} SCOLON
+    | FUNCTION ID LPAR {parameter-list} RPAR COLON {any-type} SCOLON {var-declrs-or-inits} {compund-statement} SCOLON
+    | FUNCTION ID LPAR {parameter-list} RPAR COLON {any-type} SCOLON {compound-statement} SCOLON
 
 {parameter-list} ::=
-    | {variable-declaration} scolon {parameter-list}
-    | {variable-declaration}
-    |
+    | {var-declr-list} SCOLON {var-init-list}
+    | {var-declr-list}
+    | {var-init-list}
+    | (* empty list *)
 
 {type-definition} ::= TYPE {type-definition-list}
 
-{type-definition-list} ::= ID EQ {type-body}
+{type-definition-list} ::= 
+    | ID EQ {type-body} SCOLON {type-definition-list}
+    | ID EQ {type-body} SCOLON
 
 {type-body} ::=
     | {any-type}   (* alias a type *)
@@ -262,6 +287,7 @@ type Token =
     | {array-type}
     | {enumerate-type}
     | {exception-type}
+    | {reference-type}
 
 {any-type} ::=
     | ID
@@ -276,6 +302,7 @@ type Token =
 
 {record-type} ::=
     | RECORD {fixed-field-list} {variant-part} END
+    | RECORD {variant-part} END
     | RECORD {fixed-field-list} END
 
 {fixed-field-list} ::=
@@ -284,10 +311,9 @@ type Token =
 
 {variant-part} ::=
     | CASE ID COLON {simple-type} OF {fixed-field-list} {variant-else-part} END
-    | CASE ID COLON {simple-type} of {fixed-field-list} END
+    | CASE ID COLON {simple-type} OF {fixed-field-list} END
 
 {variant-else-part} ::= ELSE {fixed-field-list} 
-
 
 {array-type} ::= 
     | {static-array-type}
@@ -296,7 +322,7 @@ type Token =
 {static-array-type} ::= ARRAY LBRA {range-list} RBRA OF {any-type}
 
 {range-list} ::=
-    | INT RANGE INT {range-list}
+    | INT RANGE INT COMMA {range-list}
     | INT RANGE INT
 
 {dynamic-array-type} ::=
@@ -307,22 +333,24 @@ type Token =
 {exception-type} ::=
     | EXCEPTION
     | EXCEPTION {fixed-field-list} END
-    
+
+{reference-type} ::=
+    | REF {any-type}
+    | REF {array-type}
+
 (* program structure *)
-{program} ::= 
-    | {program-declaration} {global-variable-declaration} {procedure-and-function-definition-sequence} {main-block} DOT
+{program} ::= {program-declaration} {global-declaration-list} {variable-declaration} {procedures-and-functions-definition} {compound-statement} DOT
+
+{global-declaration-list} ::=
+    | {global-declaration} SCOLON {global-declaration-list}
+    | {global-declaration} SCOLON
+
+{global-declaration ::=
+    | {variable-declaration}
+    | {procedures-definitions}
+    | {functions-definitions}
+    | {type-definitions}
 
 {program-declaration} ::= 
-    | program identifier SCOLOn
-
-{global-variable-declaration} ::= 
-    | {variable-declaration-block}
-
-{procedure-and-function-definition-sequence} ::=
-    | {procedure-and-function-definition} {procedure-and-function-definition-sequence}
-    | {procedure-and-function-definition}
-
-{procedre-and-function-definition} ::=
-    | {procedure-definition}
-    | {function-definition}
+    | PROGRAM identifier SCOLON
 
