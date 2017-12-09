@@ -339,13 +339,13 @@ type Token =
     | REF {array-type}
 
 (* program structure *)
-{program} ::= {program-declaration} {global-declaration-list} {variable-declaration} {procedures-and-functions-definition} {compound-statement} DOT
+{program} ::= {program-declaration} {global-declaration-list} {compound-statement} DOT
 
 {global-declaration-list} ::=
     | {global-declaration} SCOLON {global-declaration-list}
     | {global-declaration} SCOLON
 
-{global-declaration ::=
+{global-declaration} ::=
     | {variable-declaration}
     | {procedures-definitions}
     | {functions-definitions}
