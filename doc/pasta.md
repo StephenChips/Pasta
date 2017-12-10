@@ -67,6 +67,7 @@ type Token =
     | CONTINUE
     | TRY
     | EXCEPT
+    | NIL
 
 
 (* parser rules *)
@@ -91,6 +92,12 @@ type Token =
     | CONTINUE
     | (* empty statement *)
 
+(*
+    change array syntax
+    array [] of type 
+
+    type should not be an array.
+*)
 {assignment-statement} ::= ID ASG {expression}
 
 {procedure-statement} ::= ID LPAR {expression-list} RPAR
@@ -106,9 +113,9 @@ type Token =
     | {literal-or-enum-list} COLON {statement} SCOLON {case-part}
     | {literal-or-enum-list} COLON {statement} SCOLON 
 
-{literal-list} ::=
-    | {literal} COLON {literal-list}
+{literal-or-enum} ::=
     | {literal}
+    | ID
 
 {literal} ::=
     | ICONST
@@ -117,9 +124,9 @@ type Token =
     | SCONST
     | CCONST
 
-{literal-or-enum-list} ::= 
-    | {literal} {literal-or-enum-list}
-    | ID {literal-or-enum-list} (* enum *)
+{literal-or-enum-list} ::=
+    | {literal-or-enum} {literal-or-enum-list}
+    | {literal-or-enum}
 
 {else-part} ::= ELSE {statement-list}
 
@@ -156,7 +163,7 @@ type Token =
 {try-except-satement} ::=
     | TRY {statement-list} EXCEPT {exception-part} DO {statement-list} END
     | TRY {statement-list} FINALLY {statement-list} END
-    | TRY {statement-list} EXCEPT {exception-part} DO {statement-list} FINALLY {statement-list} END;
+    | TRY {statement-list} EXCEPT {exception-part} DO {statement-list} FINALLY {statement-list} END
 
 {exception-part} ::=
     | {id-list}
@@ -206,6 +213,7 @@ type Token =
     | REAL
     | INTEGER
     | ID
+    | NIL
     | LPAR {expression} RPAR
     | ID LBRA {expression-list} RBRA  (* array indexing, should has one expression in the list at less *)
     | ID LPAR {expression-list} RPAR  (* function call *)
@@ -228,13 +236,30 @@ type Token =
     | CHARACTER
     | BOOLEAN
 
-{simple-or-enum-type} ::= 
-    | ID (* any enumerate type *)
+{any-named-type} ::=
+    | ID
     | {simple-type}
+
+{ordinal-type} ::=
+    | INTEGER
+    | REAL
+    | CHARACTER
+    | BOOLEAN
 
 {any-type} ::=
     | ID (* any type except simple type *)
+    | {array-type}
     | {simple-type}
+
+{array-type} ::= ARRAY LBRA {range-list} RBRA OF {any-named-type}
+
+{range-list} ::=
+    | {range} COMMA {range-list}
+    | {range}
+
+{range} ::=
+    | INT RANGE INT
+    | (* empty range *)
 
 {variable-declaration} ::= VAR {var-declrs-and-inits}
 
@@ -250,24 +275,25 @@ type Token =
 
 {var-declr} ::= 
     | {id-list} COLON {any-type}
-    | {id-list} COLON {array-type}
 
 {var-init-list} ::= 
     | {var-init} SCOLON {var-init-list}
     | {var-init}
 
 (* the result of expression should be a constant *)
+(* the variable should has simple type *)
+
 {var-init} ::= 
     | ID COLON {simple-type} EQ {expression} 
     | ID COLON ID EQ ID (* enumerate type *)
 
-{procedure-definition} ::=
-    | PROCEDURE ID LPAR {parameter-list} RPAR SCOLON {var-declrs-or-inits} {compound-statement} SCOLON
-    | PROCEDURE ID LPAR {parameter-list} RPAR SCOLON {compound-statement} SCOLON
+{procedure-definition} ::= PROCEDURE ID LPAR {parameter-list} RPAR SCOLON {local-var-declrs} {compound-statement} SCOLON
 
-{function-definition} ::= 
-    | FUNCTION ID LPAR {parameter-list} RPAR COLON {any-type} SCOLON {var-declrs-or-inits} {compund-statement} SCOLON
-    | FUNCTION ID LPAR {parameter-list} RPAR COLON {any-type} SCOLON {compound-statement} SCOLON
+{function-definition} ::= FUNCTION ID LPAR {parameter-list} RPAR COLON {any-type} SCOLON {local-var-declrs} {compund-statement} SCOLON
+
+{local-var-declrs} ::=
+    | {var-declrs-or-inits}
+    | (* no variable declared *)
 
 {parameter-list} ::=
     | {var-declr-list} SCOLON {var-init-list}
@@ -283,24 +309,12 @@ type Token =
 
 {type-body} ::=
     | {any-type}   (* alias a type *)
-    | {record-type}
-    | {array-type}
-    | {enumerate-type}
-    | {exception-type}
-    | {reference-type}
+    | {record-body}
+    | {enumerate-body}
+    | {exception-body}
+    | {reference-body}
 
-{any-type} ::=
-    | ID
-    | {simple-type}
-
-{simple-type} ::=
-    | INTEGER
-    | REAL
-    | STRING
-    | BOOLEAN
-    | ID (* enumberate variable *)
-
-{record-type} ::=
+{record-body} ::=
     | RECORD {fixed-field-list} {variant-part} END
     | RECORD {variant-part} END
     | RECORD {fixed-field-list} END
@@ -309,38 +323,21 @@ type Token =
     | {fixed-field} SCOLON {fixed-field-list}
     | {fixed-field}
 
-{fixed-field} ::=
-    | {id-list} COLON {any-type}
-    | {id-list} COLON {array-type}
+{fixed-field} ::= {id-list} COLON {any-type}
 
 {variant-part} ::=
-    | CASE ID COLON {simple-type} OF {fixed-field-list} {variant-else-part} END
-    | CASE ID COLON {simple-type} OF {fixed-field-list} END
+    | CASE {literal-or-enum-list} COLON {ordinal-type} OF {fixed-field-list} {variant-else-part} END
+    | CASE {literal-or-enum-list} COLON {ordinal-type} OF {fixed-field-list} END
 
 {variant-else-part} ::= ELSE {fixed-field-list} 
 
-{array-type} ::= 
-    | {static-array-type}
-    | {dynamic-array-type}
-
-{static-array-type} ::= ARRAY LBRA {range-list} RBRA OF {any-type}
-
-{range-list} ::=
-    | INT RANGE INT COMMA {range-list}
-    | INT RANGE INT
-
-{dynamic-array-type} ::=
-    | ARRAY OF {any-type}
-
-{enumerate-type} ::= ENUMERATE {id-list} END;
+{enumerate-type} ::= ENUMERATE {id-list} END
 
 {exception-type} ::=
     | EXCEPTION
     | EXCEPTION {fixed-field-list} END
 
-{reference-type} ::=
-    | REF {any-type}
-    | REF {array-type}
+{reference-type} ::= REF {any-type}
 
 (* program structure *)
 {program} ::= {program-declaration} {global-declaration-list} {compound-statement} DOT
