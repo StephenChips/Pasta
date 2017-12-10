@@ -1,3 +1,5 @@
+(* sematic checking *)
+1. break and continue should be inside 
 (* lexer rules *)
 type Token = 
     | ICONST of int 
@@ -22,7 +24,7 @@ type Token =
     | NOTEQ
     | GTEQ
     | LTEQ
-    | GETADDR
+    | GETREF
     | DEREF
     | COLON
     | SCOLON
@@ -203,7 +205,7 @@ type Token =
 
 {not-expression} ::=
     | NOT {primitive-expression}
-    | GETADDR {not-expression}    (* get object's address *)
+    | GETREF {not-expression}    (* get object's address *)
     | DEREF {not-expression}  (* access refered object's value *)
     | {primitive-expression}
 
