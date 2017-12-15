@@ -1,6 +1,6 @@
-# 1 "pastalex.mll"
+# 1 "lexer.mll"
  
-open PastaParser;;
+open Parser;;
 exception Eof;;
 exception LexingError of string;;
 
@@ -58,7 +58,7 @@ let escape s = function
 
 ;;
 
-# 62 "pastalex.ml"
+# 62 "lexer.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\221\255\017\000\225\255\226\255\229\255\031\000\233\255\
@@ -415,194 +415,194 @@ let rec Token lexbuf =
 and __ocaml_lex_Token_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 64 "pastalex.mll"
+# 64 "lexer.mll"
                        ( Token lexbuf )
-# 421 "pastalex.ml"
+# 421 "lexer.ml"
 
   | 1 ->
-# 65 "pastalex.mll"
+# 65 "lexer.mll"
                        ( Lexing.new_line lexbuf; Token lexbuf )
-# 426 "pastalex.ml"
+# 426 "lexer.ml"
 
   | 2 ->
-# 66 "pastalex.mll"
+# 66 "lexer.mll"
                        ( IgnoreComment lexbuf; Token lexbuf  )
-# 431 "pastalex.ml"
+# 431 "lexer.ml"
 
   | 3 ->
 let
-# 67 "pastalex.mll"
+# 67 "lexer.mll"
                                                              s
-# 437 "pastalex.ml"
+# 437 "lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos lexbuf.Lexing.lex_curr_pos in
-# 68 "pastalex.mll"
+# 68 "lexer.mll"
                        ( keyword s )
-# 441 "pastalex.ml"
+# 441 "lexer.ml"
 
   | 4 ->
 let
-# 70 "pastalex.mll"
+# 70 "lexer.mll"
                 s
-# 447 "pastalex.ml"
+# 447 "lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos lexbuf.Lexing.lex_curr_pos in
-# 70 "pastalex.mll"
+# 70 "lexer.mll"
                        ( ICONST (string_of_int s) )
-# 451 "pastalex.ml"
+# 451 "lexer.ml"
 
   | 5 ->
 let
-# 71 "pastalex.mll"
+# 71 "lexer.mll"
                                              s
-# 457 "pastalex.ml"
+# 457 "lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos lexbuf.Lexing.lex_curr_pos in
-# 72 "pastalex.mll"
+# 72 "lexer.mll"
                        ( RCONST (string_of_float s) )
-# 461 "pastalex.ml"
+# 461 "lexer.ml"
 
   | 6 ->
-# 74 "pastalex.mll"
+# 74 "lexer.mll"
                        ( BCONST true )
-# 466 "pastalex.ml"
+# 466 "lexer.ml"
 
   | 7 ->
-# 75 "pastalex.mll"
+# 75 "lexer.mll"
                        ( BCONST false )
-# 471 "pastalex.ml"
+# 471 "lexer.ml"
 
   | 8 ->
-# 76 "pastalex.mll"
+# 76 "lexer.mll"
                        ( SCONST (MatchString [] lexbuf) )
-# 476 "pastalex.ml"
+# 476 "lexer.ml"
 
   | 9 ->
-# 77 "pastalex.mll"
+# 77 "lexer.mll"
                        ( CCONST (MatchCharacter lexbuf) )
-# 481 "pastalex.ml"
+# 481 "lexer.ml"
 
   | 10 ->
-# 78 "pastalex.mll"
+# 78 "lexer.mll"
                        ( ADD )
-# 486 "pastalex.ml"
+# 486 "lexer.ml"
 
   | 11 ->
-# 79 "pastalex.mll"
+# 79 "lexer.mll"
                        ( SUB )
-# 491 "pastalex.ml"
+# 491 "lexer.ml"
 
   | 12 ->
-# 80 "pastalex.mll"
+# 80 "lexer.mll"
                        ( MUL )
-# 496 "pastalex.ml"
+# 496 "lexer.ml"
 
   | 13 ->
-# 81 "pastalex.mll"
+# 81 "lexer.mll"
                        ( DIV )
-# 501 "pastalex.ml"
+# 501 "lexer.ml"
 
   | 14 ->
-# 82 "pastalex.mll"
+# 82 "lexer.mll"
                        ( MOD )
-# 506 "pastalex.ml"
+# 506 "lexer.ml"
 
   | 15 ->
-# 83 "pastalex.mll"
+# 83 "lexer.mll"
                        ( ASG )
-# 511 "pastalex.ml"
+# 511 "lexer.ml"
 
   | 16 ->
-# 84 "pastalex.mll"
+# 84 "lexer.mll"
                        ( LPAR )
-# 516 "pastalex.ml"
+# 516 "lexer.ml"
 
   | 17 ->
-# 85 "pastalex.mll"
+# 85 "lexer.mll"
                        ( RPAR )
-# 521 "pastalex.ml"
+# 521 "lexer.ml"
 
   | 18 ->
-# 86 "pastalex.mll"
+# 86 "lexer.mll"
                        ( LBRA )
-# 526 "pastalex.ml"
+# 526 "lexer.ml"
 
   | 19 ->
-# 87 "pastalex.mll"
+# 87 "lexer.mll"
                        ( RBRA )
-# 531 "pastalex.ml"
+# 531 "lexer.ml"
 
   | 20 ->
-# 88 "pastalex.mll"
+# 88 "lexer.mll"
                        ( GT )
-# 536 "pastalex.ml"
+# 536 "lexer.ml"
 
   | 21 ->
-# 89 "pastalex.mll"
+# 89 "lexer.mll"
                        ( LT )
-# 541 "pastalex.ml"
+# 541 "lexer.ml"
 
   | 22 ->
-# 90 "pastalex.mll"
+# 90 "lexer.mll"
                        ( EQUAL )
-# 546 "pastalex.ml"
+# 546 "lexer.ml"
 
   | 23 ->
-# 91 "pastalex.mll"
+# 91 "lexer.mll"
                        ( NOTEQ )
-# 551 "pastalex.ml"
+# 551 "lexer.ml"
 
   | 24 ->
-# 92 "pastalex.mll"
+# 92 "lexer.mll"
                        ( GTEQ )
-# 556 "pastalex.ml"
+# 556 "lexer.ml"
 
   | 25 ->
-# 93 "pastalex.mll"
+# 93 "lexer.mll"
                        ( LTEQ )
-# 561 "pastalex.ml"
+# 561 "lexer.ml"
 
   | 26 ->
-# 94 "pastalex.mll"
+# 94 "lexer.mll"
                        ( GETREF )
-# 566 "pastalex.ml"
+# 566 "lexer.ml"
 
   | 27 ->
-# 95 "pastalex.mll"
+# 95 "lexer.mll"
                        ( DEREF )
-# 571 "pastalex.ml"
+# 571 "lexer.ml"
 
   | 28 ->
-# 96 "pastalex.mll"
+# 96 "lexer.mll"
                        ( COLON )
-# 576 "pastalex.ml"
+# 576 "lexer.ml"
 
   | 29 ->
-# 97 "pastalex.mll"
+# 97 "lexer.mll"
                        ( SCOLON )
-# 581 "pastalex.ml"
+# 581 "lexer.ml"
 
   | 30 ->
-# 98 "pastalex.mll"
+# 98 "lexer.mll"
                        ( COMMA )
-# 586 "pastalex.ml"
+# 586 "lexer.ml"
 
   | 31 ->
-# 99 "pastalex.mll"
+# 99 "lexer.mll"
                        ( DOT )
-# 591 "pastalex.ml"
+# 591 "lexer.ml"
 
   | 32 ->
-# 100 "pastalex.mll"
+# 100 "lexer.mll"
                        ( RANGE )
-# 596 "pastalex.ml"
+# 596 "lexer.ml"
 
   | 33 ->
-# 101 "pastalex.mll"
+# 101 "lexer.mll"
                        ( AS )
-# 601 "pastalex.ml"
+# 601 "lexer.ml"
 
   | 34 ->
-# 102 "pastalex.mll"
+# 102 "lexer.mll"
         ( raise (LexingError "Unknown token") )
-# 606 "pastalex.ml"
+# 606 "lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_Token_rec lexbuf __ocaml_lex_state
@@ -612,44 +612,44 @@ and MatchString charlist lexbuf =
 and __ocaml_lex_MatchString_rec charlist lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 106 "pastalex.mll"
+# 106 "lexer.mll"
         ( String.concat "" (List.map (String.make 1) (List.rev charlist)) )
-# 618 "pastalex.ml"
+# 618 "lexer.ml"
 
   | 1 ->
 let
-# 107 "pastalex.mll"
+# 107 "lexer.mll"
                                             s
-# 624 "pastalex.ml"
+# 624 "lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 2) in
-# 108 "pastalex.mll"
+# 108 "lexer.mll"
         ( (escape s) :: charlist )
-# 628 "pastalex.ml"
+# 628 "lexer.ml"
 
   | 2 ->
-# 110 "pastalex.mll"
+# 110 "lexer.mll"
         ( '"' :: charlist )
-# 633 "pastalex.ml"
+# 633 "lexer.ml"
 
   | 3 ->
-# 112 "pastalex.mll"
+# 112 "lexer.mll"
         ( raise (LexingError "Illegal character") )
-# 638 "pastalex.ml"
+# 638 "lexer.ml"
 
   | 4 ->
-# 114 "pastalex.mll"
+# 114 "lexer.mll"
         ( raise (LexingError "Unterminated string") )
-# 643 "pastalex.ml"
+# 643 "lexer.ml"
 
   | 5 ->
 let
-# 115 "pastalex.mll"
+# 115 "lexer.mll"
            s
-# 649 "pastalex.ml"
+# 649 "lexer.ml"
 = Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 116 "pastalex.mll"
+# 116 "lexer.mll"
          ( s :: charlist )
-# 653 "pastalex.ml"
+# 653 "lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_MatchString_rec charlist lexbuf __ocaml_lex_state
@@ -660,21 +660,21 @@ and __ocaml_lex_MatchCharacter_rec charlist lexbuf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
 let
-# 119 "pastalex.mll"
+# 119 "lexer.mll"
                                               s
-# 666 "pastalex.ml"
+# 666 "lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 2) in
-# 120 "pastalex.mll"
+# 120 "lexer.mll"
         ( escape s )
-# 670 "pastalex.ml"
+# 670 "lexer.ml"
 
   | 1 ->
 let
-# 121 "pastalex.mll"
+# 121 "lexer.mll"
                                             s
-# 676 "pastalex.ml"
+# 676 "lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
-# 121 "pastalex.mll"
+# 121 "lexer.mll"
                                                    ( 
             let code = int_of_string s in
                 if code >= 31 && code <= 127 then 
@@ -682,22 +682,22 @@ let
                 else 
                     raise (LexiingError "Illegal Character")
         )
-# 686 "pastalex.ml"
+# 686 "lexer.ml"
 
   | 2 ->
 let
-# 128 "pastalex.mll"
+# 128 "lexer.mll"
            s
-# 692 "pastalex.ml"
+# 692 "lexer.ml"
 = Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 129 "pastalex.mll"
+# 129 "lexer.mll"
         ( s.[0] )
-# 696 "pastalex.ml"
+# 696 "lexer.ml"
 
   | 3 ->
-# 131 "pastalex.mll"
+# 131 "lexer.mll"
         ( raise (LexingError "Unknown character") )
-# 701 "pastalex.ml"
+# 701 "lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_MatchCharacter_rec charlist lexbuf lexbuf __ocaml_lex_state
@@ -707,24 +707,24 @@ and IgnoreComment lexbuf lexbuf =
 and __ocaml_lex_IgnoreComment_rec lexbuf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 134 "pastalex.mll"
+# 134 "lexer.mll"
           ( IgnoreComment lexbuf; IgnoreComment lexbuf )
-# 713 "pastalex.ml"
+# 713 "lexer.ml"
 
   | 1 ->
-# 135 "pastalex.mll"
+# 135 "lexer.mll"
           ( () )
-# 718 "pastalex.ml"
+# 718 "lexer.ml"
 
   | 2 ->
-# 136 "pastalex.mll"
+# 136 "lexer.mll"
                      ( raise (LexingError "Unterminated Comment") )
-# 723 "pastalex.ml"
+# 723 "lexer.ml"
 
   | 3 ->
-# 137 "pastalex.mll"
+# 137 "lexer.mll"
           ( IgnoreComment lexbuf )
-# 728 "pastalex.ml"
+# 728 "lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_IgnoreComment_rec lexbuf lexbuf __ocaml_lex_state

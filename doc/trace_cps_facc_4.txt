@@ -1,0 +1,39 @@
+let rec facc n k = 
+  if n = 0 then k 1
+  else facc (n-1) (fun v -> k (n * v))
+
+facc 4 (fun v -> 1)
+
+facc 3 (fun v -> 
+         (fun v -> 1) (4 * v))
+
+facc 2 (fun v -> 
+         (fun v -> 
+           (fun v -> 1) (4 * v)) 
+         (3 * v))
+
+faac 1 (fun v ->
+         (fun v ->
+           (fun v ->
+             (fun v -> v) (4 * v))
+           (3 * v))
+         (2 * v))
+
+--
+
+fun v ->
+  fun v ->
+    (fun v -> v) 4 * v
+  3 * v
+2 * 1
+
+fun v ->
+  (fun v -> v) 4 * v
+3 * ( 2 * 1 )
+
+(fun v -> v) 4 * ( 3 * ( 2 * 1 ) )
+
+24
+
+
+

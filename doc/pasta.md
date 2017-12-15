@@ -335,11 +335,11 @@ type Token =
 
 {enumerate-type} ::= ENUMERATE {id-list} END
 
-{exception-type} ::=
+{exception-body} ::=
     | EXCEPTION
     | EXCEPTION {fixed-field-list} END
 
-{reference-type} ::= REF {any-type}
+{reference-body} ::= REF {any-type}
 
 (* program structure *)
 {program} ::= {program-declaration} {global-declaration-list} {compound-statement} DOT
@@ -350,10 +350,10 @@ type Token =
 
 {global-declaration} ::=
     | {variable-declaration}
-    | {procedures-definitions}
-    | {functions-definitions}
-    | {type-definitions}
+    | {procedures-definition}
+    | {functions-definition}
+    | {type-definition}
 
 {program-declaration} ::= 
-    | PROGRAM identifier SCOLON
+    | PROGRAM ID SCOLON
 

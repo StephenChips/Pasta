@@ -1,5 +1,5 @@
 {
-open PastaParser;;
+open Parser;;
 exception Eof;;
 exception LexingError of string;;
 
@@ -41,6 +41,10 @@ let keyword s = function
     | "try" -> TRY
     | "except" -> EXCEPT
     | "nil" -> NIL
+    | "as" -> AS
+    | "raise" -> RAISE
+    | "or" -> OR
+    | "and" -> AND
     | _ -> ID s
 
 let escape s = function
@@ -98,7 +102,6 @@ rule Token = parse
     | ','              { COMMA }
     | '.'              { DOT }
     | ".."             { RANGE }
-    | "as"             { AS }
     | _ { raise (LexingError "Unknown token") }
 
 and MatchString charlist = parse
