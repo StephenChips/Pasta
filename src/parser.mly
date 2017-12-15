@@ -55,7 +55,7 @@ program_declaration :
 /* DECLARATIOINS AND DEFINITIONS */
 
 simple_type:
-     INTEGER {}
+      INTEGER {}
     | REAL   {}
     | STRING {}
     | CHARACTER {}
@@ -68,7 +68,7 @@ any_named_type:
     ;
 
 ordinal_type:
-     INTEGER {}
+      INTEGER {}
     | REAL {}
     | CHARACTER {}
     | BOOLEAN {}
