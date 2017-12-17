@@ -101,116 +101,121 @@
 
   68  reference_body : REF any_type
 
-  69  statement : assignment_statement
-  70            | procedure_statement
-  71            | if_then_else_statement
-  72            | case_of_statement
-  73            | while_do_statement
-  74            | for_statement
-  75            | repeat_until_statement
-  76            | try_except_statement
-  77            | compound_statement
-  78            | raise_statement
-  79            | write_statement
-  80            | read_statement
-  81            | inc_statement
-  82            | dec_statement
-  83            | BREAK
-  84            | CONTINUE
-  85            |
+  69  statement : other_statement
+  70            | if_then_else_statement
+  71            | if_then_statement
 
-  86  assignment_statement : ID ASG expression
+  72  other_statement : assignment_statement
+  73                  | procedure_statement
+  74                  | case_of_statement
+  75                  | while_do_statement
+  76                  | for_statement
+  77                  | repeat_until_statement
+  78                  | try_except_statement
+  79                  | compound_statement
+  80                  | raise_statement
+  81                  | write_statement
+  82                  | read_statement
+  83                  | inc_statement
+  84                  | dec_statement
+  85                  | BREAK
+  86                  | CONTINUE
+  87                  |
 
-  87  procedure_statement : ID LPAR expression_list RPAR
+  88  if_then_statement : IF expression THEN statement
 
-  88  compound_statement : BEGIN statement_list END
+  89  if_then_else_statement : IF expression THEN if_then_else_statement ELSE statement
+  90                         | IF expression THEN other_statement ELSE statement
 
-  89  case_of_statement : CASE expression OF case_part ELSE statement END
-  90                    | CASE expression OF case_part END
+  91  assignment_statement : ID ASG expression
 
-  91  case_part : literal_or_enum_list COLON statement SCOLON case_part
-  92            | literal_or_enum_list COLON statement SCOLON
+  92  procedure_statement : ID LPAR expression_list RPAR
 
-  93  literal_or_enum : literal
-  94                  | ID
+  93  compound_statement : BEGIN statement_list END
 
-  95  literal : ICONST
-  96          | RCONST
-  97          | BCONST
-  98          | SCONST
-  99          | CCONST
+  94  case_of_statement : CASE expression OF case_part ELSE statement END
+  95                    | CASE expression OF case_part END
 
- 100  literal_or_enum_list : literal_or_enum literal_or_enum_list
- 101                       | literal_or_enum
+  96  case_part : literal_or_enum_list COLON statement SCOLON case_part
+  97            | literal_or_enum_list COLON statement SCOLON
 
- 102  if_then_else_statement : IF expression THEN statement
- 103                         | IF expression THEN statement ELSE statement
+  98  literal_or_enum : literal
+  99                  | ID
 
- 104  while_do_statement : WHILE expression DO statement
+ 100  literal : ICONST
+ 101          | RCONST
+ 102          | BCONST
+ 103          | SCONST
+ 104          | CCONST
 
- 105  for_statement : FOR ID ASG expression TO expression DO statement
- 106                | FOR ID ASG expression DOWNTO expression DO statement
+ 105  literal_or_enum_list : literal_or_enum literal_or_enum_list
+ 106                       | literal_or_enum
 
- 107  repeat_until_statement : REPEAT statement UNTIL expression
+ 107  while_do_statement : WHILE expression DO statement
 
- 108  write_statement : WRITE expression_list
+ 108  for_statement : FOR ID ASG expression TO expression DO statement
+ 109                | FOR ID ASG expression DOWNTO expression DO statement
 
- 109  read_statement : READ expression_list
+ 110  repeat_until_statement : REPEAT statement UNTIL expression
 
- 110  inc_statement : INC expression
+ 111  write_statement : WRITE expression_list
 
- 111  dec_statement : DEC expression
+ 112  read_statement : READ expression_list
 
- 112  raise_statement : RAISE ID LPAR expression_list RPAR
+ 113  inc_statement : INC expression
 
- 113  try_except_statement : TRY statement_list EXCEPT exception_part DO statement_list END
- 114                       | TRY statement_list FINALLY statement_list END
- 115                       | TRY statement_list EXCEPT exception_part DO statement_list FINALLY statement_list END
+ 114  dec_statement : DEC expression
 
- 116  exception_part : id_list
- 117                 | id_list AS ID
+ 115  raise_statement : RAISE ID LPAR expression_list RPAR
 
- 118  id_list : id_list COMMA ID
- 119          | ID
+ 116  try_except_statement : TRY statement_list EXCEPT exception_part DO statement_list END
+ 117                       | TRY statement_list FINALLY statement_list END
+ 118                       | TRY statement_list EXCEPT exception_part DO statement_list FINALLY statement_list END
 
- 120  statement_list : statement
- 121                 | statement_list SCOLON statement
+ 119  exception_part : id_list
+ 120                 | id_list AS ID
 
- 122  expression : expression GT expression
- 123             | expression LT expression
- 124             | expression EQUAL expression
- 125             | expression GTEQ expression
- 126             | expression LTEQ expression
- 127             | expression NOTEQ expression
- 128             | expression ADD expression
- 129             | expression SUB expression
- 130             | expression OR expression
- 131             | expression MUL expression
- 132             | expression DIV expression
- 133             | expression MOD expression
- 134             | expression AND expression
- 135             | NOT expression
- 136             | GETREF expression
- 137             | DEREF expression
- 138             | TRUE
- 139             | FALSE
- 140             | REAL
- 141             | INTEGER
- 142             | ID
- 143             | NIL
- 144             | LPAR expression RPAR
- 145             | ID LBRA expression_list RBRA
- 146             | ID LPAR expression_list RPAR
- 147             | ID DOT field
+ 121  id_list : id_list COMMA ID
+ 122          | ID
 
- 148  field : ID
- 149        | ID DOT field
+ 123  statement_list : statement
+ 124                 | statement_list SCOLON statement
 
- 150  expression_list : expression
- 151                  | expression COMMA expression_list
- 152                  |
+ 125  expression : expression GT expression
+ 126             | expression LT expression
+ 127             | expression EQUAL expression
+ 128             | expression GTEQ expression
+ 129             | expression LTEQ expression
+ 130             | expression NOTEQ expression
+ 131             | expression ADD expression
+ 132             | expression SUB expression
+ 133             | expression OR expression
+ 134             | expression MUL expression
+ 135             | expression DIV expression
+ 136             | expression MOD expression
+ 137             | expression AND expression
+ 138             | NOT expression
+ 139             | GETREF expression
+ 140             | DEREF expression
+ 141             | TRUE
+ 142             | FALSE
+ 143             | REAL
+ 144             | INTEGER
+ 145             | ID
+ 146             | NIL
+ 147             | LPAR expression RPAR
+ 148             | ID LBRA expression_list RBRA
+ 149             | ID LPAR expression_list RPAR
+ 150             | ID DOT field
 
- 153  %entry% : '\001' program
+ 151  field : ID
+ 152        | ID DOT field
+
+ 153  expression_list : expression
+ 154                  | expression COMMA expression_list
+ 155                  |
+
+ 156  %entry% : '\001' program
 
 state 0
 	$accept : . %entry% $end  (0)
@@ -222,7 +227,7 @@ state 0
 
 
 state 1
-	%entry% : '\001' . program  (153)
+	%entry% : '\001' . program  (156)
 
 	PROGRAM  shift 3
 	.  error
@@ -245,9 +250,9 @@ state 3
 
 
 state 4
-	%entry% : '\001' program .  (153)
+	%entry% : '\001' program .  (156)
 
-	.  reduce 153
+	.  reduce 156
 
 
 state 5
@@ -372,9 +377,9 @@ state 19
 
 
 state 20
-	id_list : ID .  (119)
+	id_list : ID .  (122)
 
-	.  reduce 119
+	.  reduce 122
 
 
 state 21
@@ -408,7 +413,7 @@ state 25
 	var_declr : id_list . ID COLON any_type  (35)
 	var_init : id_list . COLON simple_type EQUAL expression  (38)
 	var_init : id_list . COLON ID EQUAL ID  (39)
-	id_list : id_list . COMMA ID  (118)
+	id_list : id_list . COMMA ID  (121)
 
 	ID  shift 34
 	COLON  shift 35
@@ -431,8 +436,8 @@ state 27
 
 
 state 28
-	compound_statement : BEGIN . statement_list END  (88)
-	statement : .  (85)
+	compound_statement : BEGIN . statement_list END  (93)
+	other_statement : .  (87)
 
 	ID  shift 38
 	BEGIN  shift 28
@@ -449,31 +454,33 @@ state 28
 	CONTINUE  shift 49
 	TRY  shift 50
 	RAISE  shift 51
-	SCOLON  reduce 85
-	END  reduce 85
+	SCOLON  reduce 87
+	END  reduce 87
 
 	compound_statement  goto 52
 	statement  goto 53
-	assignment_statement  goto 54
-	procedure_statement  goto 55
-	if_then_else_statement  goto 56
-	case_of_statement  goto 57
-	while_do_statement  goto 58
-	for_statement  goto 59
-	repeat_until_statement  goto 60
-	try_except_statement  goto 61
-	raise_statement  goto 62
-	write_statement  goto 63
-	read_statement  goto 64
-	inc_statement  goto 65
-	dec_statement  goto 66
-	statement_list  goto 67
+	other_statement  goto 54
+	if_then_else_statement  goto 55
+	if_then_statement  goto 56
+	assignment_statement  goto 57
+	procedure_statement  goto 58
+	case_of_statement  goto 59
+	while_do_statement  goto 60
+	for_statement  goto 61
+	repeat_until_statement  goto 62
+	try_except_statement  goto 63
+	raise_statement  goto 64
+	write_statement  goto 65
+	read_statement  goto 66
+	inc_statement  goto 67
+	dec_statement  goto 68
+	statement_list  goto 69
 
 
 state 29
 	program : program_declaration global_declaration_list compound_statement . DOT  (1)
 
-	DOT  shift 68
+	DOT  shift 70
 	.  error
 
 
@@ -487,7 +494,7 @@ state 30
 	TYPE  shift 10
 	BEGIN  reduce 3
 
-	global_declaration_list  goto 69
+	global_declaration_list  goto 71
 	global_declaration  goto 12
 	variable_declaration  goto 13
 	procedure_definition  goto 14
@@ -502,12 +509,12 @@ state 31
 	ID  shift 20
 	RPAR  reduce 47
 
-	var_declr  goto 70
-	var_init  goto 71
-	var_declr_list  goto 72
+	var_declr  goto 72
+	var_init  goto 73
+	var_declr_list  goto 74
 	id_list  goto 25
-	var_init_list  goto 73
-	parameter_list  goto 74
+	var_init_list  goto 75
+	parameter_list  goto 76
 
 
 state 32
@@ -517,12 +524,12 @@ state 32
 	ID  shift 20
 	RPAR  reduce 47
 
-	var_declr  goto 70
-	var_init  goto 71
-	var_declr_list  goto 72
+	var_declr  goto 72
+	var_init  goto 73
+	var_declr_list  goto 74
 	id_list  goto 25
-	var_init_list  goto 73
-	parameter_list  goto 75
+	var_init_list  goto 75
+	parameter_list  goto 77
 
 
 state 33
@@ -531,7 +538,7 @@ state 33
 	ID  shift 20
 	.  error
 
-	var_declrs_or_inits  goto 76
+	var_declrs_or_inits  goto 78
 	declr_or_init  goto 22
 	var_declr  goto 23
 	var_init  goto 24
@@ -541,7 +548,7 @@ state 33
 state 34
 	var_declr : id_list ID . COLON any_type  (35)
 
-	COLON  shift 77
+	COLON  shift 79
 	.  error
 
 
@@ -549,21 +556,21 @@ state 35
 	var_init : id_list COLON . simple_type EQUAL expression  (38)
 	var_init : id_list COLON . ID EQUAL ID  (39)
 
-	ID  shift 78
-	INTEGER  shift 79
-	REAL  shift 80
-	STRING  shift 81
-	BOOLEAN  shift 82
-	CHARACTER  shift 83
+	ID  shift 80
+	INTEGER  shift 81
+	REAL  shift 82
+	STRING  shift 83
+	BOOLEAN  shift 84
+	CHARACTER  shift 85
 	.  error
 
-	simple_type  goto 84
+	simple_type  goto 86
 
 
 state 36
-	id_list : id_list COMMA . ID  (118)
+	id_list : id_list COMMA . ID  (121)
 
-	ID  shift 85
+	ID  shift 87
 	.  error
 
 
@@ -571,243 +578,67 @@ state 37
 	type_definition_list : ID EQUAL . type_body SCOLON type_definition_list  (49)
 	type_definition_list : ID EQUAL . type_body SCOLON  (50)
 
-	ID  shift 86
-	INTEGER  shift 79
-	REF  shift 87
-	REAL  shift 80
-	STRING  shift 81
-	BOOLEAN  shift 82
-	CHARACTER  shift 83
-	ARRAY  shift 88
-	ENUMERATE  shift 89
-	RECORD  shift 90
-	EXCEPTION  shift 91
+	ID  shift 88
+	INTEGER  shift 81
+	REF  shift 89
+	REAL  shift 82
+	STRING  shift 83
+	BOOLEAN  shift 84
+	CHARACTER  shift 85
+	ARRAY  shift 90
+	ENUMERATE  shift 91
+	RECORD  shift 92
+	EXCEPTION  shift 93
 	.  error
 
-	simple_type  goto 92
-	any_type  goto 93
-	array_type  goto 94
-	type_body  goto 95
-	record_body  goto 96
-	enumerate_body  goto 97
-	exception_body  goto 98
-	reference_body  goto 99
+	simple_type  goto 94
+	any_type  goto 95
+	array_type  goto 96
+	type_body  goto 97
+	record_body  goto 98
+	enumerate_body  goto 99
+	exception_body  goto 100
+	reference_body  goto 101
 
 
 state 38
-	assignment_statement : ID . ASG expression  (86)
-	procedure_statement : ID . LPAR expression_list RPAR  (87)
+	assignment_statement : ID . ASG expression  (91)
+	procedure_statement : ID . LPAR expression_list RPAR  (92)
 
-	ASG  shift 100
-	LPAR  shift 101
+	ASG  shift 102
+	LPAR  shift 103
 	.  error
 
 
 state 39
-	for_statement : FOR . ID ASG expression TO expression DO statement  (105)
-	for_statement : FOR . ID ASG expression DOWNTO expression DO statement  (106)
+	for_statement : FOR . ID ASG expression TO expression DO statement  (108)
+	for_statement : FOR . ID ASG expression DOWNTO expression DO statement  (109)
 
-	ID  shift 102
+	ID  shift 104
 	.  error
 
 
 state 40
-	while_do_statement : WHILE . expression DO statement  (104)
+	while_do_statement : WHILE . expression DO statement  (107)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	.  error
-
-	expression  goto 113
-
-
-state 41
-	repeat_until_statement : REPEAT . statement UNTIL expression  (107)
-	statement : .  (85)
-
-	ID  shift 38
-	BEGIN  shift 28
-	FOR  shift 39
-	WHILE  shift 40
-	REPEAT  shift 41
-	IF  shift 42
-	INC  shift 43
-	DEC  shift 44
-	WRITE  shift 45
-	READ  shift 46
-	CASE  shift 47
-	BREAK  shift 48
-	CONTINUE  shift 49
-	TRY  shift 50
-	RAISE  shift 51
-	UNTIL  reduce 85
-
-	compound_statement  goto 52
-	statement  goto 114
-	assignment_statement  goto 54
-	procedure_statement  goto 55
-	if_then_else_statement  goto 56
-	case_of_statement  goto 57
-	while_do_statement  goto 58
-	for_statement  goto 59
-	repeat_until_statement  goto 60
-	try_except_statement  goto 61
-	raise_statement  goto 62
-	write_statement  goto 63
-	read_statement  goto 64
-	inc_statement  goto 65
-	dec_statement  goto 66
-
-
-state 42
-	if_then_else_statement : IF . expression THEN statement  (102)
-	if_then_else_statement : IF . expression THEN statement ELSE statement  (103)
-
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
 
 	expression  goto 115
 
 
-state 43
-	inc_statement : INC . expression  (110)
-
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	.  error
-
-	expression  goto 116
-
-
-state 44
-	dec_statement : DEC . expression  (111)
-
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	.  error
-
-	expression  goto 117
-
-
-state 45
-	write_statement : WRITE . expression_list  (108)
-	expression_list : .  (152)
-
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	SCOLON  reduce 152
-	END  reduce 152
-	UNTIL  reduce 152
-	ELSE  reduce 152
-	EXCEPT  reduce 152
-	FINALLY  reduce 152
-
-	expression  goto 118
-	expression_list  goto 119
-
-
-state 46
-	read_statement : READ . expression_list  (109)
-	expression_list : .  (152)
-
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	SCOLON  reduce 152
-	END  reduce 152
-	UNTIL  reduce 152
-	ELSE  reduce 152
-	EXCEPT  reduce 152
-	FINALLY  reduce 152
-
-	expression  goto 118
-	expression_list  goto 120
-
-
-state 47
-	case_of_statement : CASE . expression OF case_part ELSE statement END  (89)
-	case_of_statement : CASE . expression OF case_part END  (90)
-
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	.  error
-
-	expression  goto 121
-
-
-state 48
-	statement : BREAK .  (83)
-
-	.  reduce 83
-
-
-state 49
-	statement : CONTINUE .  (84)
-
-	.  reduce 84
-
-
-state 50
-	try_except_statement : TRY . statement_list EXCEPT exception_part DO statement_list END  (113)
-	try_except_statement : TRY . statement_list FINALLY statement_list END  (114)
-	try_except_statement : TRY . statement_list EXCEPT exception_part DO statement_list FINALLY statement_list END  (115)
-	statement : .  (85)
+state 41
+	repeat_until_statement : REPEAT . statement UNTIL expression  (110)
+	other_statement : .  (87)
 
 	ID  shift 38
 	BEGIN  shift 28
@@ -824,822 +655,1016 @@ state 50
 	CONTINUE  shift 49
 	TRY  shift 50
 	RAISE  shift 51
-	SCOLON  reduce 85
-	EXCEPT  reduce 85
-	FINALLY  reduce 85
+	UNTIL  reduce 87
+
+	compound_statement  goto 52
+	statement  goto 116
+	other_statement  goto 54
+	if_then_else_statement  goto 55
+	if_then_statement  goto 56
+	assignment_statement  goto 57
+	procedure_statement  goto 58
+	case_of_statement  goto 59
+	while_do_statement  goto 60
+	for_statement  goto 61
+	repeat_until_statement  goto 62
+	try_except_statement  goto 63
+	raise_statement  goto 64
+	write_statement  goto 65
+	read_statement  goto 66
+	inc_statement  goto 67
+	dec_statement  goto 68
+
+
+state 42
+	if_then_statement : IF . expression THEN statement  (88)
+	if_then_else_statement : IF . expression THEN if_then_else_statement ELSE statement  (89)
+	if_then_else_statement : IF . expression THEN other_statement ELSE statement  (90)
+
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
+	.  error
+
+	expression  goto 117
+
+
+state 43
+	inc_statement : INC . expression  (113)
+
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
+	.  error
+
+	expression  goto 118
+
+
+state 44
+	dec_statement : DEC . expression  (114)
+
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
+	.  error
+
+	expression  goto 119
+
+
+state 45
+	write_statement : WRITE . expression_list  (111)
+	expression_list : .  (155)
+
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
+	SCOLON  reduce 155
+	END  reduce 155
+	UNTIL  reduce 155
+	ELSE  reduce 155
+	EXCEPT  reduce 155
+	FINALLY  reduce 155
+
+	expression  goto 120
+	expression_list  goto 121
+
+
+state 46
+	read_statement : READ . expression_list  (112)
+	expression_list : .  (155)
+
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
+	SCOLON  reduce 155
+	END  reduce 155
+	UNTIL  reduce 155
+	ELSE  reduce 155
+	EXCEPT  reduce 155
+	FINALLY  reduce 155
+
+	expression  goto 120
+	expression_list  goto 122
+
+
+state 47
+	case_of_statement : CASE . expression OF case_part ELSE statement END  (94)
+	case_of_statement : CASE . expression OF case_part END  (95)
+
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
+	.  error
+
+	expression  goto 123
+
+
+state 48
+	other_statement : BREAK .  (85)
+
+	.  reduce 85
+
+
+state 49
+	other_statement : CONTINUE .  (86)
+
+	.  reduce 86
+
+
+state 50
+	try_except_statement : TRY . statement_list EXCEPT exception_part DO statement_list END  (116)
+	try_except_statement : TRY . statement_list FINALLY statement_list END  (117)
+	try_except_statement : TRY . statement_list EXCEPT exception_part DO statement_list FINALLY statement_list END  (118)
+	other_statement : .  (87)
+
+	ID  shift 38
+	BEGIN  shift 28
+	FOR  shift 39
+	WHILE  shift 40
+	REPEAT  shift 41
+	IF  shift 42
+	INC  shift 43
+	DEC  shift 44
+	WRITE  shift 45
+	READ  shift 46
+	CASE  shift 47
+	BREAK  shift 48
+	CONTINUE  shift 49
+	TRY  shift 50
+	RAISE  shift 51
+	SCOLON  reduce 87
+	EXCEPT  reduce 87
+	FINALLY  reduce 87
 
 	compound_statement  goto 52
 	statement  goto 53
-	assignment_statement  goto 54
-	procedure_statement  goto 55
-	if_then_else_statement  goto 56
-	case_of_statement  goto 57
-	while_do_statement  goto 58
-	for_statement  goto 59
-	repeat_until_statement  goto 60
-	try_except_statement  goto 61
-	raise_statement  goto 62
-	write_statement  goto 63
-	read_statement  goto 64
-	inc_statement  goto 65
-	dec_statement  goto 66
-	statement_list  goto 122
+	other_statement  goto 54
+	if_then_else_statement  goto 55
+	if_then_statement  goto 56
+	assignment_statement  goto 57
+	procedure_statement  goto 58
+	case_of_statement  goto 59
+	while_do_statement  goto 60
+	for_statement  goto 61
+	repeat_until_statement  goto 62
+	try_except_statement  goto 63
+	raise_statement  goto 64
+	write_statement  goto 65
+	read_statement  goto 66
+	inc_statement  goto 67
+	dec_statement  goto 68
+	statement_list  goto 124
 
 
 state 51
-	raise_statement : RAISE . ID LPAR expression_list RPAR  (112)
+	raise_statement : RAISE . ID LPAR expression_list RPAR  (115)
 
-	ID  shift 123
+	ID  shift 125
 	.  error
 
 
 state 52
-	statement : compound_statement .  (77)
+	other_statement : compound_statement .  (79)
 
-	.  reduce 77
+	.  reduce 79
 
 
 state 53
-	statement_list : statement .  (120)
+	statement_list : statement .  (123)
 
-	.  reduce 120
+	.  reduce 123
 
 
 state 54
-	statement : assignment_statement .  (69)
+	statement : other_statement .  (69)
 
 	.  reduce 69
 
 
 state 55
-	statement : procedure_statement .  (70)
+	statement : if_then_else_statement .  (70)
 
 	.  reduce 70
 
 
 state 56
-	statement : if_then_else_statement .  (71)
+	statement : if_then_statement .  (71)
 
 	.  reduce 71
 
 
 state 57
-	statement : case_of_statement .  (72)
+	other_statement : assignment_statement .  (72)
 
 	.  reduce 72
 
 
 state 58
-	statement : while_do_statement .  (73)
+	other_statement : procedure_statement .  (73)
 
 	.  reduce 73
 
 
 state 59
-	statement : for_statement .  (74)
+	other_statement : case_of_statement .  (74)
 
 	.  reduce 74
 
 
 state 60
-	statement : repeat_until_statement .  (75)
+	other_statement : while_do_statement .  (75)
 
 	.  reduce 75
 
 
 state 61
-	statement : try_except_statement .  (76)
+	other_statement : for_statement .  (76)
 
 	.  reduce 76
 
 
 state 62
-	statement : raise_statement .  (78)
+	other_statement : repeat_until_statement .  (77)
+
+	.  reduce 77
+
+
+state 63
+	other_statement : try_except_statement .  (78)
 
 	.  reduce 78
 
 
-state 63
-	statement : write_statement .  (79)
-
-	.  reduce 79
-
-
 state 64
-	statement : read_statement .  (80)
+	other_statement : raise_statement .  (80)
 
 	.  reduce 80
 
 
 state 65
-	statement : inc_statement .  (81)
+	other_statement : write_statement .  (81)
 
 	.  reduce 81
 
 
 state 66
-	statement : dec_statement .  (82)
+	other_statement : read_statement .  (82)
 
 	.  reduce 82
 
 
 state 67
-	compound_statement : BEGIN statement_list . END  (88)
-	statement_list : statement_list . SCOLON statement  (121)
+	other_statement : inc_statement .  (83)
 
-	SCOLON  shift 124
-	END  shift 125
-	.  error
+	.  reduce 83
 
 
 state 68
+	other_statement : dec_statement .  (84)
+
+	.  reduce 84
+
+
+state 69
+	compound_statement : BEGIN statement_list . END  (93)
+	statement_list : statement_list . SCOLON statement  (124)
+
+	SCOLON  shift 126
+	END  shift 127
+	.  error
+
+
+state 70
 	program : program_declaration global_declaration_list compound_statement DOT .  (1)
 
 	.  reduce 1
 
 
-state 69
+state 71
 	global_declaration_list : global_declaration SCOLON global_declaration_list .  (2)
 
 	.  reduce 2
 
 
-state 70
+state 72
 	var_declr_list : var_declr .  (34)
 
 	.  reduce 34
 
 
-state 71
+state 73
 	var_init_list : var_init .  (37)
 
 	.  reduce 37
 
 
-state 72
+state 74
 	var_declr_list : var_declr_list . SCOLON var_declr  (33)
 	parameter_list : var_declr_list . SCOLON var_init_list  (44)
 	parameter_list : var_declr_list .  (45)
 
-	SCOLON  shift 126
+	SCOLON  shift 128
 	RPAR  reduce 45
 
 
-state 73
+state 75
 	var_init_list : var_init_list . SCOLON var_init  (36)
 	parameter_list : var_init_list .  (46)
 
-	SCOLON  shift 127
+	SCOLON  shift 129
 	RPAR  reduce 46
 
 
-state 74
+state 76
 	function_definition : FUNCTION ID LPAR parameter_list . RPAR COLON any_type SCOLON local_var_declrs compound_statement SCOLON  (41)
 
-	RPAR  shift 128
+	RPAR  shift 130
 	.  error
 
 
-state 75
+state 77
 	procedure_definition : PROCEDURE ID LPAR parameter_list . RPAR SCOLON local_var_declrs compound_statement SCOLON  (40)
 
-	RPAR  shift 129
+	RPAR  shift 131
 	.  error
 
 
-state 76
+state 78
 	var_declrs_or_inits : declr_or_init SCOLON var_declrs_or_inits .  (29)
 
 	.  reduce 29
 
 
-state 77
+state 79
 	var_declr : id_list ID COLON . any_type  (35)
 
-	ID  shift 86
-	INTEGER  shift 79
-	REAL  shift 80
-	STRING  shift 81
-	BOOLEAN  shift 82
-	CHARACTER  shift 83
-	ARRAY  shift 88
+	ID  shift 88
+	INTEGER  shift 81
+	REAL  shift 82
+	STRING  shift 83
+	BOOLEAN  shift 84
+	CHARACTER  shift 85
+	ARRAY  shift 90
 	.  error
 
-	simple_type  goto 92
-	any_type  goto 130
-	array_type  goto 94
+	simple_type  goto 94
+	any_type  goto 132
+	array_type  goto 96
 
 
-state 78
+state 80
 	var_init : id_list COLON ID . EQUAL ID  (39)
 
-	EQUAL  shift 131
+	EQUAL  shift 133
 	.  error
 
 
-state 79
+state 81
 	simple_type : INTEGER .  (9)
 
 	.  reduce 9
 
 
-state 80
+state 82
 	simple_type : REAL .  (10)
 
 	.  reduce 10
 
 
-state 81
+state 83
 	simple_type : STRING .  (11)
 
 	.  reduce 11
 
 
-state 82
+state 84
 	simple_type : BOOLEAN .  (13)
 
 	.  reduce 13
 
 
-state 83
+state 85
 	simple_type : CHARACTER .  (12)
 
 	.  reduce 12
 
 
-state 84
+state 86
 	var_init : id_list COLON simple_type . EQUAL expression  (38)
 
-	EQUAL  shift 132
+	EQUAL  shift 134
 	.  error
 
 
-state 85
-	id_list : id_list COMMA ID .  (118)
+state 87
+	id_list : id_list COMMA ID .  (121)
 
-	.  reduce 118
+	.  reduce 121
 
 
-state 86
+state 88
 	any_type : ID .  (20)
 
 	.  reduce 20
 
 
-state 87
+state 89
 	reference_body : REF . any_type  (68)
 
-	ID  shift 86
-	INTEGER  shift 79
-	REAL  shift 80
-	STRING  shift 81
-	BOOLEAN  shift 82
-	CHARACTER  shift 83
-	ARRAY  shift 88
+	ID  shift 88
+	INTEGER  shift 81
+	REAL  shift 82
+	STRING  shift 83
+	BOOLEAN  shift 84
+	CHARACTER  shift 85
+	ARRAY  shift 90
 	.  error
 
-	simple_type  goto 92
-	any_type  goto 133
-	array_type  goto 94
+	simple_type  goto 94
+	any_type  goto 135
+	array_type  goto 96
 
 
-state 88
+state 90
 	array_type : ARRAY . LBRA range_list RBRA OF any_named_type  (23)
 
-	LBRA  shift 134
+	LBRA  shift 136
 	.  error
 
 
-state 89
+state 91
 	enumerate_body : ENUMERATE . id_list END  (65)
 
 	ID  shift 20
 	.  error
 
-	id_list  goto 135
+	id_list  goto 137
 
 
-state 90
+state 92
 	record_body : RECORD . fixed_field_list variant_part END  (56)
 	record_body : RECORD . variant_part END  (57)
 	record_body : RECORD . fixed_field_list END  (58)
 
 	ID  shift 20
-	CASE  shift 136
+	CASE  shift 138
 	.  error
 
-	id_list  goto 137
-	fixed_field_list  goto 138
-	variant_part  goto 139
-	fixed_field  goto 140
+	id_list  goto 139
+	fixed_field_list  goto 140
+	variant_part  goto 141
+	fixed_field  goto 142
 
 
-state 91
+state 93
 	exception_body : EXCEPTION .  (66)
 	exception_body : EXCEPTION . fixed_field_list END  (67)
 
 	ID  shift 20
 	SCOLON  reduce 66
 
-	id_list  goto 137
-	fixed_field_list  goto 141
-	fixed_field  goto 140
+	id_list  goto 139
+	fixed_field_list  goto 143
+	fixed_field  goto 142
 
 
-state 92
+state 94
 	any_type : simple_type .  (22)
 
 	.  reduce 22
 
 
-state 93
+state 95
 	type_body : any_type .  (51)
 
 	.  reduce 51
 
 
-state 94
+state 96
 	any_type : array_type .  (21)
 
 	.  reduce 21
 
 
-state 95
+state 97
 	type_definition_list : ID EQUAL type_body . SCOLON type_definition_list  (49)
 	type_definition_list : ID EQUAL type_body . SCOLON  (50)
 
-	SCOLON  shift 142
+	SCOLON  shift 144
 	.  error
 
 
-state 96
+state 98
 	type_body : record_body .  (52)
 
 	.  reduce 52
 
 
-state 97
+state 99
 	type_body : enumerate_body .  (53)
 
 	.  reduce 53
 
 
-state 98
+state 100
 	type_body : exception_body .  (54)
 
 	.  reduce 54
 
 
-state 99
+state 101
 	type_body : reference_body .  (55)
 
 	.  reduce 55
 
 
-state 100
-	assignment_statement : ID ASG . expression  (86)
-
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	.  error
-
-	expression  goto 143
-
-
-state 101
-	procedure_statement : ID LPAR . expression_list RPAR  (87)
-	expression_list : .  (152)
-
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	RPAR  reduce 152
-
-	expression  goto 118
-	expression_list  goto 144
-
-
 state 102
-	for_statement : FOR ID . ASG expression TO expression DO statement  (105)
-	for_statement : FOR ID . ASG expression DOWNTO expression DO statement  (106)
+	assignment_statement : ID ASG . expression  (91)
 
-	ASG  shift 145
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
+
+	expression  goto 145
 
 
 state 103
-	expression : ID .  (142)
-	expression : ID . LBRA expression_list RBRA  (145)
-	expression : ID . LPAR expression_list RPAR  (146)
-	expression : ID . DOT field  (147)
+	procedure_statement : ID LPAR . expression_list RPAR  (92)
+	expression_list : .  (155)
 
-	LPAR  shift 146
-	LBRA  shift 147
-	DOT  shift 148
-	ADD  reduce 142
-	SUB  reduce 142
-	MUL  reduce 142
-	DIV  reduce 142
-	MOD  reduce 142
-	RPAR  reduce 142
-	RBRA  reduce 142
-	GT  reduce 142
-	LT  reduce 142
-	EQUAL  reduce 142
-	NOTEQ  reduce 142
-	GTEQ  reduce 142
-	LTEQ  reduce 142
-	SCOLON  reduce 142
-	COMMA  reduce 142
-	BEGIN  reduce 142
-	END  reduce 142
-	THEN  reduce 142
-	UNTIL  reduce 142
-	ELSE  reduce 142
-	DO  reduce 142
-	TO  reduce 142
-	DOWNTO  reduce 142
-	OF  reduce 142
-	EXCEPT  reduce 142
-	FINALLY  reduce 142
-	OR  reduce 142
-	AND  reduce 142
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
+	RPAR  reduce 155
+
+	expression  goto 120
+	expression_list  goto 146
 
 
 state 104
-	expression : LPAR . expression RPAR  (144)
+	for_statement : FOR ID . ASG expression TO expression DO statement  (108)
+	for_statement : FOR ID . ASG expression DOWNTO expression DO statement  (109)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
+	ASG  shift 147
 	.  error
-
-	expression  goto 149
 
 
 state 105
-	expression : GETREF . expression  (136)
+	expression : ID .  (145)
+	expression : ID . LBRA expression_list RBRA  (148)
+	expression : ID . LPAR expression_list RPAR  (149)
+	expression : ID . DOT field  (150)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	.  error
-
-	expression  goto 150
+	LPAR  shift 148
+	LBRA  shift 149
+	DOT  shift 150
+	ADD  reduce 145
+	SUB  reduce 145
+	MUL  reduce 145
+	DIV  reduce 145
+	MOD  reduce 145
+	RPAR  reduce 145
+	RBRA  reduce 145
+	GT  reduce 145
+	LT  reduce 145
+	EQUAL  reduce 145
+	NOTEQ  reduce 145
+	GTEQ  reduce 145
+	LTEQ  reduce 145
+	SCOLON  reduce 145
+	COMMA  reduce 145
+	BEGIN  reduce 145
+	END  reduce 145
+	THEN  reduce 145
+	UNTIL  reduce 145
+	ELSE  reduce 145
+	DO  reduce 145
+	TO  reduce 145
+	DOWNTO  reduce 145
+	OF  reduce 145
+	EXCEPT  reduce 145
+	FINALLY  reduce 145
+	OR  reduce 145
+	AND  reduce 145
 
 
 state 106
-	expression : DEREF . expression  (137)
+	expression : LPAR . expression RPAR  (147)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
 
 	expression  goto 151
 
 
 state 107
-	expression : INTEGER .  (141)
+	expression : GETREF . expression  (139)
 
-	.  reduce 141
-
-
-state 108
-	expression : REAL .  (140)
-
-	.  reduce 140
-
-
-state 109
-	expression : NIL .  (143)
-
-	.  reduce 143
-
-
-state 110
-	expression : FALSE .  (139)
-
-	.  reduce 139
-
-
-state 111
-	expression : TRUE .  (138)
-
-	.  reduce 138
-
-
-state 112
-	expression : NOT . expression  (135)
-
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
 
 	expression  goto 152
 
 
-state 113
-	while_do_statement : WHILE expression . DO statement  (104)
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
+state 108
+	expression : DEREF . expression  (140)
 
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	GT  shift 158
-	LT  shift 159
-	EQUAL  shift 160
-	NOTEQ  shift 161
-	GTEQ  shift 162
-	LTEQ  shift 163
-	DO  shift 164
-	OR  shift 165
-	AND  shift 166
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
+
+	expression  goto 153
+
+
+state 109
+	expression : INTEGER .  (144)
+
+	.  reduce 144
+
+
+state 110
+	expression : REAL .  (143)
+
+	.  reduce 143
+
+
+state 111
+	expression : NIL .  (146)
+
+	.  reduce 146
+
+
+state 112
+	expression : FALSE .  (142)
+
+	.  reduce 142
+
+
+state 113
+	expression : TRUE .  (141)
+
+	.  reduce 141
 
 
 state 114
-	repeat_until_statement : REPEAT statement . UNTIL expression  (107)
+	expression : NOT . expression  (138)
 
-	UNTIL  shift 167
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
+
+	expression  goto 154
 
 
 state 115
-	if_then_else_statement : IF expression . THEN statement  (102)
-	if_then_else_statement : IF expression . THEN statement ELSE statement  (103)
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
+	while_do_statement : WHILE expression . DO statement  (107)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	GT  shift 158
-	LT  shift 159
-	EQUAL  shift 160
-	NOTEQ  shift 161
-	GTEQ  shift 162
-	LTEQ  shift 163
-	THEN  shift 168
-	OR  shift 165
-	AND  shift 166
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	GT  shift 160
+	LT  shift 161
+	EQUAL  shift 162
+	NOTEQ  shift 163
+	GTEQ  shift 164
+	LTEQ  shift 165
+	DO  shift 166
+	OR  shift 167
+	AND  shift 168
 	.  error
 
 
 state 116
-	inc_statement : INC expression .  (110)
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
+	repeat_until_statement : REPEAT statement . UNTIL expression  (110)
 
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	GT  shift 158
-	LT  shift 159
-	EQUAL  shift 160
-	NOTEQ  shift 161
-	GTEQ  shift 162
-	LTEQ  shift 163
-	OR  shift 165
-	AND  shift 166
-	SCOLON  reduce 110
-	END  reduce 110
-	UNTIL  reduce 110
-	ELSE  reduce 110
-	EXCEPT  reduce 110
-	FINALLY  reduce 110
+	UNTIL  shift 169
+	.  error
 
 
 state 117
-	dec_statement : DEC expression .  (111)
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
+	if_then_statement : IF expression . THEN statement  (88)
+	if_then_else_statement : IF expression . THEN if_then_else_statement ELSE statement  (89)
+	if_then_else_statement : IF expression . THEN other_statement ELSE statement  (90)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	GT  shift 158
-	LT  shift 159
-	EQUAL  shift 160
-	NOTEQ  shift 161
-	GTEQ  shift 162
-	LTEQ  shift 163
-	OR  shift 165
-	AND  shift 166
-	SCOLON  reduce 111
-	END  reduce 111
-	UNTIL  reduce 111
-	ELSE  reduce 111
-	EXCEPT  reduce 111
-	FINALLY  reduce 111
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	GT  shift 160
+	LT  shift 161
+	EQUAL  shift 162
+	NOTEQ  shift 163
+	GTEQ  shift 164
+	LTEQ  shift 165
+	THEN  shift 170
+	OR  shift 167
+	AND  shift 168
+	.  error
 
 
 state 118
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
-	expression_list : expression .  (150)
-	expression_list : expression . COMMA expression_list  (151)
+	inc_statement : INC expression .  (113)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	GT  shift 158
-	LT  shift 159
-	EQUAL  shift 160
-	NOTEQ  shift 161
-	GTEQ  shift 162
-	LTEQ  shift 163
-	COMMA  shift 169
-	OR  shift 165
-	AND  shift 166
-	RPAR  reduce 150
-	RBRA  reduce 150
-	SCOLON  reduce 150
-	END  reduce 150
-	UNTIL  reduce 150
-	ELSE  reduce 150
-	EXCEPT  reduce 150
-	FINALLY  reduce 150
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	GT  shift 160
+	LT  shift 161
+	EQUAL  shift 162
+	NOTEQ  shift 163
+	GTEQ  shift 164
+	LTEQ  shift 165
+	OR  shift 167
+	AND  shift 168
+	SCOLON  reduce 113
+	END  reduce 113
+	UNTIL  reduce 113
+	ELSE  reduce 113
+	EXCEPT  reduce 113
+	FINALLY  reduce 113
 
 
 state 119
-	write_statement : WRITE expression_list .  (108)
+	dec_statement : DEC expression .  (114)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	.  reduce 108
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	GT  shift 160
+	LT  shift 161
+	EQUAL  shift 162
+	NOTEQ  shift 163
+	GTEQ  shift 164
+	LTEQ  shift 165
+	OR  shift 167
+	AND  shift 168
+	SCOLON  reduce 114
+	END  reduce 114
+	UNTIL  reduce 114
+	ELSE  reduce 114
+	EXCEPT  reduce 114
+	FINALLY  reduce 114
 
 
 state 120
-	read_statement : READ expression_list .  (109)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
+	expression_list : expression .  (153)
+	expression_list : expression . COMMA expression_list  (154)
 
-	.  reduce 109
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	GT  shift 160
+	LT  shift 161
+	EQUAL  shift 162
+	NOTEQ  shift 163
+	GTEQ  shift 164
+	LTEQ  shift 165
+	COMMA  shift 171
+	OR  shift 167
+	AND  shift 168
+	RPAR  reduce 153
+	RBRA  reduce 153
+	SCOLON  reduce 153
+	END  reduce 153
+	UNTIL  reduce 153
+	ELSE  reduce 153
+	EXCEPT  reduce 153
+	FINALLY  reduce 153
 
 
 state 121
-	case_of_statement : CASE expression . OF case_part ELSE statement END  (89)
-	case_of_statement : CASE expression . OF case_part END  (90)
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
+	write_statement : WRITE expression_list .  (111)
 
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	GT  shift 158
-	LT  shift 159
-	EQUAL  shift 160
-	NOTEQ  shift 161
-	GTEQ  shift 162
-	LTEQ  shift 163
-	OF  shift 170
-	OR  shift 165
-	AND  shift 166
-	.  error
+	.  reduce 111
 
 
 state 122
-	try_except_statement : TRY statement_list . EXCEPT exception_part DO statement_list END  (113)
-	try_except_statement : TRY statement_list . FINALLY statement_list END  (114)
-	try_except_statement : TRY statement_list . EXCEPT exception_part DO statement_list FINALLY statement_list END  (115)
-	statement_list : statement_list . SCOLON statement  (121)
+	read_statement : READ expression_list .  (112)
 
-	SCOLON  shift 124
-	EXCEPT  shift 171
-	FINALLY  shift 172
-	.  error
+	.  reduce 112
 
 
 state 123
-	raise_statement : RAISE ID . LPAR expression_list RPAR  (112)
+	case_of_statement : CASE expression . OF case_part ELSE statement END  (94)
+	case_of_statement : CASE expression . OF case_part END  (95)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	LPAR  shift 173
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	GT  shift 160
+	LT  shift 161
+	EQUAL  shift 162
+	NOTEQ  shift 163
+	GTEQ  shift 164
+	LTEQ  shift 165
+	OF  shift 172
+	OR  shift 167
+	AND  shift 168
 	.  error
 
 
 state 124
-	statement_list : statement_list SCOLON . statement  (121)
-	statement : .  (85)
+	try_except_statement : TRY statement_list . EXCEPT exception_part DO statement_list END  (116)
+	try_except_statement : TRY statement_list . FINALLY statement_list END  (117)
+	try_except_statement : TRY statement_list . EXCEPT exception_part DO statement_list FINALLY statement_list END  (118)
+	statement_list : statement_list . SCOLON statement  (124)
+
+	SCOLON  shift 126
+	EXCEPT  shift 173
+	FINALLY  shift 174
+	.  error
+
+
+state 125
+	raise_statement : RAISE ID . LPAR expression_list RPAR  (115)
+
+	LPAR  shift 175
+	.  error
+
+
+state 126
+	statement_list : statement_list SCOLON . statement  (124)
+	other_statement : .  (87)
 
 	ID  shift 38
 	BEGIN  shift 28
@@ -1656,701 +1681,706 @@ state 124
 	CONTINUE  shift 49
 	TRY  shift 50
 	RAISE  shift 51
-	SCOLON  reduce 85
-	END  reduce 85
-	EXCEPT  reduce 85
-	FINALLY  reduce 85
+	SCOLON  reduce 87
+	END  reduce 87
+	EXCEPT  reduce 87
+	FINALLY  reduce 87
 
 	compound_statement  goto 52
-	statement  goto 174
-	assignment_statement  goto 54
-	procedure_statement  goto 55
-	if_then_else_statement  goto 56
-	case_of_statement  goto 57
-	while_do_statement  goto 58
-	for_statement  goto 59
-	repeat_until_statement  goto 60
-	try_except_statement  goto 61
-	raise_statement  goto 62
-	write_statement  goto 63
-	read_statement  goto 64
-	inc_statement  goto 65
-	dec_statement  goto 66
+	statement  goto 176
+	other_statement  goto 54
+	if_then_else_statement  goto 55
+	if_then_statement  goto 56
+	assignment_statement  goto 57
+	procedure_statement  goto 58
+	case_of_statement  goto 59
+	while_do_statement  goto 60
+	for_statement  goto 61
+	repeat_until_statement  goto 62
+	try_except_statement  goto 63
+	raise_statement  goto 64
+	write_statement  goto 65
+	read_statement  goto 66
+	inc_statement  goto 67
+	dec_statement  goto 68
 
 
-state 125
-	compound_statement : BEGIN statement_list END .  (88)
+state 127
+	compound_statement : BEGIN statement_list END .  (93)
 
-	.  reduce 88
+	.  reduce 93
 
 
-state 126
+state 128
 	var_declr_list : var_declr_list SCOLON . var_declr  (33)
 	parameter_list : var_declr_list SCOLON . var_init_list  (44)
 
 	ID  shift 20
 	.  error
 
-	var_declr  goto 175
-	var_init  goto 71
+	var_declr  goto 177
+	var_init  goto 73
 	id_list  goto 25
-	var_init_list  goto 176
+	var_init_list  goto 178
 
 
-state 127
+state 129
 	var_init_list : var_init_list SCOLON . var_init  (36)
 
 	ID  shift 20
 	.  error
 
-	var_init  goto 177
-	id_list  goto 178
-
-
-state 128
-	function_definition : FUNCTION ID LPAR parameter_list RPAR . COLON any_type SCOLON local_var_declrs compound_statement SCOLON  (41)
-
-	COLON  shift 179
-	.  error
-
-
-state 129
-	procedure_definition : PROCEDURE ID LPAR parameter_list RPAR . SCOLON local_var_declrs compound_statement SCOLON  (40)
-
-	SCOLON  shift 180
-	.  error
+	var_init  goto 179
+	id_list  goto 180
 
 
 state 130
+	function_definition : FUNCTION ID LPAR parameter_list RPAR . COLON any_type SCOLON local_var_declrs compound_statement SCOLON  (41)
+
+	COLON  shift 181
+	.  error
+
+
+state 131
+	procedure_definition : PROCEDURE ID LPAR parameter_list RPAR . SCOLON local_var_declrs compound_statement SCOLON  (40)
+
+	SCOLON  shift 182
+	.  error
+
+
+state 132
 	var_declr : id_list ID COLON any_type .  (35)
 
 	.  reduce 35
 
 
-state 131
+state 133
 	var_init : id_list COLON ID EQUAL . ID  (39)
 
-	ID  shift 181
+	ID  shift 183
 	.  error
 
 
-state 132
+state 134
 	var_init : id_list COLON simple_type EQUAL . expression  (38)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
 
-	expression  goto 182
+	expression  goto 184
 
 
-state 133
+state 135
 	reference_body : REF any_type .  (68)
 
 	.  reduce 68
 
 
-state 134
+state 136
 	array_type : ARRAY LBRA . range_list RBRA OF any_named_type  (23)
 	range : .  (27)
 
-	ICONST  shift 183
+	ICONST  shift 185
 	RBRA  reduce 27
 	COMMA  reduce 27
 
-	range_list  goto 184
-	range  goto 185
-
-
-state 135
-	enumerate_body : ENUMERATE id_list . END  (65)
-	id_list : id_list . COMMA ID  (118)
-
-	COMMA  shift 36
-	END  shift 186
-	.  error
-
-
-state 136
-	variant_part : CASE . literal_or_enum_list COLON ordinal_type OF fixed_field_list variant_else_part END  (62)
-	variant_part : CASE . literal_or_enum_list COLON ordinal_type OF fixed_field_list END  (63)
-
-	ICONST  shift 187
-	RCONST  shift 188
-	BCONST  shift 189
-	CCONST  shift 190
-	SCONST  shift 191
-	ID  shift 192
-	.  error
-
-	literal_or_enum_list  goto 193
-	literal_or_enum  goto 194
-	literal  goto 195
+	range_list  goto 186
+	range  goto 187
 
 
 state 137
-	fixed_field : id_list . COLON any_type  (61)
-	id_list : id_list . COMMA ID  (118)
+	enumerate_body : ENUMERATE id_list . END  (65)
+	id_list : id_list . COMMA ID  (121)
 
-	COLON  shift 196
 	COMMA  shift 36
+	END  shift 188
 	.  error
 
 
 state 138
-	record_body : RECORD fixed_field_list . variant_part END  (56)
-	record_body : RECORD fixed_field_list . END  (58)
+	variant_part : CASE . literal_or_enum_list COLON ordinal_type OF fixed_field_list variant_else_part END  (62)
+	variant_part : CASE . literal_or_enum_list COLON ordinal_type OF fixed_field_list END  (63)
 
-	END  shift 197
-	CASE  shift 136
+	ICONST  shift 189
+	RCONST  shift 190
+	BCONST  shift 191
+	CCONST  shift 192
+	SCONST  shift 193
+	ID  shift 194
 	.  error
 
-	variant_part  goto 198
+	literal_or_enum_list  goto 195
+	literal_or_enum  goto 196
+	literal  goto 197
 
 
 state 139
-	record_body : RECORD variant_part . END  (57)
+	fixed_field : id_list . COLON any_type  (61)
+	id_list : id_list . COMMA ID  (121)
 
-	END  shift 199
+	COLON  shift 198
+	COMMA  shift 36
 	.  error
 
 
 state 140
-	fixed_field_list : fixed_field . SCOLON fixed_field_list  (59)
-	fixed_field_list : fixed_field .  (60)
+	record_body : RECORD fixed_field_list . variant_part END  (56)
+	record_body : RECORD fixed_field_list . END  (58)
 
-	SCOLON  shift 200
-	END  reduce 60
-	ELSE  reduce 60
-	CASE  reduce 60
+	END  shift 199
+	CASE  shift 138
+	.  error
+
+	variant_part  goto 200
 
 
 state 141
-	exception_body : EXCEPTION fixed_field_list . END  (67)
+	record_body : RECORD variant_part . END  (57)
 
 	END  shift 201
 	.  error
 
 
 state 142
+	fixed_field_list : fixed_field . SCOLON fixed_field_list  (59)
+	fixed_field_list : fixed_field .  (60)
+
+	SCOLON  shift 202
+	END  reduce 60
+	ELSE  reduce 60
+	CASE  reduce 60
+
+
+state 143
+	exception_body : EXCEPTION fixed_field_list . END  (67)
+
+	END  shift 203
+	.  error
+
+
+state 144
 	type_definition_list : ID EQUAL type_body SCOLON . type_definition_list  (49)
 	type_definition_list : ID EQUAL type_body SCOLON .  (50)
 
 	ID  shift 26
 	SCOLON  reduce 50
 
-	type_definition_list  goto 202
-
-
-state 143
-	assignment_statement : ID ASG expression .  (86)
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
-
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	GT  shift 158
-	LT  shift 159
-	EQUAL  shift 160
-	NOTEQ  shift 161
-	GTEQ  shift 162
-	LTEQ  shift 163
-	OR  shift 165
-	AND  shift 166
-	SCOLON  reduce 86
-	END  reduce 86
-	UNTIL  reduce 86
-	ELSE  reduce 86
-	EXCEPT  reduce 86
-	FINALLY  reduce 86
-
-
-state 144
-	procedure_statement : ID LPAR expression_list . RPAR  (87)
-
-	RPAR  shift 203
-	.  error
+	type_definition_list  goto 204
 
 
 state 145
-	for_statement : FOR ID ASG . expression TO expression DO statement  (105)
-	for_statement : FOR ID ASG . expression DOWNTO expression DO statement  (106)
+	assignment_statement : ID ASG expression .  (91)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	.  error
-
-	expression  goto 204
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	GT  shift 160
+	LT  shift 161
+	EQUAL  shift 162
+	NOTEQ  shift 163
+	GTEQ  shift 164
+	LTEQ  shift 165
+	OR  shift 167
+	AND  shift 168
+	SCOLON  reduce 91
+	END  reduce 91
+	UNTIL  reduce 91
+	ELSE  reduce 91
+	EXCEPT  reduce 91
+	FINALLY  reduce 91
 
 
 state 146
-	expression : ID LPAR . expression_list RPAR  (146)
-	expression_list : .  (152)
+	procedure_statement : ID LPAR expression_list . RPAR  (92)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	RPAR  reduce 152
-
-	expression  goto 118
-	expression_list  goto 205
+	RPAR  shift 205
+	.  error
 
 
 state 147
-	expression : ID LBRA . expression_list RBRA  (145)
-	expression_list : .  (152)
+	for_statement : FOR ID ASG . expression TO expression DO statement  (108)
+	for_statement : FOR ID ASG . expression DOWNTO expression DO statement  (109)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	RBRA  reduce 152
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
+	.  error
 
-	expression  goto 118
-	expression_list  goto 206
+	expression  goto 206
 
 
 state 148
-	expression : ID DOT . field  (147)
+	expression : ID LPAR . expression_list RPAR  (149)
+	expression_list : .  (155)
 
-	ID  shift 207
-	.  error
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
+	RPAR  reduce 155
 
-	field  goto 208
+	expression  goto 120
+	expression_list  goto 207
 
 
 state 149
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
-	expression : LPAR expression . RPAR  (144)
+	expression : ID LBRA . expression_list RBRA  (148)
+	expression_list : .  (155)
 
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	RPAR  shift 209
-	GT  shift 158
-	LT  shift 159
-	EQUAL  shift 160
-	NOTEQ  shift 161
-	GTEQ  shift 162
-	LTEQ  shift 163
-	OR  shift 165
-	AND  shift 166
-	.  error
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
+	RBRA  reduce 155
+
+	expression  goto 120
+	expression_list  goto 208
 
 
 state 150
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
-	expression : GETREF expression .  (136)
+	expression : ID DOT . field  (150)
 
-	.  reduce 136
+	ID  shift 209
+	.  error
+
+	field  goto 210
 
 
 state 151
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
-	expression : DEREF expression .  (137)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
+	expression : LPAR expression . RPAR  (147)
 
-	.  reduce 137
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	RPAR  shift 211
+	GT  shift 160
+	LT  shift 161
+	EQUAL  shift 162
+	NOTEQ  shift 163
+	GTEQ  shift 164
+	LTEQ  shift 165
+	OR  shift 167
+	AND  shift 168
+	.  error
 
 
 state 152
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
-	expression : NOT expression .  (135)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
+	expression : GETREF expression .  (139)
 
-	.  reduce 135
+	.  reduce 139
 
 
 state 153
-	expression : expression ADD . expression  (128)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
+	expression : DEREF expression .  (140)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	.  error
-
-	expression  goto 210
+	.  reduce 140
 
 
 state 154
-	expression : expression SUB . expression  (129)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
+	expression : NOT expression .  (138)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	.  error
-
-	expression  goto 211
+	.  reduce 138
 
 
 state 155
-	expression : expression MUL . expression  (131)
+	expression : expression ADD . expression  (131)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
 
 	expression  goto 212
 
 
 state 156
-	expression : expression DIV . expression  (132)
+	expression : expression SUB . expression  (132)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
 
 	expression  goto 213
 
 
 state 157
-	expression : expression MOD . expression  (133)
+	expression : expression MUL . expression  (134)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
 
 	expression  goto 214
 
 
 state 158
-	expression : expression GT . expression  (122)
+	expression : expression DIV . expression  (135)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
 
 	expression  goto 215
 
 
 state 159
-	expression : expression LT . expression  (123)
+	expression : expression MOD . expression  (136)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
 
 	expression  goto 216
 
 
 state 160
-	expression : expression EQUAL . expression  (124)
+	expression : expression GT . expression  (125)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
 
 	expression  goto 217
 
 
 state 161
-	expression : expression NOTEQ . expression  (127)
+	expression : expression LT . expression  (126)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
 
 	expression  goto 218
 
 
 state 162
-	expression : expression GTEQ . expression  (125)
+	expression : expression EQUAL . expression  (127)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
 
 	expression  goto 219
 
 
 state 163
-	expression : expression LTEQ . expression  (126)
+	expression : expression NOTEQ . expression  (130)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
 
 	expression  goto 220
 
 
 state 164
-	while_do_statement : WHILE expression DO . statement  (104)
-	statement : .  (85)
+	expression : expression GTEQ . expression  (128)
 
-	ID  shift 38
-	BEGIN  shift 28
-	FOR  shift 39
-	WHILE  shift 40
-	REPEAT  shift 41
-	IF  shift 42
-	INC  shift 43
-	DEC  shift 44
-	WRITE  shift 45
-	READ  shift 46
-	CASE  shift 47
-	BREAK  shift 48
-	CONTINUE  shift 49
-	TRY  shift 50
-	RAISE  shift 51
-	SCOLON  reduce 85
-	END  reduce 85
-	UNTIL  reduce 85
-	ELSE  reduce 85
-	EXCEPT  reduce 85
-	FINALLY  reduce 85
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
+	.  error
 
-	compound_statement  goto 52
-	statement  goto 221
-	assignment_statement  goto 54
-	procedure_statement  goto 55
-	if_then_else_statement  goto 56
-	case_of_statement  goto 57
-	while_do_statement  goto 58
-	for_statement  goto 59
-	repeat_until_statement  goto 60
-	try_except_statement  goto 61
-	raise_statement  goto 62
-	write_statement  goto 63
-	read_statement  goto 64
-	inc_statement  goto 65
-	dec_statement  goto 66
+	expression  goto 221
 
 
 state 165
-	expression : expression OR . expression  (130)
+	expression : expression LTEQ . expression  (129)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
 
 	expression  goto 222
 
 
 state 166
-	expression : expression AND . expression  (134)
+	while_do_statement : WHILE expression DO . statement  (107)
+	other_statement : .  (87)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	.  error
+	ID  shift 38
+	BEGIN  shift 28
+	FOR  shift 39
+	WHILE  shift 40
+	REPEAT  shift 41
+	IF  shift 42
+	INC  shift 43
+	DEC  shift 44
+	WRITE  shift 45
+	READ  shift 46
+	CASE  shift 47
+	BREAK  shift 48
+	CONTINUE  shift 49
+	TRY  shift 50
+	RAISE  shift 51
+	SCOLON  reduce 87
+	END  reduce 87
+	UNTIL  reduce 87
+	ELSE  reduce 87
+	EXCEPT  reduce 87
+	FINALLY  reduce 87
 
-	expression  goto 223
+	compound_statement  goto 52
+	statement  goto 223
+	other_statement  goto 54
+	if_then_else_statement  goto 55
+	if_then_statement  goto 56
+	assignment_statement  goto 57
+	procedure_statement  goto 58
+	case_of_statement  goto 59
+	while_do_statement  goto 60
+	for_statement  goto 61
+	repeat_until_statement  goto 62
+	try_except_statement  goto 63
+	raise_statement  goto 64
+	write_statement  goto 65
+	read_statement  goto 66
+	inc_statement  goto 67
+	dec_statement  goto 68
 
 
 state 167
-	repeat_until_statement : REPEAT statement UNTIL . expression  (107)
+	expression : expression OR . expression  (133)
 
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
 
 	expression  goto 224
 
 
 state 168
-	if_then_else_statement : IF expression THEN . statement  (102)
-	if_then_else_statement : IF expression THEN . statement ELSE statement  (103)
-	statement : .  (85)
+	expression : expression AND . expression  (137)
+
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
+	.  error
+
+	expression  goto 225
+
+
+state 169
+	repeat_until_statement : REPEAT statement UNTIL . expression  (110)
+
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
+	.  error
+
+	expression  goto 226
+
+
+state 170
+	if_then_statement : IF expression THEN . statement  (88)
+	if_then_else_statement : IF expression THEN . if_then_else_statement ELSE statement  (89)
+	if_then_else_statement : IF expression THEN . other_statement ELSE statement  (90)
+	other_statement : .  (87)
 
 	ID  shift 38
 	BEGIN  shift 28
@@ -2367,89 +2397,91 @@ state 168
 	CONTINUE  shift 49
 	TRY  shift 50
 	RAISE  shift 51
-	SCOLON  reduce 85
-	END  reduce 85
-	UNTIL  reduce 85
-	ELSE  reduce 85
-	EXCEPT  reduce 85
-	FINALLY  reduce 85
+	SCOLON  reduce 87
+	END  reduce 87
+	UNTIL  reduce 87
+	ELSE  reduce 87
+	EXCEPT  reduce 87
+	FINALLY  reduce 87
 
 	compound_statement  goto 52
-	statement  goto 225
-	assignment_statement  goto 54
-	procedure_statement  goto 55
-	if_then_else_statement  goto 56
-	case_of_statement  goto 57
-	while_do_statement  goto 58
-	for_statement  goto 59
-	repeat_until_statement  goto 60
-	try_except_statement  goto 61
-	raise_statement  goto 62
-	write_statement  goto 63
-	read_statement  goto 64
-	inc_statement  goto 65
-	dec_statement  goto 66
-
-
-state 169
-	expression_list : expression COMMA . expression_list  (151)
-	expression_list : .  (152)
-
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	RPAR  reduce 152
-	RBRA  reduce 152
-	SCOLON  reduce 152
-	END  reduce 152
-	UNTIL  reduce 152
-	ELSE  reduce 152
-	EXCEPT  reduce 152
-	FINALLY  reduce 152
-
-	expression  goto 118
-	expression_list  goto 226
-
-
-state 170
-	case_of_statement : CASE expression OF . case_part ELSE statement END  (89)
-	case_of_statement : CASE expression OF . case_part END  (90)
-
-	ICONST  shift 187
-	RCONST  shift 188
-	BCONST  shift 189
-	CCONST  shift 190
-	SCONST  shift 191
-	ID  shift 192
-	.  error
-
-	literal_or_enum_list  goto 227
-	case_part  goto 228
-	literal_or_enum  goto 194
-	literal  goto 195
+	statement  goto 227
+	other_statement  goto 228
+	if_then_else_statement  goto 229
+	if_then_statement  goto 56
+	assignment_statement  goto 57
+	procedure_statement  goto 58
+	case_of_statement  goto 59
+	while_do_statement  goto 60
+	for_statement  goto 61
+	repeat_until_statement  goto 62
+	try_except_statement  goto 63
+	raise_statement  goto 64
+	write_statement  goto 65
+	read_statement  goto 66
+	inc_statement  goto 67
+	dec_statement  goto 68
 
 
 state 171
-	try_except_statement : TRY statement_list EXCEPT . exception_part DO statement_list END  (113)
-	try_except_statement : TRY statement_list EXCEPT . exception_part DO statement_list FINALLY statement_list END  (115)
+	expression_list : expression COMMA . expression_list  (154)
+	expression_list : .  (155)
+
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
+	RPAR  reduce 155
+	RBRA  reduce 155
+	SCOLON  reduce 155
+	END  reduce 155
+	UNTIL  reduce 155
+	ELSE  reduce 155
+	EXCEPT  reduce 155
+	FINALLY  reduce 155
+
+	expression  goto 120
+	expression_list  goto 230
+
+
+state 172
+	case_of_statement : CASE expression OF . case_part ELSE statement END  (94)
+	case_of_statement : CASE expression OF . case_part END  (95)
+
+	ICONST  shift 189
+	RCONST  shift 190
+	BCONST  shift 191
+	CCONST  shift 192
+	SCONST  shift 193
+	ID  shift 194
+	.  error
+
+	literal_or_enum_list  goto 231
+	case_part  goto 232
+	literal_or_enum  goto 196
+	literal  goto 197
+
+
+state 173
+	try_except_statement : TRY statement_list EXCEPT . exception_part DO statement_list END  (116)
+	try_except_statement : TRY statement_list EXCEPT . exception_part DO statement_list FINALLY statement_list END  (118)
 
 	ID  shift 20
 	.  error
 
-	id_list  goto 229
-	exception_part  goto 230
+	id_list  goto 233
+	exception_part  goto 234
 
 
-state 172
-	try_except_statement : TRY statement_list FINALLY . statement_list END  (114)
-	statement : .  (85)
+state 174
+	try_except_statement : TRY statement_list FINALLY . statement_list END  (117)
+	other_statement : .  (87)
 
 	ID  shift 38
 	BEGIN  shift 28
@@ -2466,767 +2498,585 @@ state 172
 	CONTINUE  shift 49
 	TRY  shift 50
 	RAISE  shift 51
-	SCOLON  reduce 85
-	END  reduce 85
+	SCOLON  reduce 87
+	END  reduce 87
 
 	compound_statement  goto 52
 	statement  goto 53
-	assignment_statement  goto 54
-	procedure_statement  goto 55
-	if_then_else_statement  goto 56
-	case_of_statement  goto 57
-	while_do_statement  goto 58
-	for_statement  goto 59
-	repeat_until_statement  goto 60
-	try_except_statement  goto 61
-	raise_statement  goto 62
-	write_statement  goto 63
-	read_statement  goto 64
-	inc_statement  goto 65
-	dec_statement  goto 66
-	statement_list  goto 231
-
-
-state 173
-	raise_statement : RAISE ID LPAR . expression_list RPAR  (112)
-	expression_list : .  (152)
-
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	RPAR  reduce 152
-
-	expression  goto 118
-	expression_list  goto 232
-
-
-state 174
-	statement_list : statement_list SCOLON statement .  (121)
-
-	.  reduce 121
+	other_statement  goto 54
+	if_then_else_statement  goto 55
+	if_then_statement  goto 56
+	assignment_statement  goto 57
+	procedure_statement  goto 58
+	case_of_statement  goto 59
+	while_do_statement  goto 60
+	for_statement  goto 61
+	repeat_until_statement  goto 62
+	try_except_statement  goto 63
+	raise_statement  goto 64
+	write_statement  goto 65
+	read_statement  goto 66
+	inc_statement  goto 67
+	dec_statement  goto 68
+	statement_list  goto 235
 
 
 state 175
+	raise_statement : RAISE ID LPAR . expression_list RPAR  (115)
+	expression_list : .  (155)
+
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
+	RPAR  reduce 155
+
+	expression  goto 120
+	expression_list  goto 236
+
+
+state 176
+	statement_list : statement_list SCOLON statement .  (124)
+
+	.  reduce 124
+
+
+state 177
 	var_declr_list : var_declr_list SCOLON var_declr .  (33)
 
 	.  reduce 33
 
 
-state 176
+state 178
 	var_init_list : var_init_list . SCOLON var_init  (36)
 	parameter_list : var_declr_list SCOLON var_init_list .  (44)
 
-	SCOLON  shift 127
+	SCOLON  shift 129
 	RPAR  reduce 44
 
 
-state 177
+state 179
 	var_init_list : var_init_list SCOLON var_init .  (36)
 
 	.  reduce 36
 
 
-state 178
+state 180
 	var_init : id_list . COLON simple_type EQUAL expression  (38)
 	var_init : id_list . COLON ID EQUAL ID  (39)
-	id_list : id_list . COMMA ID  (118)
+	id_list : id_list . COMMA ID  (121)
 
 	COLON  shift 35
 	COMMA  shift 36
 	.  error
 
 
-state 179
+state 181
 	function_definition : FUNCTION ID LPAR parameter_list RPAR COLON . any_type SCOLON local_var_declrs compound_statement SCOLON  (41)
 
-	ID  shift 86
-	INTEGER  shift 79
-	REAL  shift 80
-	STRING  shift 81
-	BOOLEAN  shift 82
-	CHARACTER  shift 83
-	ARRAY  shift 88
+	ID  shift 88
+	INTEGER  shift 81
+	REAL  shift 82
+	STRING  shift 83
+	BOOLEAN  shift 84
+	CHARACTER  shift 85
+	ARRAY  shift 90
 	.  error
 
-	simple_type  goto 92
-	any_type  goto 233
-	array_type  goto 94
+	simple_type  goto 94
+	any_type  goto 237
+	array_type  goto 96
 
 
-state 180
+state 182
 	procedure_definition : PROCEDURE ID LPAR parameter_list RPAR SCOLON . local_var_declrs compound_statement SCOLON  (40)
 	local_var_declrs : .  (43)
 
 	ID  shift 20
 	BEGIN  reduce 43
 
-	var_declrs_or_inits  goto 234
+	var_declrs_or_inits  goto 238
 	declr_or_init  goto 22
 	var_declr  goto 23
 	var_init  goto 24
 	id_list  goto 25
-	local_var_declrs  goto 235
+	local_var_declrs  goto 239
 
 
-state 181
+state 183
 	var_init : id_list COLON ID EQUAL ID .  (39)
 
 	.  reduce 39
 
 
-state 182
+state 184
 	var_init : id_list COLON simple_type EQUAL expression .  (38)
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	GT  shift 158
-	LT  shift 159
-	EQUAL  shift 160
-	NOTEQ  shift 161
-	GTEQ  shift 162
-	LTEQ  shift 163
-	OR  shift 165
-	AND  shift 166
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	GT  shift 160
+	LT  shift 161
+	EQUAL  shift 162
+	NOTEQ  shift 163
+	GTEQ  shift 164
+	LTEQ  shift 165
+	OR  shift 167
+	AND  shift 168
 	RPAR  reduce 38
 	SCOLON  reduce 38
 	BEGIN  reduce 38
 
 
-state 183
+state 185
 	range : ICONST . RANGE ICONST  (26)
 
-	RANGE  shift 236
+	RANGE  shift 240
 	.  error
-
-
-state 184
-	array_type : ARRAY LBRA range_list . RBRA OF any_named_type  (23)
-
-	RBRA  shift 237
-	.  error
-
-
-state 185
-	range_list : range . COMMA range_list  (24)
-	range_list : range .  (25)
-
-	COMMA  shift 238
-	RBRA  reduce 25
 
 
 state 186
+	array_type : ARRAY LBRA range_list . RBRA OF any_named_type  (23)
+
+	RBRA  shift 241
+	.  error
+
+
+state 187
+	range_list : range . COMMA range_list  (24)
+	range_list : range .  (25)
+
+	COMMA  shift 242
+	RBRA  reduce 25
+
+
+state 188
 	enumerate_body : ENUMERATE id_list END .  (65)
 
 	.  reduce 65
 
 
-state 187
-	literal : ICONST .  (95)
-
-	.  reduce 95
-
-
-state 188
-	literal : RCONST .  (96)
-
-	.  reduce 96
-
-
 state 189
-	literal : BCONST .  (97)
+	literal : ICONST .  (100)
 
-	.  reduce 97
+	.  reduce 100
 
 
 state 190
-	literal : CCONST .  (99)
+	literal : RCONST .  (101)
+
+	.  reduce 101
+
+
+state 191
+	literal : BCONST .  (102)
+
+	.  reduce 102
+
+
+state 192
+	literal : CCONST .  (104)
+
+	.  reduce 104
+
+
+state 193
+	literal : SCONST .  (103)
+
+	.  reduce 103
+
+
+state 194
+	literal_or_enum : ID .  (99)
 
 	.  reduce 99
 
 
-state 191
-	literal : SCONST .  (98)
+state 195
+	variant_part : CASE literal_or_enum_list . COLON ordinal_type OF fixed_field_list variant_else_part END  (62)
+	variant_part : CASE literal_or_enum_list . COLON ordinal_type OF fixed_field_list END  (63)
+
+	COLON  shift 243
+	.  error
+
+
+state 196
+	literal_or_enum_list : literal_or_enum . literal_or_enum_list  (105)
+	literal_or_enum_list : literal_or_enum .  (106)
+
+	ICONST  shift 189
+	RCONST  shift 190
+	BCONST  shift 191
+	CCONST  shift 192
+	SCONST  shift 193
+	ID  shift 194
+	COLON  reduce 106
+
+	literal_or_enum_list  goto 244
+	literal_or_enum  goto 196
+	literal  goto 197
+
+
+state 197
+	literal_or_enum : literal .  (98)
 
 	.  reduce 98
 
 
-state 192
-	literal_or_enum : ID .  (94)
-
-	.  reduce 94
-
-
-state 193
-	variant_part : CASE literal_or_enum_list . COLON ordinal_type OF fixed_field_list variant_else_part END  (62)
-	variant_part : CASE literal_or_enum_list . COLON ordinal_type OF fixed_field_list END  (63)
-
-	COLON  shift 239
-	.  error
-
-
-state 194
-	literal_or_enum_list : literal_or_enum . literal_or_enum_list  (100)
-	literal_or_enum_list : literal_or_enum .  (101)
-
-	ICONST  shift 187
-	RCONST  shift 188
-	BCONST  shift 189
-	CCONST  shift 190
-	SCONST  shift 191
-	ID  shift 192
-	COLON  reduce 101
-
-	literal_or_enum_list  goto 240
-	literal_or_enum  goto 194
-	literal  goto 195
-
-
-state 195
-	literal_or_enum : literal .  (93)
-
-	.  reduce 93
-
-
-state 196
+state 198
 	fixed_field : id_list COLON . any_type  (61)
 
-	ID  shift 86
-	INTEGER  shift 79
-	REAL  shift 80
-	STRING  shift 81
-	BOOLEAN  shift 82
-	CHARACTER  shift 83
-	ARRAY  shift 88
+	ID  shift 88
+	INTEGER  shift 81
+	REAL  shift 82
+	STRING  shift 83
+	BOOLEAN  shift 84
+	CHARACTER  shift 85
+	ARRAY  shift 90
 	.  error
 
-	simple_type  goto 92
-	any_type  goto 241
-	array_type  goto 94
+	simple_type  goto 94
+	any_type  goto 245
+	array_type  goto 96
 
 
-state 197
+state 199
 	record_body : RECORD fixed_field_list END .  (58)
 
 	.  reduce 58
 
 
-state 198
+state 200
 	record_body : RECORD fixed_field_list variant_part . END  (56)
 
-	END  shift 242
+	END  shift 246
 	.  error
 
 
-state 199
+state 201
 	record_body : RECORD variant_part END .  (57)
 
 	.  reduce 57
 
 
-state 200
+state 202
 	fixed_field_list : fixed_field SCOLON . fixed_field_list  (59)
 
 	ID  shift 20
 	.  error
 
-	id_list  goto 137
-	fixed_field_list  goto 243
-	fixed_field  goto 140
+	id_list  goto 139
+	fixed_field_list  goto 247
+	fixed_field  goto 142
 
 
-state 201
+state 203
 	exception_body : EXCEPTION fixed_field_list END .  (67)
 
 	.  reduce 67
 
 
-state 202
+state 204
 	type_definition_list : ID EQUAL type_body SCOLON type_definition_list .  (49)
 
 	.  reduce 49
 
 
-state 203
-	procedure_statement : ID LPAR expression_list RPAR .  (87)
-
-	.  reduce 87
-
-
-state 204
-	for_statement : FOR ID ASG expression . TO expression DO statement  (105)
-	for_statement : FOR ID ASG expression . DOWNTO expression DO statement  (106)
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
-
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	GT  shift 158
-	LT  shift 159
-	EQUAL  shift 160
-	NOTEQ  shift 161
-	GTEQ  shift 162
-	LTEQ  shift 163
-	TO  shift 244
-	DOWNTO  shift 245
-	OR  shift 165
-	AND  shift 166
-	.  error
-
-
 state 205
-	expression : ID LPAR expression_list . RPAR  (146)
+	procedure_statement : ID LPAR expression_list RPAR .  (92)
 
-	RPAR  shift 246
-	.  error
+	.  reduce 92
 
 
 state 206
-	expression : ID LBRA expression_list . RBRA  (145)
+	for_statement : FOR ID ASG expression . TO expression DO statement  (108)
+	for_statement : FOR ID ASG expression . DOWNTO expression DO statement  (109)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	RBRA  shift 247
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	GT  shift 160
+	LT  shift 161
+	EQUAL  shift 162
+	NOTEQ  shift 163
+	GTEQ  shift 164
+	LTEQ  shift 165
+	TO  shift 248
+	DOWNTO  shift 249
+	OR  shift 167
+	AND  shift 168
 	.  error
 
 
 state 207
-	field : ID .  (148)
-	field : ID . DOT field  (149)
+	expression : ID LPAR expression_list . RPAR  (149)
 
-	DOT  shift 248
-	ADD  reduce 148
-	SUB  reduce 148
-	MUL  reduce 148
-	DIV  reduce 148
-	MOD  reduce 148
-	RPAR  reduce 148
-	RBRA  reduce 148
-	GT  reduce 148
-	LT  reduce 148
-	EQUAL  reduce 148
-	NOTEQ  reduce 148
-	GTEQ  reduce 148
-	LTEQ  reduce 148
-	SCOLON  reduce 148
-	COMMA  reduce 148
-	BEGIN  reduce 148
-	END  reduce 148
-	THEN  reduce 148
-	UNTIL  reduce 148
-	ELSE  reduce 148
-	DO  reduce 148
-	TO  reduce 148
-	DOWNTO  reduce 148
-	OF  reduce 148
-	EXCEPT  reduce 148
-	FINALLY  reduce 148
-	OR  reduce 148
-	AND  reduce 148
+	RPAR  shift 250
+	.  error
 
 
 state 208
-	expression : ID DOT field .  (147)
+	expression : ID LBRA expression_list . RBRA  (148)
+
+	RBRA  shift 251
+	.  error
+
+
+state 209
+	field : ID .  (151)
+	field : ID . DOT field  (152)
+
+	DOT  shift 252
+	ADD  reduce 151
+	SUB  reduce 151
+	MUL  reduce 151
+	DIV  reduce 151
+	MOD  reduce 151
+	RPAR  reduce 151
+	RBRA  reduce 151
+	GT  reduce 151
+	LT  reduce 151
+	EQUAL  reduce 151
+	NOTEQ  reduce 151
+	GTEQ  reduce 151
+	LTEQ  reduce 151
+	SCOLON  reduce 151
+	COMMA  reduce 151
+	BEGIN  reduce 151
+	END  reduce 151
+	THEN  reduce 151
+	UNTIL  reduce 151
+	ELSE  reduce 151
+	DO  reduce 151
+	TO  reduce 151
+	DOWNTO  reduce 151
+	OF  reduce 151
+	EXCEPT  reduce 151
+	FINALLY  reduce 151
+	OR  reduce 151
+	AND  reduce 151
+
+
+state 210
+	expression : ID DOT field .  (150)
+
+	.  reduce 150
+
+
+state 211
+	expression : LPAR expression RPAR .  (147)
 
 	.  reduce 147
 
 
-state 209
-	expression : LPAR expression RPAR .  (144)
-
-	.  reduce 144
-
-
-state 210
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression ADD expression .  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
-
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	AND  shift 166
-	ADD  reduce 128
-	SUB  reduce 128
-	RPAR  reduce 128
-	RBRA  reduce 128
-	GT  reduce 128
-	LT  reduce 128
-	EQUAL  reduce 128
-	NOTEQ  reduce 128
-	GTEQ  reduce 128
-	LTEQ  reduce 128
-	SCOLON  reduce 128
-	COMMA  reduce 128
-	BEGIN  reduce 128
-	END  reduce 128
-	THEN  reduce 128
-	UNTIL  reduce 128
-	ELSE  reduce 128
-	DO  reduce 128
-	TO  reduce 128
-	DOWNTO  reduce 128
-	OF  reduce 128
-	EXCEPT  reduce 128
-	FINALLY  reduce 128
-	OR  reduce 128
-
-
-state 211
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression SUB expression .  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
-
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	AND  shift 166
-	ADD  reduce 129
-	SUB  reduce 129
-	RPAR  reduce 129
-	RBRA  reduce 129
-	GT  reduce 129
-	LT  reduce 129
-	EQUAL  reduce 129
-	NOTEQ  reduce 129
-	GTEQ  reduce 129
-	LTEQ  reduce 129
-	SCOLON  reduce 129
-	COMMA  reduce 129
-	BEGIN  reduce 129
-	END  reduce 129
-	THEN  reduce 129
-	UNTIL  reduce 129
-	ELSE  reduce 129
-	DO  reduce 129
-	TO  reduce 129
-	DOWNTO  reduce 129
-	OF  reduce 129
-	EXCEPT  reduce 129
-	FINALLY  reduce 129
-	OR  reduce 129
-
-
 state 212
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression MUL expression .  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression ADD expression .  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	.  reduce 131
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	AND  shift 168
+	ADD  reduce 131
+	SUB  reduce 131
+	RPAR  reduce 131
+	RBRA  reduce 131
+	GT  reduce 131
+	LT  reduce 131
+	EQUAL  reduce 131
+	NOTEQ  reduce 131
+	GTEQ  reduce 131
+	LTEQ  reduce 131
+	SCOLON  reduce 131
+	COMMA  reduce 131
+	BEGIN  reduce 131
+	END  reduce 131
+	THEN  reduce 131
+	UNTIL  reduce 131
+	ELSE  reduce 131
+	DO  reduce 131
+	TO  reduce 131
+	DOWNTO  reduce 131
+	OF  reduce 131
+	EXCEPT  reduce 131
+	FINALLY  reduce 131
+	OR  reduce 131
 
 
 state 213
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression DIV expression .  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression SUB expression .  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	.  reduce 132
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	AND  shift 168
+	ADD  reduce 132
+	SUB  reduce 132
+	RPAR  reduce 132
+	RBRA  reduce 132
+	GT  reduce 132
+	LT  reduce 132
+	EQUAL  reduce 132
+	NOTEQ  reduce 132
+	GTEQ  reduce 132
+	LTEQ  reduce 132
+	SCOLON  reduce 132
+	COMMA  reduce 132
+	BEGIN  reduce 132
+	END  reduce 132
+	THEN  reduce 132
+	UNTIL  reduce 132
+	ELSE  reduce 132
+	DO  reduce 132
+	TO  reduce 132
+	DOWNTO  reduce 132
+	OF  reduce 132
+	EXCEPT  reduce 132
+	FINALLY  reduce 132
+	OR  reduce 132
 
 
 state 214
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression MOD expression .  (133)
-	expression : expression . AND expression  (134)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression MUL expression .  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	.  reduce 133
+	.  reduce 134
 
 
 state 215
-	expression : expression . GT expression  (122)
-	expression : expression GT expression .  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression DIV expression .  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	OR  shift 165
-	AND  shift 166
-	RPAR  reduce 122
-	RBRA  reduce 122
-	GT  reduce 122
-	LT  reduce 122
-	EQUAL  reduce 122
-	NOTEQ  reduce 122
-	GTEQ  reduce 122
-	LTEQ  reduce 122
-	SCOLON  reduce 122
-	COMMA  reduce 122
-	BEGIN  reduce 122
-	END  reduce 122
-	THEN  reduce 122
-	UNTIL  reduce 122
-	ELSE  reduce 122
-	DO  reduce 122
-	TO  reduce 122
-	DOWNTO  reduce 122
-	OF  reduce 122
-	EXCEPT  reduce 122
-	FINALLY  reduce 122
+	.  reduce 135
 
 
 state 216
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression LT expression .  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression MOD expression .  (136)
+	expression : expression . AND expression  (137)
 
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	OR  shift 165
-	AND  shift 166
-	RPAR  reduce 123
-	RBRA  reduce 123
-	GT  reduce 123
-	LT  reduce 123
-	EQUAL  reduce 123
-	NOTEQ  reduce 123
-	GTEQ  reduce 123
-	LTEQ  reduce 123
-	SCOLON  reduce 123
-	COMMA  reduce 123
-	BEGIN  reduce 123
-	END  reduce 123
-	THEN  reduce 123
-	UNTIL  reduce 123
-	ELSE  reduce 123
-	DO  reduce 123
-	TO  reduce 123
-	DOWNTO  reduce 123
-	OF  reduce 123
-	EXCEPT  reduce 123
-	FINALLY  reduce 123
+	.  reduce 136
 
 
 state 217
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression EQUAL expression .  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
+	expression : expression . GT expression  (125)
+	expression : expression GT expression .  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	OR  shift 165
-	AND  shift 166
-	RPAR  reduce 124
-	RBRA  reduce 124
-	GT  reduce 124
-	LT  reduce 124
-	EQUAL  reduce 124
-	NOTEQ  reduce 124
-	GTEQ  reduce 124
-	LTEQ  reduce 124
-	SCOLON  reduce 124
-	COMMA  reduce 124
-	BEGIN  reduce 124
-	END  reduce 124
-	THEN  reduce 124
-	UNTIL  reduce 124
-	ELSE  reduce 124
-	DO  reduce 124
-	TO  reduce 124
-	DOWNTO  reduce 124
-	OF  reduce 124
-	EXCEPT  reduce 124
-	FINALLY  reduce 124
-
-
-state 218
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression NOTEQ expression .  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
-
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	OR  shift 165
-	AND  shift 166
-	RPAR  reduce 127
-	RBRA  reduce 127
-	GT  reduce 127
-	LT  reduce 127
-	EQUAL  reduce 127
-	NOTEQ  reduce 127
-	GTEQ  reduce 127
-	LTEQ  reduce 127
-	SCOLON  reduce 127
-	COMMA  reduce 127
-	BEGIN  reduce 127
-	END  reduce 127
-	THEN  reduce 127
-	UNTIL  reduce 127
-	ELSE  reduce 127
-	DO  reduce 127
-	TO  reduce 127
-	DOWNTO  reduce 127
-	OF  reduce 127
-	EXCEPT  reduce 127
-	FINALLY  reduce 127
-
-
-state 219
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression GTEQ expression .  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
-
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	OR  shift 165
-	AND  shift 166
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	OR  shift 167
+	AND  shift 168
 	RPAR  reduce 125
 	RBRA  reduce 125
 	GT  reduce 125
@@ -3250,29 +3100,29 @@ state 219
 	FINALLY  reduce 125
 
 
-state 220
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression LTEQ expression .  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
+state 218
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression LT expression .  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	OR  shift 165
-	AND  shift 166
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	OR  shift 167
+	AND  shift 168
 	RPAR  reduce 126
 	RBRA  reduce 126
 	GT  reduce 126
@@ -3296,34 +3146,75 @@ state 220
 	FINALLY  reduce 126
 
 
-state 221
-	while_do_statement : WHILE expression DO statement .  (104)
+state 219
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression EQUAL expression .  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	.  reduce 104
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	OR  shift 167
+	AND  shift 168
+	RPAR  reduce 127
+	RBRA  reduce 127
+	GT  reduce 127
+	LT  reduce 127
+	EQUAL  reduce 127
+	NOTEQ  reduce 127
+	GTEQ  reduce 127
+	LTEQ  reduce 127
+	SCOLON  reduce 127
+	COMMA  reduce 127
+	BEGIN  reduce 127
+	END  reduce 127
+	THEN  reduce 127
+	UNTIL  reduce 127
+	ELSE  reduce 127
+	DO  reduce 127
+	TO  reduce 127
+	DOWNTO  reduce 127
+	OF  reduce 127
+	EXCEPT  reduce 127
+	FINALLY  reduce 127
 
 
-state 222
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression OR expression .  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
+state 220
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression NOTEQ expression .  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	AND  shift 166
-	ADD  reduce 130
-	SUB  reduce 130
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	OR  shift 167
+	AND  shift 168
 	RPAR  reduce 130
 	RBRA  reduce 130
 	GT  reduce 130
@@ -3345,414 +3236,442 @@ state 222
 	OF  reduce 130
 	EXCEPT  reduce 130
 	FINALLY  reduce 130
-	OR  reduce 130
+
+
+state 221
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression GTEQ expression .  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
+
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	OR  shift 167
+	AND  shift 168
+	RPAR  reduce 128
+	RBRA  reduce 128
+	GT  reduce 128
+	LT  reduce 128
+	EQUAL  reduce 128
+	NOTEQ  reduce 128
+	GTEQ  reduce 128
+	LTEQ  reduce 128
+	SCOLON  reduce 128
+	COMMA  reduce 128
+	BEGIN  reduce 128
+	END  reduce 128
+	THEN  reduce 128
+	UNTIL  reduce 128
+	ELSE  reduce 128
+	DO  reduce 128
+	TO  reduce 128
+	DOWNTO  reduce 128
+	OF  reduce 128
+	EXCEPT  reduce 128
+	FINALLY  reduce 128
+
+
+state 222
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression LTEQ expression .  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
+
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	OR  shift 167
+	AND  shift 168
+	RPAR  reduce 129
+	RBRA  reduce 129
+	GT  reduce 129
+	LT  reduce 129
+	EQUAL  reduce 129
+	NOTEQ  reduce 129
+	GTEQ  reduce 129
+	LTEQ  reduce 129
+	SCOLON  reduce 129
+	COMMA  reduce 129
+	BEGIN  reduce 129
+	END  reduce 129
+	THEN  reduce 129
+	UNTIL  reduce 129
+	ELSE  reduce 129
+	DO  reduce 129
+	TO  reduce 129
+	DOWNTO  reduce 129
+	OF  reduce 129
+	EXCEPT  reduce 129
+	FINALLY  reduce 129
 
 
 state 223
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
-	expression : expression AND expression .  (134)
+	while_do_statement : WHILE expression DO statement .  (107)
 
-	.  reduce 134
+	.  reduce 107
 
 
 state 224
-	repeat_until_statement : REPEAT statement UNTIL expression .  (107)
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression OR expression .  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	GT  shift 158
-	LT  shift 159
-	EQUAL  shift 160
-	NOTEQ  shift 161
-	GTEQ  shift 162
-	LTEQ  shift 163
-	OR  shift 165
-	AND  shift 166
-	SCOLON  reduce 107
-	END  reduce 107
-	UNTIL  reduce 107
-	ELSE  reduce 107
-	EXCEPT  reduce 107
-	FINALLY  reduce 107
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	AND  shift 168
+	ADD  reduce 133
+	SUB  reduce 133
+	RPAR  reduce 133
+	RBRA  reduce 133
+	GT  reduce 133
+	LT  reduce 133
+	EQUAL  reduce 133
+	NOTEQ  reduce 133
+	GTEQ  reduce 133
+	LTEQ  reduce 133
+	SCOLON  reduce 133
+	COMMA  reduce 133
+	BEGIN  reduce 133
+	END  reduce 133
+	THEN  reduce 133
+	UNTIL  reduce 133
+	ELSE  reduce 133
+	DO  reduce 133
+	TO  reduce 133
+	DOWNTO  reduce 133
+	OF  reduce 133
+	EXCEPT  reduce 133
+	FINALLY  reduce 133
+	OR  reduce 133
 
 
-225: shift/reduce conflict (shift 249, reduce 102) on ELSE
 state 225
-	if_then_else_statement : IF expression THEN statement .  (102)
-	if_then_else_statement : IF expression THEN statement . ELSE statement  (103)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
+	expression : expression AND expression .  (137)
 
-	ELSE  shift 249
-	SCOLON  reduce 102
-	END  reduce 102
-	UNTIL  reduce 102
-	EXCEPT  reduce 102
-	FINALLY  reduce 102
+	.  reduce 137
 
 
 state 226
-	expression_list : expression COMMA expression_list .  (151)
+	repeat_until_statement : REPEAT statement UNTIL expression .  (110)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	.  reduce 151
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	GT  shift 160
+	LT  shift 161
+	EQUAL  shift 162
+	NOTEQ  shift 163
+	GTEQ  shift 164
+	LTEQ  shift 165
+	OR  shift 167
+	AND  shift 168
+	SCOLON  reduce 110
+	END  reduce 110
+	UNTIL  reduce 110
+	ELSE  reduce 110
+	EXCEPT  reduce 110
+	FINALLY  reduce 110
 
 
 state 227
-	case_part : literal_or_enum_list . COLON statement SCOLON case_part  (91)
-	case_part : literal_or_enum_list . COLON statement SCOLON  (92)
+	if_then_statement : IF expression THEN statement .  (88)
 
-	COLON  shift 250
-	.  error
+	.  reduce 88
 
 
+228: shift/reduce conflict (shift 253, reduce 69) on ELSE
 state 228
-	case_of_statement : CASE expression OF case_part . ELSE statement END  (89)
-	case_of_statement : CASE expression OF case_part . END  (90)
+	statement : other_statement .  (69)
+	if_then_else_statement : IF expression THEN other_statement . ELSE statement  (90)
 
-	END  shift 251
-	ELSE  shift 252
-	.  error
+	ELSE  shift 253
+	SCOLON  reduce 69
+	END  reduce 69
+	UNTIL  reduce 69
+	EXCEPT  reduce 69
+	FINALLY  reduce 69
 
 
+229: shift/reduce conflict (shift 254, reduce 70) on ELSE
 state 229
-	exception_part : id_list .  (116)
-	exception_part : id_list . AS ID  (117)
-	id_list : id_list . COMMA ID  (118)
+	statement : if_then_else_statement .  (70)
+	if_then_else_statement : IF expression THEN if_then_else_statement . ELSE statement  (89)
 
-	COMMA  shift 36
-	AS  shift 253
-	DO  reduce 116
+	ELSE  shift 254
+	SCOLON  reduce 70
+	END  reduce 70
+	UNTIL  reduce 70
+	EXCEPT  reduce 70
+	FINALLY  reduce 70
 
 
 state 230
-	try_except_statement : TRY statement_list EXCEPT exception_part . DO statement_list END  (113)
-	try_except_statement : TRY statement_list EXCEPT exception_part . DO statement_list FINALLY statement_list END  (115)
+	expression_list : expression COMMA expression_list .  (154)
 
-	DO  shift 254
-	.  error
+	.  reduce 154
 
 
 state 231
-	try_except_statement : TRY statement_list FINALLY statement_list . END  (114)
-	statement_list : statement_list . SCOLON statement  (121)
+	case_part : literal_or_enum_list . COLON statement SCOLON case_part  (96)
+	case_part : literal_or_enum_list . COLON statement SCOLON  (97)
 
-	SCOLON  shift 124
-	END  shift 255
+	COLON  shift 255
 	.  error
 
 
 state 232
-	raise_statement : RAISE ID LPAR expression_list . RPAR  (112)
+	case_of_statement : CASE expression OF case_part . ELSE statement END  (94)
+	case_of_statement : CASE expression OF case_part . END  (95)
 
-	RPAR  shift 256
+	END  shift 256
+	ELSE  shift 257
 	.  error
 
 
 state 233
-	function_definition : FUNCTION ID LPAR parameter_list RPAR COLON any_type . SCOLON local_var_declrs compound_statement SCOLON  (41)
+	exception_part : id_list .  (119)
+	exception_part : id_list . AS ID  (120)
+	id_list : id_list . COMMA ID  (121)
 
-	SCOLON  shift 257
-	.  error
+	COMMA  shift 36
+	AS  shift 258
+	DO  reduce 119
 
 
 state 234
+	try_except_statement : TRY statement_list EXCEPT exception_part . DO statement_list END  (116)
+	try_except_statement : TRY statement_list EXCEPT exception_part . DO statement_list FINALLY statement_list END  (118)
+
+	DO  shift 259
+	.  error
+
+
+state 235
+	try_except_statement : TRY statement_list FINALLY statement_list . END  (117)
+	statement_list : statement_list . SCOLON statement  (124)
+
+	SCOLON  shift 126
+	END  shift 260
+	.  error
+
+
+state 236
+	raise_statement : RAISE ID LPAR expression_list . RPAR  (115)
+
+	RPAR  shift 261
+	.  error
+
+
+state 237
+	function_definition : FUNCTION ID LPAR parameter_list RPAR COLON any_type . SCOLON local_var_declrs compound_statement SCOLON  (41)
+
+	SCOLON  shift 262
+	.  error
+
+
+state 238
 	local_var_declrs : var_declrs_or_inits .  (42)
 
 	.  reduce 42
 
 
-state 235
+state 239
 	procedure_definition : PROCEDURE ID LPAR parameter_list RPAR SCOLON local_var_declrs . compound_statement SCOLON  (40)
 
 	BEGIN  shift 28
 	.  error
 
-	compound_statement  goto 258
-
-
-state 236
-	range : ICONST RANGE . ICONST  (26)
-
-	ICONST  shift 259
-	.  error
-
-
-state 237
-	array_type : ARRAY LBRA range_list RBRA . OF any_named_type  (23)
-
-	OF  shift 260
-	.  error
-
-
-state 238
-	range_list : range COMMA . range_list  (24)
-	range : .  (27)
-
-	ICONST  shift 183
-	RBRA  reduce 27
-	COMMA  reduce 27
-
-	range_list  goto 261
-	range  goto 185
-
-
-state 239
-	variant_part : CASE literal_or_enum_list COLON . ordinal_type OF fixed_field_list variant_else_part END  (62)
-	variant_part : CASE literal_or_enum_list COLON . ordinal_type OF fixed_field_list END  (63)
-
-	INTEGER  shift 262
-	REAL  shift 263
-	BOOLEAN  shift 264
-	CHARACTER  shift 265
-	.  error
-
-	ordinal_type  goto 266
+	compound_statement  goto 263
 
 
 state 240
-	literal_or_enum_list : literal_or_enum literal_or_enum_list .  (100)
+	range : ICONST RANGE . ICONST  (26)
 
-	.  reduce 100
+	ICONST  shift 264
+	.  error
 
 
 state 241
+	array_type : ARRAY LBRA range_list RBRA . OF any_named_type  (23)
+
+	OF  shift 265
+	.  error
+
+
+state 242
+	range_list : range COMMA . range_list  (24)
+	range : .  (27)
+
+	ICONST  shift 185
+	RBRA  reduce 27
+	COMMA  reduce 27
+
+	range_list  goto 266
+	range  goto 187
+
+
+state 243
+	variant_part : CASE literal_or_enum_list COLON . ordinal_type OF fixed_field_list variant_else_part END  (62)
+	variant_part : CASE literal_or_enum_list COLON . ordinal_type OF fixed_field_list END  (63)
+
+	INTEGER  shift 267
+	REAL  shift 268
+	BOOLEAN  shift 269
+	CHARACTER  shift 270
+	.  error
+
+	ordinal_type  goto 271
+
+
+state 244
+	literal_or_enum_list : literal_or_enum literal_or_enum_list .  (105)
+
+	.  reduce 105
+
+
+state 245
 	fixed_field : id_list COLON any_type .  (61)
 
 	.  reduce 61
 
 
-state 242
+state 246
 	record_body : RECORD fixed_field_list variant_part END .  (56)
 
 	.  reduce 56
 
 
-state 243
+state 247
 	fixed_field_list : fixed_field SCOLON fixed_field_list .  (59)
 
 	.  reduce 59
 
 
-state 244
-	for_statement : FOR ID ASG expression TO . expression DO statement  (105)
-
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	.  error
-
-	expression  goto 267
-
-
-state 245
-	for_statement : FOR ID ASG expression DOWNTO . expression DO statement  (106)
-
-	ID  shift 103
-	LPAR  shift 104
-	GETREF  shift 105
-	DEREF  shift 106
-	INTEGER  shift 107
-	REAL  shift 108
-	NIL  shift 109
-	FALSE  shift 110
-	TRUE  shift 111
-	NOT  shift 112
-	.  error
-
-	expression  goto 268
-
-
-state 246
-	expression : ID LPAR expression_list RPAR .  (146)
-
-	.  reduce 146
-
-
-state 247
-	expression : ID LBRA expression_list RBRA .  (145)
-
-	.  reduce 145
-
-
 state 248
-	field : ID DOT . field  (149)
+	for_statement : FOR ID ASG expression TO . expression DO statement  (108)
 
-	ID  shift 207
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
 	.  error
 
-	field  goto 269
+	expression  goto 272
 
 
 state 249
-	if_then_else_statement : IF expression THEN statement ELSE . statement  (103)
-	statement : .  (85)
+	for_statement : FOR ID ASG expression DOWNTO . expression DO statement  (109)
 
-	ID  shift 38
-	BEGIN  shift 28
-	FOR  shift 39
-	WHILE  shift 40
-	REPEAT  shift 41
-	IF  shift 42
-	INC  shift 43
-	DEC  shift 44
-	WRITE  shift 45
-	READ  shift 46
-	CASE  shift 47
-	BREAK  shift 48
-	CONTINUE  shift 49
-	TRY  shift 50
-	RAISE  shift 51
-	SCOLON  reduce 85
-	END  reduce 85
-	UNTIL  reduce 85
-	ELSE  reduce 85
-	EXCEPT  reduce 85
-	FINALLY  reduce 85
+	ID  shift 105
+	LPAR  shift 106
+	GETREF  shift 107
+	DEREF  shift 108
+	INTEGER  shift 109
+	REAL  shift 110
+	NIL  shift 111
+	FALSE  shift 112
+	TRUE  shift 113
+	NOT  shift 114
+	.  error
 
-	compound_statement  goto 52
-	statement  goto 270
-	assignment_statement  goto 54
-	procedure_statement  goto 55
-	if_then_else_statement  goto 56
-	case_of_statement  goto 57
-	while_do_statement  goto 58
-	for_statement  goto 59
-	repeat_until_statement  goto 60
-	try_except_statement  goto 61
-	raise_statement  goto 62
-	write_statement  goto 63
-	read_statement  goto 64
-	inc_statement  goto 65
-	dec_statement  goto 66
+	expression  goto 273
 
 
 state 250
-	case_part : literal_or_enum_list COLON . statement SCOLON case_part  (91)
-	case_part : literal_or_enum_list COLON . statement SCOLON  (92)
-	statement : .  (85)
+	expression : ID LPAR expression_list RPAR .  (149)
 
-	ID  shift 38
-	BEGIN  shift 28
-	FOR  shift 39
-	WHILE  shift 40
-	REPEAT  shift 41
-	IF  shift 42
-	INC  shift 43
-	DEC  shift 44
-	WRITE  shift 45
-	READ  shift 46
-	CASE  shift 47
-	BREAK  shift 48
-	CONTINUE  shift 49
-	TRY  shift 50
-	RAISE  shift 51
-	SCOLON  reduce 85
-
-	compound_statement  goto 52
-	statement  goto 271
-	assignment_statement  goto 54
-	procedure_statement  goto 55
-	if_then_else_statement  goto 56
-	case_of_statement  goto 57
-	while_do_statement  goto 58
-	for_statement  goto 59
-	repeat_until_statement  goto 60
-	try_except_statement  goto 61
-	raise_statement  goto 62
-	write_statement  goto 63
-	read_statement  goto 64
-	inc_statement  goto 65
-	dec_statement  goto 66
+	.  reduce 149
 
 
 state 251
-	case_of_statement : CASE expression OF case_part END .  (90)
+	expression : ID LBRA expression_list RBRA .  (148)
 
-	.  reduce 90
+	.  reduce 148
 
 
 state 252
-	case_of_statement : CASE expression OF case_part ELSE . statement END  (89)
-	statement : .  (85)
+	field : ID DOT . field  (152)
 
-	ID  shift 38
-	BEGIN  shift 28
-	FOR  shift 39
-	WHILE  shift 40
-	REPEAT  shift 41
-	IF  shift 42
-	INC  shift 43
-	DEC  shift 44
-	WRITE  shift 45
-	READ  shift 46
-	CASE  shift 47
-	BREAK  shift 48
-	CONTINUE  shift 49
-	TRY  shift 50
-	RAISE  shift 51
-	END  reduce 85
+	ID  shift 209
+	.  error
 
-	compound_statement  goto 52
-	statement  goto 272
-	assignment_statement  goto 54
-	procedure_statement  goto 55
-	if_then_else_statement  goto 56
-	case_of_statement  goto 57
-	while_do_statement  goto 58
-	for_statement  goto 59
-	repeat_until_statement  goto 60
-	try_except_statement  goto 61
-	raise_statement  goto 62
-	write_statement  goto 63
-	read_statement  goto 64
-	inc_statement  goto 65
-	dec_statement  goto 66
+	field  goto 274
 
 
 state 253
-	exception_part : id_list AS . ID  (117)
-
-	ID  shift 273
-	.  error
-
-
-state 254
-	try_except_statement : TRY statement_list EXCEPT exception_part DO . statement_list END  (113)
-	try_except_statement : TRY statement_list EXCEPT exception_part DO . statement_list FINALLY statement_list END  (115)
-	statement : .  (85)
+	if_then_else_statement : IF expression THEN other_statement ELSE . statement  (90)
+	other_statement : .  (87)
 
 	ID  shift 38
 	BEGIN  shift 28
@@ -3769,529 +3688,729 @@ state 254
 	CONTINUE  shift 49
 	TRY  shift 50
 	RAISE  shift 51
-	SCOLON  reduce 85
-	END  reduce 85
-	FINALLY  reduce 85
+	SCOLON  reduce 87
+	END  reduce 87
+	UNTIL  reduce 87
+	ELSE  reduce 87
+	EXCEPT  reduce 87
+	FINALLY  reduce 87
 
 	compound_statement  goto 52
-	statement  goto 53
-	assignment_statement  goto 54
-	procedure_statement  goto 55
-	if_then_else_statement  goto 56
-	case_of_statement  goto 57
-	while_do_statement  goto 58
-	for_statement  goto 59
-	repeat_until_statement  goto 60
-	try_except_statement  goto 61
-	raise_statement  goto 62
-	write_statement  goto 63
-	read_statement  goto 64
-	inc_statement  goto 65
-	dec_statement  goto 66
-	statement_list  goto 274
+	statement  goto 275
+	other_statement  goto 54
+	if_then_else_statement  goto 55
+	if_then_statement  goto 56
+	assignment_statement  goto 57
+	procedure_statement  goto 58
+	case_of_statement  goto 59
+	while_do_statement  goto 60
+	for_statement  goto 61
+	repeat_until_statement  goto 62
+	try_except_statement  goto 63
+	raise_statement  goto 64
+	write_statement  goto 65
+	read_statement  goto 66
+	inc_statement  goto 67
+	dec_statement  goto 68
+
+
+state 254
+	if_then_else_statement : IF expression THEN if_then_else_statement ELSE . statement  (89)
+	other_statement : .  (87)
+
+	ID  shift 38
+	BEGIN  shift 28
+	FOR  shift 39
+	WHILE  shift 40
+	REPEAT  shift 41
+	IF  shift 42
+	INC  shift 43
+	DEC  shift 44
+	WRITE  shift 45
+	READ  shift 46
+	CASE  shift 47
+	BREAK  shift 48
+	CONTINUE  shift 49
+	TRY  shift 50
+	RAISE  shift 51
+	SCOLON  reduce 87
+	END  reduce 87
+	UNTIL  reduce 87
+	ELSE  reduce 87
+	EXCEPT  reduce 87
+	FINALLY  reduce 87
+
+	compound_statement  goto 52
+	statement  goto 276
+	other_statement  goto 54
+	if_then_else_statement  goto 55
+	if_then_statement  goto 56
+	assignment_statement  goto 57
+	procedure_statement  goto 58
+	case_of_statement  goto 59
+	while_do_statement  goto 60
+	for_statement  goto 61
+	repeat_until_statement  goto 62
+	try_except_statement  goto 63
+	raise_statement  goto 64
+	write_statement  goto 65
+	read_statement  goto 66
+	inc_statement  goto 67
+	dec_statement  goto 68
 
 
 state 255
-	try_except_statement : TRY statement_list FINALLY statement_list END .  (114)
+	case_part : literal_or_enum_list COLON . statement SCOLON case_part  (96)
+	case_part : literal_or_enum_list COLON . statement SCOLON  (97)
+	other_statement : .  (87)
 
-	.  reduce 114
+	ID  shift 38
+	BEGIN  shift 28
+	FOR  shift 39
+	WHILE  shift 40
+	REPEAT  shift 41
+	IF  shift 42
+	INC  shift 43
+	DEC  shift 44
+	WRITE  shift 45
+	READ  shift 46
+	CASE  shift 47
+	BREAK  shift 48
+	CONTINUE  shift 49
+	TRY  shift 50
+	RAISE  shift 51
+	SCOLON  reduce 87
+
+	compound_statement  goto 52
+	statement  goto 277
+	other_statement  goto 54
+	if_then_else_statement  goto 55
+	if_then_statement  goto 56
+	assignment_statement  goto 57
+	procedure_statement  goto 58
+	case_of_statement  goto 59
+	while_do_statement  goto 60
+	for_statement  goto 61
+	repeat_until_statement  goto 62
+	try_except_statement  goto 63
+	raise_statement  goto 64
+	write_statement  goto 65
+	read_statement  goto 66
+	inc_statement  goto 67
+	dec_statement  goto 68
 
 
 state 256
-	raise_statement : RAISE ID LPAR expression_list RPAR .  (112)
+	case_of_statement : CASE expression OF case_part END .  (95)
 
-	.  reduce 112
+	.  reduce 95
 
 
 state 257
+	case_of_statement : CASE expression OF case_part ELSE . statement END  (94)
+	other_statement : .  (87)
+
+	ID  shift 38
+	BEGIN  shift 28
+	FOR  shift 39
+	WHILE  shift 40
+	REPEAT  shift 41
+	IF  shift 42
+	INC  shift 43
+	DEC  shift 44
+	WRITE  shift 45
+	READ  shift 46
+	CASE  shift 47
+	BREAK  shift 48
+	CONTINUE  shift 49
+	TRY  shift 50
+	RAISE  shift 51
+	END  reduce 87
+
+	compound_statement  goto 52
+	statement  goto 278
+	other_statement  goto 54
+	if_then_else_statement  goto 55
+	if_then_statement  goto 56
+	assignment_statement  goto 57
+	procedure_statement  goto 58
+	case_of_statement  goto 59
+	while_do_statement  goto 60
+	for_statement  goto 61
+	repeat_until_statement  goto 62
+	try_except_statement  goto 63
+	raise_statement  goto 64
+	write_statement  goto 65
+	read_statement  goto 66
+	inc_statement  goto 67
+	dec_statement  goto 68
+
+
+state 258
+	exception_part : id_list AS . ID  (120)
+
+	ID  shift 279
+	.  error
+
+
+state 259
+	try_except_statement : TRY statement_list EXCEPT exception_part DO . statement_list END  (116)
+	try_except_statement : TRY statement_list EXCEPT exception_part DO . statement_list FINALLY statement_list END  (118)
+	other_statement : .  (87)
+
+	ID  shift 38
+	BEGIN  shift 28
+	FOR  shift 39
+	WHILE  shift 40
+	REPEAT  shift 41
+	IF  shift 42
+	INC  shift 43
+	DEC  shift 44
+	WRITE  shift 45
+	READ  shift 46
+	CASE  shift 47
+	BREAK  shift 48
+	CONTINUE  shift 49
+	TRY  shift 50
+	RAISE  shift 51
+	SCOLON  reduce 87
+	END  reduce 87
+	FINALLY  reduce 87
+
+	compound_statement  goto 52
+	statement  goto 53
+	other_statement  goto 54
+	if_then_else_statement  goto 55
+	if_then_statement  goto 56
+	assignment_statement  goto 57
+	procedure_statement  goto 58
+	case_of_statement  goto 59
+	while_do_statement  goto 60
+	for_statement  goto 61
+	repeat_until_statement  goto 62
+	try_except_statement  goto 63
+	raise_statement  goto 64
+	write_statement  goto 65
+	read_statement  goto 66
+	inc_statement  goto 67
+	dec_statement  goto 68
+	statement_list  goto 280
+
+
+state 260
+	try_except_statement : TRY statement_list FINALLY statement_list END .  (117)
+
+	.  reduce 117
+
+
+state 261
+	raise_statement : RAISE ID LPAR expression_list RPAR .  (115)
+
+	.  reduce 115
+
+
+state 262
 	function_definition : FUNCTION ID LPAR parameter_list RPAR COLON any_type SCOLON . local_var_declrs compound_statement SCOLON  (41)
 	local_var_declrs : .  (43)
 
 	ID  shift 20
 	BEGIN  reduce 43
 
-	var_declrs_or_inits  goto 234
+	var_declrs_or_inits  goto 238
 	declr_or_init  goto 22
 	var_declr  goto 23
 	var_init  goto 24
 	id_list  goto 25
-	local_var_declrs  goto 275
+	local_var_declrs  goto 281
 
 
-state 258
+state 263
 	procedure_definition : PROCEDURE ID LPAR parameter_list RPAR SCOLON local_var_declrs compound_statement . SCOLON  (40)
 
-	SCOLON  shift 276
+	SCOLON  shift 282
 	.  error
 
 
-state 259
+state 264
 	range : ICONST RANGE ICONST .  (26)
 
 	.  reduce 26
 
 
-state 260
+state 265
 	array_type : ARRAY LBRA range_list RBRA OF . any_named_type  (23)
 
-	ID  shift 277
-	INTEGER  shift 79
-	REAL  shift 80
-	STRING  shift 81
-	BOOLEAN  shift 82
-	CHARACTER  shift 83
+	ID  shift 283
+	INTEGER  shift 81
+	REAL  shift 82
+	STRING  shift 83
+	BOOLEAN  shift 84
+	CHARACTER  shift 85
 	.  error
 
-	simple_type  goto 278
-	any_named_type  goto 279
+	simple_type  goto 284
+	any_named_type  goto 285
 
 
-state 261
+state 266
 	range_list : range COMMA range_list .  (24)
 
 	.  reduce 24
 
 
-state 262
+state 267
 	ordinal_type : INTEGER .  (16)
 
 	.  reduce 16
 
 
-state 263
+state 268
 	ordinal_type : REAL .  (17)
 
 	.  reduce 17
 
 
-state 264
+state 269
 	ordinal_type : BOOLEAN .  (19)
 
 	.  reduce 19
 
 
-state 265
+state 270
 	ordinal_type : CHARACTER .  (18)
 
 	.  reduce 18
 
 
-state 266
+state 271
 	variant_part : CASE literal_or_enum_list COLON ordinal_type . OF fixed_field_list variant_else_part END  (62)
 	variant_part : CASE literal_or_enum_list COLON ordinal_type . OF fixed_field_list END  (63)
 
-	OF  shift 280
-	.  error
-
-
-state 267
-	for_statement : FOR ID ASG expression TO expression . DO statement  (105)
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
-
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	GT  shift 158
-	LT  shift 159
-	EQUAL  shift 160
-	NOTEQ  shift 161
-	GTEQ  shift 162
-	LTEQ  shift 163
-	DO  shift 281
-	OR  shift 165
-	AND  shift 166
-	.  error
-
-
-state 268
-	for_statement : FOR ID ASG expression DOWNTO expression . DO statement  (106)
-	expression : expression . GT expression  (122)
-	expression : expression . LT expression  (123)
-	expression : expression . EQUAL expression  (124)
-	expression : expression . GTEQ expression  (125)
-	expression : expression . LTEQ expression  (126)
-	expression : expression . NOTEQ expression  (127)
-	expression : expression . ADD expression  (128)
-	expression : expression . SUB expression  (129)
-	expression : expression . OR expression  (130)
-	expression : expression . MUL expression  (131)
-	expression : expression . DIV expression  (132)
-	expression : expression . MOD expression  (133)
-	expression : expression . AND expression  (134)
-
-	ADD  shift 153
-	SUB  shift 154
-	MUL  shift 155
-	DIV  shift 156
-	MOD  shift 157
-	GT  shift 158
-	LT  shift 159
-	EQUAL  shift 160
-	NOTEQ  shift 161
-	GTEQ  shift 162
-	LTEQ  shift 163
-	DO  shift 282
-	OR  shift 165
-	AND  shift 166
-	.  error
-
-
-state 269
-	field : ID DOT field .  (149)
-
-	.  reduce 149
-
-
-state 270
-	if_then_else_statement : IF expression THEN statement ELSE statement .  (103)
-
-	.  reduce 103
-
-
-state 271
-	case_part : literal_or_enum_list COLON statement . SCOLON case_part  (91)
-	case_part : literal_or_enum_list COLON statement . SCOLON  (92)
-
-	SCOLON  shift 283
+	OF  shift 286
 	.  error
 
 
 state 272
-	case_of_statement : CASE expression OF case_part ELSE statement . END  (89)
+	for_statement : FOR ID ASG expression TO expression . DO statement  (108)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	END  shift 284
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	GT  shift 160
+	LT  shift 161
+	EQUAL  shift 162
+	NOTEQ  shift 163
+	GTEQ  shift 164
+	LTEQ  shift 165
+	DO  shift 287
+	OR  shift 167
+	AND  shift 168
 	.  error
 
 
 state 273
-	exception_part : id_list AS ID .  (117)
+	for_statement : FOR ID ASG expression DOWNTO expression . DO statement  (109)
+	expression : expression . GT expression  (125)
+	expression : expression . LT expression  (126)
+	expression : expression . EQUAL expression  (127)
+	expression : expression . GTEQ expression  (128)
+	expression : expression . LTEQ expression  (129)
+	expression : expression . NOTEQ expression  (130)
+	expression : expression . ADD expression  (131)
+	expression : expression . SUB expression  (132)
+	expression : expression . OR expression  (133)
+	expression : expression . MUL expression  (134)
+	expression : expression . DIV expression  (135)
+	expression : expression . MOD expression  (136)
+	expression : expression . AND expression  (137)
 
-	.  reduce 117
-
-
-state 274
-	try_except_statement : TRY statement_list EXCEPT exception_part DO statement_list . END  (113)
-	try_except_statement : TRY statement_list EXCEPT exception_part DO statement_list . FINALLY statement_list END  (115)
-	statement_list : statement_list . SCOLON statement  (121)
-
-	SCOLON  shift 124
-	END  shift 285
-	FINALLY  shift 286
+	ADD  shift 155
+	SUB  shift 156
+	MUL  shift 157
+	DIV  shift 158
+	MOD  shift 159
+	GT  shift 160
+	LT  shift 161
+	EQUAL  shift 162
+	NOTEQ  shift 163
+	GTEQ  shift 164
+	LTEQ  shift 165
+	DO  shift 288
+	OR  shift 167
+	AND  shift 168
 	.  error
 
 
+state 274
+	field : ID DOT field .  (152)
+
+	.  reduce 152
+
+
 state 275
+	if_then_else_statement : IF expression THEN other_statement ELSE statement .  (90)
+
+	.  reduce 90
+
+
+state 276
+	if_then_else_statement : IF expression THEN if_then_else_statement ELSE statement .  (89)
+
+	.  reduce 89
+
+
+state 277
+	case_part : literal_or_enum_list COLON statement . SCOLON case_part  (96)
+	case_part : literal_or_enum_list COLON statement . SCOLON  (97)
+
+	SCOLON  shift 289
+	.  error
+
+
+state 278
+	case_of_statement : CASE expression OF case_part ELSE statement . END  (94)
+
+	END  shift 290
+	.  error
+
+
+state 279
+	exception_part : id_list AS ID .  (120)
+
+	.  reduce 120
+
+
+state 280
+	try_except_statement : TRY statement_list EXCEPT exception_part DO statement_list . END  (116)
+	try_except_statement : TRY statement_list EXCEPT exception_part DO statement_list . FINALLY statement_list END  (118)
+	statement_list : statement_list . SCOLON statement  (124)
+
+	SCOLON  shift 126
+	END  shift 291
+	FINALLY  shift 292
+	.  error
+
+
+state 281
 	function_definition : FUNCTION ID LPAR parameter_list RPAR COLON any_type SCOLON local_var_declrs . compound_statement SCOLON  (41)
 
 	BEGIN  shift 28
 	.  error
 
-	compound_statement  goto 287
+	compound_statement  goto 293
 
 
-state 276
+state 282
 	procedure_definition : PROCEDURE ID LPAR parameter_list RPAR SCOLON local_var_declrs compound_statement SCOLON .  (40)
 
 	.  reduce 40
 
 
-state 277
+state 283
 	any_named_type : ID .  (14)
 
 	.  reduce 14
 
 
-state 278
+state 284
 	any_named_type : simple_type .  (15)
 
 	.  reduce 15
 
 
-state 279
+state 285
 	array_type : ARRAY LBRA range_list RBRA OF any_named_type .  (23)
 
 	.  reduce 23
 
 
-state 280
+state 286
 	variant_part : CASE literal_or_enum_list COLON ordinal_type OF . fixed_field_list variant_else_part END  (62)
 	variant_part : CASE literal_or_enum_list COLON ordinal_type OF . fixed_field_list END  (63)
 
 	ID  shift 20
 	.  error
 
-	id_list  goto 137
-	fixed_field_list  goto 288
-	fixed_field  goto 140
-
-
-state 281
-	for_statement : FOR ID ASG expression TO expression DO . statement  (105)
-	statement : .  (85)
-
-	ID  shift 38
-	BEGIN  shift 28
-	FOR  shift 39
-	WHILE  shift 40
-	REPEAT  shift 41
-	IF  shift 42
-	INC  shift 43
-	DEC  shift 44
-	WRITE  shift 45
-	READ  shift 46
-	CASE  shift 47
-	BREAK  shift 48
-	CONTINUE  shift 49
-	TRY  shift 50
-	RAISE  shift 51
-	SCOLON  reduce 85
-	END  reduce 85
-	UNTIL  reduce 85
-	ELSE  reduce 85
-	EXCEPT  reduce 85
-	FINALLY  reduce 85
-
-	compound_statement  goto 52
-	statement  goto 289
-	assignment_statement  goto 54
-	procedure_statement  goto 55
-	if_then_else_statement  goto 56
-	case_of_statement  goto 57
-	while_do_statement  goto 58
-	for_statement  goto 59
-	repeat_until_statement  goto 60
-	try_except_statement  goto 61
-	raise_statement  goto 62
-	write_statement  goto 63
-	read_statement  goto 64
-	inc_statement  goto 65
-	dec_statement  goto 66
-
-
-state 282
-	for_statement : FOR ID ASG expression DOWNTO expression DO . statement  (106)
-	statement : .  (85)
-
-	ID  shift 38
-	BEGIN  shift 28
-	FOR  shift 39
-	WHILE  shift 40
-	REPEAT  shift 41
-	IF  shift 42
-	INC  shift 43
-	DEC  shift 44
-	WRITE  shift 45
-	READ  shift 46
-	CASE  shift 47
-	BREAK  shift 48
-	CONTINUE  shift 49
-	TRY  shift 50
-	RAISE  shift 51
-	SCOLON  reduce 85
-	END  reduce 85
-	UNTIL  reduce 85
-	ELSE  reduce 85
-	EXCEPT  reduce 85
-	FINALLY  reduce 85
-
-	compound_statement  goto 52
-	statement  goto 290
-	assignment_statement  goto 54
-	procedure_statement  goto 55
-	if_then_else_statement  goto 56
-	case_of_statement  goto 57
-	while_do_statement  goto 58
-	for_statement  goto 59
-	repeat_until_statement  goto 60
-	try_except_statement  goto 61
-	raise_statement  goto 62
-	write_statement  goto 63
-	read_statement  goto 64
-	inc_statement  goto 65
-	dec_statement  goto 66
-
-
-state 283
-	case_part : literal_or_enum_list COLON statement SCOLON . case_part  (91)
-	case_part : literal_or_enum_list COLON statement SCOLON .  (92)
-
-	ICONST  shift 187
-	RCONST  shift 188
-	BCONST  shift 189
-	CCONST  shift 190
-	SCONST  shift 191
-	ID  shift 192
-	END  reduce 92
-	ELSE  reduce 92
-
-	literal_or_enum_list  goto 227
-	case_part  goto 291
-	literal_or_enum  goto 194
-	literal  goto 195
-
-
-state 284
-	case_of_statement : CASE expression OF case_part ELSE statement END .  (89)
-
-	.  reduce 89
-
-
-state 285
-	try_except_statement : TRY statement_list EXCEPT exception_part DO statement_list END .  (113)
-
-	.  reduce 113
-
-
-state 286
-	try_except_statement : TRY statement_list EXCEPT exception_part DO statement_list FINALLY . statement_list END  (115)
-	statement : .  (85)
-
-	ID  shift 38
-	BEGIN  shift 28
-	FOR  shift 39
-	WHILE  shift 40
-	REPEAT  shift 41
-	IF  shift 42
-	INC  shift 43
-	DEC  shift 44
-	WRITE  shift 45
-	READ  shift 46
-	CASE  shift 47
-	BREAK  shift 48
-	CONTINUE  shift 49
-	TRY  shift 50
-	RAISE  shift 51
-	SCOLON  reduce 85
-	END  reduce 85
-
-	compound_statement  goto 52
-	statement  goto 53
-	assignment_statement  goto 54
-	procedure_statement  goto 55
-	if_then_else_statement  goto 56
-	case_of_statement  goto 57
-	while_do_statement  goto 58
-	for_statement  goto 59
-	repeat_until_statement  goto 60
-	try_except_statement  goto 61
-	raise_statement  goto 62
-	write_statement  goto 63
-	read_statement  goto 64
-	inc_statement  goto 65
-	dec_statement  goto 66
-	statement_list  goto 292
+	id_list  goto 139
+	fixed_field_list  goto 294
+	fixed_field  goto 142
 
 
 state 287
-	function_definition : FUNCTION ID LPAR parameter_list RPAR COLON any_type SCOLON local_var_declrs compound_statement . SCOLON  (41)
+	for_statement : FOR ID ASG expression TO expression DO . statement  (108)
+	other_statement : .  (87)
 
-	SCOLON  shift 293
-	.  error
+	ID  shift 38
+	BEGIN  shift 28
+	FOR  shift 39
+	WHILE  shift 40
+	REPEAT  shift 41
+	IF  shift 42
+	INC  shift 43
+	DEC  shift 44
+	WRITE  shift 45
+	READ  shift 46
+	CASE  shift 47
+	BREAK  shift 48
+	CONTINUE  shift 49
+	TRY  shift 50
+	RAISE  shift 51
+	SCOLON  reduce 87
+	END  reduce 87
+	UNTIL  reduce 87
+	ELSE  reduce 87
+	EXCEPT  reduce 87
+	FINALLY  reduce 87
+
+	compound_statement  goto 52
+	statement  goto 295
+	other_statement  goto 54
+	if_then_else_statement  goto 55
+	if_then_statement  goto 56
+	assignment_statement  goto 57
+	procedure_statement  goto 58
+	case_of_statement  goto 59
+	while_do_statement  goto 60
+	for_statement  goto 61
+	repeat_until_statement  goto 62
+	try_except_statement  goto 63
+	raise_statement  goto 64
+	write_statement  goto 65
+	read_statement  goto 66
+	inc_statement  goto 67
+	dec_statement  goto 68
 
 
 state 288
-	variant_part : CASE literal_or_enum_list COLON ordinal_type OF fixed_field_list . variant_else_part END  (62)
-	variant_part : CASE literal_or_enum_list COLON ordinal_type OF fixed_field_list . END  (63)
+	for_statement : FOR ID ASG expression DOWNTO expression DO . statement  (109)
+	other_statement : .  (87)
 
-	END  shift 294
-	ELSE  shift 295
-	.  error
+	ID  shift 38
+	BEGIN  shift 28
+	FOR  shift 39
+	WHILE  shift 40
+	REPEAT  shift 41
+	IF  shift 42
+	INC  shift 43
+	DEC  shift 44
+	WRITE  shift 45
+	READ  shift 46
+	CASE  shift 47
+	BREAK  shift 48
+	CONTINUE  shift 49
+	TRY  shift 50
+	RAISE  shift 51
+	SCOLON  reduce 87
+	END  reduce 87
+	UNTIL  reduce 87
+	ELSE  reduce 87
+	EXCEPT  reduce 87
+	FINALLY  reduce 87
 
-	variant_else_part  goto 296
+	compound_statement  goto 52
+	statement  goto 296
+	other_statement  goto 54
+	if_then_else_statement  goto 55
+	if_then_statement  goto 56
+	assignment_statement  goto 57
+	procedure_statement  goto 58
+	case_of_statement  goto 59
+	while_do_statement  goto 60
+	for_statement  goto 61
+	repeat_until_statement  goto 62
+	try_except_statement  goto 63
+	raise_statement  goto 64
+	write_statement  goto 65
+	read_statement  goto 66
+	inc_statement  goto 67
+	dec_statement  goto 68
 
 
 state 289
-	for_statement : FOR ID ASG expression TO expression DO statement .  (105)
+	case_part : literal_or_enum_list COLON statement SCOLON . case_part  (96)
+	case_part : literal_or_enum_list COLON statement SCOLON .  (97)
 
-	.  reduce 105
+	ICONST  shift 189
+	RCONST  shift 190
+	BCONST  shift 191
+	CCONST  shift 192
+	SCONST  shift 193
+	ID  shift 194
+	END  reduce 97
+	ELSE  reduce 97
+
+	literal_or_enum_list  goto 231
+	case_part  goto 297
+	literal_or_enum  goto 196
+	literal  goto 197
 
 
 state 290
-	for_statement : FOR ID ASG expression DOWNTO expression DO statement .  (106)
+	case_of_statement : CASE expression OF case_part ELSE statement END .  (94)
 
-	.  reduce 106
+	.  reduce 94
 
 
 state 291
-	case_part : literal_or_enum_list COLON statement SCOLON case_part .  (91)
+	try_except_statement : TRY statement_list EXCEPT exception_part DO statement_list END .  (116)
 
-	.  reduce 91
+	.  reduce 116
 
 
 state 292
-	try_except_statement : TRY statement_list EXCEPT exception_part DO statement_list FINALLY statement_list . END  (115)
-	statement_list : statement_list . SCOLON statement  (121)
+	try_except_statement : TRY statement_list EXCEPT exception_part DO statement_list FINALLY . statement_list END  (118)
+	other_statement : .  (87)
 
-	SCOLON  shift 124
-	END  shift 297
-	.  error
+	ID  shift 38
+	BEGIN  shift 28
+	FOR  shift 39
+	WHILE  shift 40
+	REPEAT  shift 41
+	IF  shift 42
+	INC  shift 43
+	DEC  shift 44
+	WRITE  shift 45
+	READ  shift 46
+	CASE  shift 47
+	BREAK  shift 48
+	CONTINUE  shift 49
+	TRY  shift 50
+	RAISE  shift 51
+	SCOLON  reduce 87
+	END  reduce 87
+
+	compound_statement  goto 52
+	statement  goto 53
+	other_statement  goto 54
+	if_then_else_statement  goto 55
+	if_then_statement  goto 56
+	assignment_statement  goto 57
+	procedure_statement  goto 58
+	case_of_statement  goto 59
+	while_do_statement  goto 60
+	for_statement  goto 61
+	repeat_until_statement  goto 62
+	try_except_statement  goto 63
+	raise_statement  goto 64
+	write_statement  goto 65
+	read_statement  goto 66
+	inc_statement  goto 67
+	dec_statement  goto 68
+	statement_list  goto 298
 
 
 state 293
+	function_definition : FUNCTION ID LPAR parameter_list RPAR COLON any_type SCOLON local_var_declrs compound_statement . SCOLON  (41)
+
+	SCOLON  shift 299
+	.  error
+
+
+state 294
+	variant_part : CASE literal_or_enum_list COLON ordinal_type OF fixed_field_list . variant_else_part END  (62)
+	variant_part : CASE literal_or_enum_list COLON ordinal_type OF fixed_field_list . END  (63)
+
+	END  shift 300
+	ELSE  shift 301
+	.  error
+
+	variant_else_part  goto 302
+
+
+state 295
+	for_statement : FOR ID ASG expression TO expression DO statement .  (108)
+
+	.  reduce 108
+
+
+state 296
+	for_statement : FOR ID ASG expression DOWNTO expression DO statement .  (109)
+
+	.  reduce 109
+
+
+state 297
+	case_part : literal_or_enum_list COLON statement SCOLON case_part .  (96)
+
+	.  reduce 96
+
+
+state 298
+	try_except_statement : TRY statement_list EXCEPT exception_part DO statement_list FINALLY statement_list . END  (118)
+	statement_list : statement_list . SCOLON statement  (124)
+
+	SCOLON  shift 126
+	END  shift 303
+	.  error
+
+
+state 299
 	function_definition : FUNCTION ID LPAR parameter_list RPAR COLON any_type SCOLON local_var_declrs compound_statement SCOLON .  (41)
 
 	.  reduce 41
 
 
-state 294
+state 300
 	variant_part : CASE literal_or_enum_list COLON ordinal_type OF fixed_field_list END .  (63)
 
 	.  reduce 63
 
 
-state 295
+state 301
 	variant_else_part : ELSE . fixed_field_list  (64)
 
 	ID  shift 20
 	.  error
 
-	id_list  goto 137
-	fixed_field_list  goto 298
-	fixed_field  goto 140
+	id_list  goto 139
+	fixed_field_list  goto 304
+	fixed_field  goto 142
 
 
-state 296
+state 302
 	variant_part : CASE literal_or_enum_list COLON ordinal_type OF fixed_field_list variant_else_part . END  (62)
 
-	END  shift 299
+	END  shift 305
 	.  error
 
 
-state 297
-	try_except_statement : TRY statement_list EXCEPT exception_part DO statement_list FINALLY statement_list END .  (115)
+state 303
+	try_except_statement : TRY statement_list EXCEPT exception_part DO statement_list FINALLY statement_list END .  (118)
 
-	.  reduce 115
+	.  reduce 118
 
 
-state 298
+state 304
 	variant_else_part : ELSE fixed_field_list .  (64)
 
 	.  reduce 64
 
 
-state 299
+state 305
 	variant_part : CASE literal_or_enum_list COLON ordinal_type OF fixed_field_list variant_else_part END .  (62)
 
 	.  reduce 62
 
 
 State 22 contains 1 shift/reduce conflict.
-State 225 contains 1 shift/reduce conflict.
+State 228 contains 1 shift/reduce conflict.
+State 229 contains 1 shift/reduce conflict.
 
 
-82 terminals, 60 nonterminals
-154 grammar rules, 300 states
+82 terminals, 62 nonterminals
+157 grammar rules, 306 states

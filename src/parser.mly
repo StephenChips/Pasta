@@ -106,6 +106,7 @@ declr_or_init:
     | var_declr {}
     | var_init {}
     ;
+
 var_declr_list: 
       var_declr_list SCOLON var_declr {}
     | var_declr {}
@@ -206,9 +207,13 @@ reference_body:
 
 /* STATEMENTS */
 statement: 
+      other_statement {}
+    | if_then_else_statement {}
+    | if_then_statement {}
+
+other_statement: /* other statements except if_then_else */
       assignment_statement {}
     | procedure_statement {}
-    | if_then_else_statement {}
     | case_of_statement {}
     | while_do_statement {}
     | for_statement {}
@@ -223,6 +228,13 @@ statement:
     | BREAK {}
     | CONTINUE {}
     | {} /* empty statement */
+    ;
+
+if_then_statement: IF expression THEN statement {} ; 
+
+if_then_else_statement: 
+      IF expression THEN if_then_else_statement ELSE statement {}
+    | IF expression THEN other_statement ELSE statement {}
     ;
 
 assignment_statement:
@@ -264,11 +276,6 @@ literal:
 literal_or_enum_list: 
       literal_or_enum literal_or_enum_list {}
     | literal_or_enum {}
-    ;
-
-if_then_else_statement: 
-      IF expression THEN statement {}
-    | IF expression THEN statement ELSE statement {}
     ;
 
 while_do_statement:  
