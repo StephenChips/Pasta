@@ -98,8 +98,8 @@ variable_declaration:
     ;
 
 var_declrs_or_inits:
-    | declr_or_init SCOLON var_declrs_or_inits {}
-    | declr_or_init {}
+      declr_or_init SCOLON var_declrs_or_inits {}
+    | declr_or_init SCOLON {}
     ;
 
 declr_or_init:
@@ -107,18 +107,8 @@ declr_or_init:
     | var_init {}
     ;
 
-var_declr_list: 
-      var_declr_list SCOLON var_declr {}
-    | var_declr {}
-    ;
-
 var_declr: 
     id_list ID COLON any_type {}
-    ;
-
-var_init_list: 
-      var_init_list SCOLON var_init{}
-    | var_init {}
     ;
 
 /* the result of expression should be a constant */
@@ -148,6 +138,16 @@ parameter_list:
     | var_declr_list {}
     | var_init_list {}
     | /* empty list */ {}
+    ;
+
+var_declr_list:
+        var_declr_list SCOLON var_declr {}
+    | var_declr  {}
+    ;
+
+var_init_list:
+      var_init_list SCOLON var_init {}
+    | var_init {}
     ;
 
 type_definition: 
@@ -200,64 +200,72 @@ exception_body:
     | EXCEPTION fixed_field_list END {}
     ;
 
-reference_body:
-    REF any_type {}
-    ;
+reference_body: REF any_type {};
 
 
 /* STATEMENTS */
 statement: 
-      other_statement {}
-    | if_then_else_statement {}
-    | if_then_statement {}
+      stmt_m {}
+    | stmt_u {}
+    ;
 
-other_statement: /* other statements except if_then_else */
-      assignment_statement {}
-    | procedure_statement {}
-    | case_of_statement {}
-    | while_do_statement {}
-    | for_statement {}
-    | repeat_until_statement {}
-    | try_except_statement {}
-    | compound_statement {}
-    | raise_statement {}
-    | write_statement {}
-    | read_statement {}
-    | inc_statement {}
-    | dec_statement {}
+
+stmt_m: /* balanced if-else-then */
+      IF expression THEN stmt_m ELSE stmt_m {}
+    | CASE expression OF case_part_m ELSE stmt_m END {}
+    | CASE expression OF case_part_m END {}
+    | ID ASG expression {} /* assignments */
+    | WHILE expression DO stmt_m {} 
+    | BEGIN stmt_m_list END {}
+    | FOR ID ASG expression TO expression DO stmt_m {}
+    | FOR ID ASG expression DOWNTO expression DO stmt_m {}
+    | REPEAT stmt_m UNTIL expression {}
+    | TRY stmt_m_list EXCEPT exception_part DO stmt_m_list END {}
+    | TRY stmt_m_list FINALLY stmt_m_list END {}
+    | TRY stmt_m_list EXCEPT exception_part DO stmt_m_list FINALLY stmt_m_list END {}
+    | RAISE ID LPAR expression_list RPAR  {}
+    | WRITE expression_list {}
+    | READ expression_list {}
+    | DEC expression {}
+    | INC expression {}
     | BREAK {}
     | CONTINUE {}
-    | {} /* empty statement */
+    | /* empty statement */ {}
     ;
 
-if_then_statement: IF expression THEN statement {} ; 
-
-if_then_else_statement: 
-      IF expression THEN if_then_else_statement ELSE statement {}
-    | IF expression THEN other_statement ELSE statement {}
-    ;
-
-assignment_statement:
-    ID ASG expression {}
-    ;
-
-procedure_statement: 
-    ID LPAR expression_list RPAR {}
-    ;
-
-compound_statement: 
-    BEGIN statement_list END {}
-    ;
-
-case_of_statement: 
-      CASE expression OF case_part ELSE statement END {}
-    | CASE expression OF case_part END {}
+stmt_u:
+      IF expression THEN statement {}
+    | IF expression THEN stmt_m ELSE stmt_u {};
+    | WHILE expression DO stmt_u {}
+    | FOR ID ASG expression TO expression DO stmt_u {}
+    | FOR ID ASG expression DOWNTO expression DO stmt_u {}
+    | CASE expression OF case_part_u ELSE stmt_u END {}
+    | CASE expression OF case_part_u END {}
+    | REPEAT stmt_u UNTIL expression {}
+    | TRY stmt_u_list EXCEPT exception_part DO stmt_u_list END {}
+    | TRY stmt_u_list FINALLY stmt_u_list END {}
+    | TRY stmt_u_list EXCEPT exception_part DO stmt_u_list FINALLY stmt_u_list END {}
     ;
 
 /* sematic check: literals in list should have same type */
-case_part:  
-      literal_or_enum_list COLON statement SCOLON case_part {}
-    | literal_or_enum_list COLON statement SCOLON {}
+case_part_m:  
+      literal_or_enum_list COLON stmt_m SCOLON case_part_u {}
+    | literal_or_enum_list COLON stmt_m SCOLON {}
+    ;
+
+case_part_u:  
+      literal_or_enum_list COLON stmt_u SCOLON case_part_u {}
+    | literal_or_enum_list COLON stmt_u SCOLON {}
+    ;
+
+stmt_m_list: 
+      stmt_m {}
+    | stmt_m_list SCOLON stmt_m {}
+    ;
+
+stmt_u_list:
+      stmt_u {}
+    | stmt_u_list SCOLON stmt_u {};
     ;
 
 literal_or_enum:
@@ -278,45 +286,6 @@ literal_or_enum_list:
     | literal_or_enum {}
     ;
 
-while_do_statement:  
-    WHILE expression DO statement {}
-    ;
-
-for_statement: 
-      FOR ID ASG expression TO expression DO statement {}
-    | FOR ID ASG expression DOWNTO expression DO statement {}
-    ;
-
-repeat_until_statement:  
-      REPEAT statement UNTIL expression {}
-    ;
-
-write_statement: 
-    WRITE expression_list {}
-    ;
-
-read_statement: 
-    READ expression_list {}
-    ;
-
-inc_statement: 
-    INC expression {}
-    ;
-
-dec_statement: 
-    DEC expression {}
-    ;
-
-raise_statement: 
-    RAISE ID LPAR expression_list RPAR  {}
-    ;
-
-try_except_statement: 
-      TRY statement_list EXCEPT exception_part DO statement_list END {}
-    | TRY statement_list FINALLY statement_list END {}
-    | TRY statement_list EXCEPT exception_part DO statement_list FINALLY statement_list END {}
-    ;
-
 exception_part: 
       id_list {}
     | id_list AS ID {}
@@ -326,6 +295,8 @@ id_list:
       id_list COMMA ID {}
     | ID {}
     ;
+
+compound_statement: BEGIN statement_list END {};
 
 statement_list: 
       statement {}

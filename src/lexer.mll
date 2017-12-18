@@ -60,6 +60,12 @@ let escape s = function
     | _ -> raise (LexingError "unknown Pasta escape.")
 
 ;;
+
+let err_info = {
+  illegal_token: "Illegal Token",
+  illegal_character: "Illegal Character",
+  undetermined_string: "Undetermined String",
+  undetermined_comment: "Undetermined Comment"
 }
 
 let digits = ['0'-'9']+
@@ -102,7 +108,7 @@ rule Token = parse
     | ','              { COMMA }
     | '.'              { DOT }
     | ".."             { RANGE }
-    | _ { raise (LexingError "Unknown token") }
+    | _ { raise (LexingError err_info.illegal_token) }
 
 and MatchString charlist = parse
     | '"'
@@ -111,10 +117,8 @@ and MatchString charlist = parse
         { (escape s) :: charlist }
     | "\\\""
         { '"' :: charlist }
-    | ['\000'-'\031' '\128'-'\255'] 
-        { raise (LexingError "Illegal character") }
     | (eof | '\026')  
-        { raise (LexingError "Unterminated string") }
+        { raise (LexingError err_info.undetermined_string) }
     | _ as s 
          { s :: charlist }
 
@@ -123,18 +127,15 @@ and MatchCharacter charlist lexbuf =  parse
         { escape s }
     | '\\' (['0'-'9']['0'-'9']['0'-'9']) as s '\'' { 
             let code = int_of_string s in
-                if code >= 31 && code <= 127 then 
-                    Char.chr code
-                else 
-                    raise (LexiingError "Illegal Character")
+                if code >= 31 && code <= 127 then Char.chr code else raise (LexiingError err_info.illegal_character)
         }
     | _ as s '\'' 
-        { s.[0] }
+        { s.[1] }
     | _ 
-        { raise (LexingError "Unknown character") }
+        { raise (LexingError err_info.illegal_character) }
 
 and IgnoreComment lexbuf = parse
     | "{" { IgnoreComment lexbuf; IgnoreComment lexbuf }
     | "}" { () }
-    | (eof | '\026') { raise (LexingError "Unterminated Comment") }
+    | (eof | '\026') { raise (LexingError err_info.undetermined_comment) }
     | _   { IgnoreComment lexbuf } 
