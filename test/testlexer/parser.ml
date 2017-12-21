@@ -74,5 +74,3 @@ type token =
   | OR
   | AND
 
-val program :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> unit
