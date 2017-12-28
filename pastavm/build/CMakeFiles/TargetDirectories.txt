@@ -1,0 +1,3 @@
+/home/dongcai/Documents/pasta/pastavm/build/CMakeFiles/rebuild_cache.dir
+/home/dongcai/Documents/pasta/pastavm/build/CMakeFiles/main.dir
+/home/dongcai/Documents/pasta/pastavm/build/CMakeFiles/edit_cache.dir

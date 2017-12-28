@@ -1,4 +1,4 @@
 program HelloWorld;
 begin
-    writeln "hello, world."
+    write "hello, world.",
 end.
