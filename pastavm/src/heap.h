@@ -26,4 +26,5 @@ void *allocate(size_t meta_size, size_t data_size);
 
 void gc(struct heap *heap);
 
+void free_heap(struct heap *heap);
 #endif

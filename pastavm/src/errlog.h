@@ -4,6 +4,7 @@
 #define OUT_OF_MEMOERY_ERROR 3
 #define INTERNAL_ERROR 4
 
+#define OK "OK"
 #define CANNOT_OPEN_CONFIG_FILE "VMError: Cannot Open Configuration File" 
 #define ILLEGAL_CONFIG_FILE_FORMAT "VMError: Illegal Configuration File Format."
 #define STACK_CAPACITY_NOT_A_NUMBER "VMError: Stack Capacity Should Be A Number."

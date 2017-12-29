@@ -12,17 +12,44 @@
 #define MIN_HEAP_CAPACITY      (1 << 21) /* 2 MB */
 #define MAX_HEAP_CAPACITY      (1 << 19) /* 512 MB */
 
+#define CSTPOOL_START_POS(rowcode) (rowcode)
+#define INSTR_START_POS(rowcode) (rowcode + sizeof(void *))
+#define INSTR_END_POS(rowcode)  (rowcode + sizeof(void *) << 1)
+
+#define IS_STACK_ITEM(position) ((position) >= vm.stack.stack &&  (position) <= (vm.stack.stack + vm.stack.capacity))
+
+extern struct heap;
+
 struct conf {
-    int stack_capacity, heap_capacity;
+    size_t stack_capacity, heap_capacity;
 };
 
 struct stack {
-    int capacity, length;
+    size_t capacity, length;
     void *stack;
 };
 
 struct registers {
-    int sp, bp, hr, pc;
+    register void *sp, *bp, *hr, *pc;
+};
+
+struct inslist {
+    int length;
+    char *inslist;
+};
+
+struct constant_pool {
+    int count;
+    void **position;
+};
+
+struct vm {
+    void *rawcode;
+    struct stack stack;
+    struct registers registers;
+    struct constant_pool constant_pool;
+    struct heap heap;
+    struct inslist instructions;
 };
 
 const struct conf default_config = {
@@ -30,9 +57,7 @@ const struct conf default_config = {
     DEFAULT_HEAP_CAPACITY
 };
 
-void *constant_pool;
-
-char *intructions;
+struct vm vm;
 
 int load(const char *src);
 
