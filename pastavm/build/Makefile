@@ -111,44 +111,71 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named main
+# Target rules for targets named pastavm
 
 # Build rule for target.
-main: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 main
-.PHONY : main
+pastavm: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 pastavm
+.PHONY : pastavm
 
 # fast build rule for target.
-main/fast:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
-.PHONY : main/fast
+pastavm/fast:
+	$(MAKE) -f CMakeFiles/pastavm.dir/build.make CMakeFiles/pastavm.dir/build
+.PHONY : pastavm/fast
 
-hello.o: hello.c.o
+main.o: main.c.o
 
-.PHONY : hello.o
+.PHONY : main.o
 
 # target to build an object file
-hello.c.o:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/hello.c.o
-.PHONY : hello.c.o
+main.c.o:
+	$(MAKE) -f CMakeFiles/pastavm.dir/build.make CMakeFiles/pastavm.dir/main.c.o
+.PHONY : main.c.o
 
-hello.i: hello.c.i
+main.i: main.c.i
 
-.PHONY : hello.i
+.PHONY : main.i
 
 # target to preprocess a source file
-hello.c.i:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/hello.c.i
-.PHONY : hello.c.i
+main.c.i:
+	$(MAKE) -f CMakeFiles/pastavm.dir/build.make CMakeFiles/pastavm.dir/main.c.i
+.PHONY : main.c.i
 
-hello.s: hello.c.s
+main.s: main.c.s
 
-.PHONY : hello.s
+.PHONY : main.s
 
 # target to generate assembly for a file
-hello.c.s:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/hello.c.s
-.PHONY : hello.c.s
+main.c.s:
+	$(MAKE) -f CMakeFiles/pastavm.dir/build.make CMakeFiles/pastavm.dir/main.c.s
+.PHONY : main.c.s
+
+vm.o: vm.c.o
+
+.PHONY : vm.o
+
+# target to build an object file
+vm.c.o:
+	$(MAKE) -f CMakeFiles/pastavm.dir/build.make CMakeFiles/pastavm.dir/vm.c.o
+.PHONY : vm.c.o
+
+vm.i: vm.c.i
+
+.PHONY : vm.i
+
+# target to preprocess a source file
+vm.c.i:
+	$(MAKE) -f CMakeFiles/pastavm.dir/build.make CMakeFiles/pastavm.dir/vm.c.i
+.PHONY : vm.c.i
+
+vm.s: vm.c.s
+
+.PHONY : vm.s
+
+# target to generate assembly for a file
+vm.c.s:
+	$(MAKE) -f CMakeFiles/pastavm.dir/build.make CMakeFiles/pastavm.dir/vm.c.s
+.PHONY : vm.c.s
 
 # Help Target
 help:
@@ -157,11 +184,14 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... main"
+	@echo "... pastavm"
 	@echo "... edit_cache"
-	@echo "... hello.o"
-	@echo "... hello.i"
-	@echo "... hello.s"
+	@echo "... main.o"
+	@echo "... main.i"
+	@echo "... main.s"
+	@echo "... vm.o"
+	@echo "... vm.i"
+	@echo "... vm.s"
 .PHONY : help
 
 

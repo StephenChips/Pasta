@@ -1,8 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <json/cJSON.h>
+#include <cjson/cJSON.h>
 #include "errlog.h"
 #include "vm.h"
+
+int load_config(struct conf *config);
+int get_config(const char *config_json, struct conf *config);
+int create_default_config(struct conf *config);
+char *read_file_content(FILE *fp);
+void init_heap(size_t size);
+int init_stack(size_t size);
+int load_bytecode_file(const char *src);
+void free_stack();
+void free_heap();
 
 int load(const char *src) {
 
@@ -29,7 +39,7 @@ int load_config(struct conf *config) {
 
     FILE *fp = NULL; 
     struct conf ret;
-    const char *config_string = NULL;
+    char *config_string = NULL;
     int err;
 
     fp = fopen("./vm.conf", "r");
@@ -52,8 +62,8 @@ int load_config(struct conf *config) {
     
     return 0;
 
+/* clean up */
 error:
-    /* clean up */
     if (fp != NULL) {
         fclose(fp);
     }
@@ -65,18 +75,18 @@ error:
 
 int get_config(const char *config_json, struct conf *config) {
 
-    size_t heap_capacity, stack_capacity;
+    unsigned long heap_capacity, stack_capacity;
     cJSON *json_conf, *json_heap_capacity, *json_stack_capacity;
     json_conf = json_heap_capacity = json_stack_capacity = NULL;
     
-    json_conf = cJSON_Parse(config_string);
+    json_conf = cJSON_Parse(config_json);
     if (json_conf == NULL) {
         LOG_ERROR(CONFIG_ERROR, ILLEGAL_CONFIG_FILE_FORMAT);
         goto error;
     }
 
-    json_heap_capacity  = cJSON_GetObjectItemCaseSensetive(json_conf, "heap_capacity");
-    json_stack_capacity = cJSON_GetObjectItemCaseSensetive(json_conf, "stack_capacity");
+    json_heap_capacity  = cJSON_GetObjectItemCaseSensitive(json_conf, "heap_capacity");
+    json_stack_capacity = cJSON_GetObjectItemCaseSensitive(json_conf, "stack_capacity");
      
     /* verify configuration */
     if (!cJSON_IsNumber(json_heap_capacity)) {
@@ -88,8 +98,8 @@ int get_config(const char *config_json, struct conf *config) {
         goto error;
     }
    
-    heap_capacity = (size_t)json_heap_capacity->valuedouble;
-    stack_capacity = (size_t)json_stack_capacity->valuedouble;
+    heap_capacity = (unsigned long)json_heap_capacity->valuedouble;
+    stack_capacity = (unsigned long)json_stack_capacity->valuedouble;
 
     if (heap_capacity <= MIN_HEAP_CAPACITY || heap_capacity >= MAX_HEAP_CAPACITY) {
         LOG_ERROR(CONFIG_ERROR, HEAP_CAPACITY_OUT_OF_RANGE);
@@ -100,8 +110,8 @@ int get_config(const char *config_json, struct conf *config) {
         goto error;
     } 
 
-    conf->heap_capacity = heap_capacity;
-    conf->stack_capacity = stack_capacity;
+    config->heap_capacity = heap_capacity;
+    config->stack_capacity = stack_capacity;
 
     return 0;
 
@@ -113,26 +123,28 @@ error:
     return -1;
 }
 
-const char *read_file_content(FILE *fp) {
+char *read_file_content(FILE *fp) {
 
     long length;
-
-    fseek(f, 0, SEEK_END);
-    length = ftell(f);
-    fseek(f, 0, SEEK_SET);
+    char *buffer; 
     
-    buf = (char *)malloc(length * sizeof(char));
+    fseek(fp, 0, SEEK_END);
+    length = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    
+    buffer = (char *)malloc(length * sizeof(char));
 
     if (buffer != NULL) {
-        fread(buffer, 1, length, f);
+        fread(buffer, 1, length, fp);
     }
 
-    return buf;
+    return buffer;
 }
 
 int create_default_config(struct conf *config) {
 
-    const char *rendered;
+    char *rendered;
+    cJSON *json_conf;
     FILE *fp = fopen("./vm.conf","w");
 
     if (fp != NULL) {
@@ -146,7 +158,7 @@ int create_default_config(struct conf *config) {
         free(rendered);
         return 0;
     } else {
-        LOG_ERROR(CONFIG_ERROR, CANNOT_OPEN_CONFILG_FILE);
+        LOG_ERROR(CONFIG_ERROR, CANNOT_OPEN_CONFIG_FILE);
 
         return -1;
     }
@@ -154,11 +166,9 @@ int create_default_config(struct conf *config) {
  
 void init_heap(size_t size) {
     vm.heap.survive_flag = DEFAULT_SURVIVE_FLAG;
-    vm.current_size = 0;
-    vm.max_size = size;
-    vm.heap_item = NULL;
-
-    return 0;
+    vm.heap.current_size = 0;
+    vm.heap.max_size = size;
+    vm.heap.list = NULL;
 }
 
 int init_stack(size_t size) {
@@ -170,7 +180,7 @@ int init_stack(size_t size) {
     }
 
     vm.registers.sp = vm.stack.stack;
-    vm.registers.bp = vm.registers.hr = -999;
+    vm.registers.bp = vm.registers.hr = NULL;
 
     return 0;
 }
@@ -185,11 +195,10 @@ int load_bytecode_file(const char *src) {
    
     /* read bytecode file */  
     FILE *fp = NULL;
-    const char *rawcode = NULL;
-    void *cstpool_start_pos;
+    void *rawcode = NULL, *cstpool_start_pos;
     char *instr_start_pos;
-    fp = *fopen(src, "r");
 
+    fp = fopen(src, "r");
     if (fp != NULL) {
         rawcode = read_file_content(fp);
         if (rawcode == NULL) {
@@ -208,11 +217,11 @@ int load_bytecode_file(const char *src) {
 
     /* initialize constant pool */
     vm.constant_pool.count = *((int *)cstpool_start_pos);
-    vm.constant_pool.position = (void **)(cstpool_start_pos + sizeof(int))
+    vm.constant_pool.position = (void **)(cstpool_start_pos + sizeof(int));
 
     /* initialize instrs */
     vm.instructions.length = *((int *)instr_start_pos);
-    vm.instructions.inslist = (char *)(instr_start_pool + sizeof(int));
+    vm.instructions.inslist = (char *)(instr_start_pos + sizeof(int));
 
     /* initialize program counter */
     vm.registers.pc = vm.instructions.inslist;
@@ -235,9 +244,9 @@ int execute(void) {
 }
 
 void halt(struct vm *vm) {
-    if (vm.rawcode != NULL) {
+    if (vm->rawcode != NULL) {
         free(vm->rawcode);
-        vm.rawcode = NULL;
+        vm->rawcode = NULL;
     }
 
     free_stack();
@@ -250,6 +259,17 @@ void free_stack() {
     vm.stack.capacity = vm.stack.length = 0;
 }
 
+void free_heap(){
+
+    struct heap_item *temp = vm.heap.list;
+
+    while (vm.heap.list != NULL) {
+        vm.heap.list = vm.heap.list->next;
+        free(temp);
+        temp = vm.heap.list;
+    }
+}
+
 int set_stack_capacity(size_t capacity) {
 
     return 0;
@@ -258,5 +278,23 @@ int set_stack_capacity(size_t capacity) {
 int set_heap_capacity(size_t capacity) {
     
     return 0;
+}
+
+void *allocate(size_t meta_size, size_t data_size) {
+    struct heap_item *new_heap_item;
+
+    new_heap_item = (struct heap_item *)malloc(sizeof(struct heap_item) + meta_size + data_size);
+
+    new_heap_item->gcflag = !vm.heap.survive_flag;
+    new_heap_item->meta_size = meta_size;
+    new_heap_item->data_size = data_size;
+    new_heap_item->next = vm.heap.list;
+    vm.heap.list = new_heap_item->next;
+
+    return (void *)new_heap_item + sizeof(new_heap_item);
+}
+
+void gc(struct heap *heap) {
+
 }
 

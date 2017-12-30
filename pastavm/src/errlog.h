@@ -12,14 +12,14 @@
 #define STACK_CAPACITY_OUT_OF_RANGE "VMError: Stack Capacity Out Of Range."
 #define HEAP_CAPACITY_OUT_OF_RANGE "VMError: Heap Capacity Out Of Range."
 
-#define LOG_ERROR(err_type, msg) \
+#define LOG_ERROR(err_type, themsg) \
 do { \
     error_logger.err = err_type; \
-    error_logger.msg = msg; \
+    error_logger.msg = themsg; \
 } while (0)
 
 struct {
-    vm_error_t err;
+    int err;
     const char *msg;
-} error_log; 
+} error_logger; 
 

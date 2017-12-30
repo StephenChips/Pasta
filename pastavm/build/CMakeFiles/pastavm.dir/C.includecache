@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/dongcai/Documents/pasta/pastavm/src/errlog.h
+
+/home/dongcai/Documents/pasta/pastavm/src/main.c
+stdio.h
+-
+
+/home/dongcai/Documents/pasta/pastavm/src/vm.c
+stdio.h
+-
+stdlib.h
+-
+cjson/cJSON.h
+-
+errlog.h
+/home/dongcai/Documents/pasta/pastavm/src/errlog.h
+vm.h
+/home/dongcai/Documents/pasta/pastavm/src/vm.h
+
+/home/dongcai/Documents/pasta/pastavm/src/vm.h
+

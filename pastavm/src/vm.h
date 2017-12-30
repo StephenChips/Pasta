@@ -4,13 +4,13 @@
 #define CSTPOOL_INDEX_TABLE_LEN(cst_pool) (*((int *)cst_pool))
 #define CSTPOOL_INDEX_TABLE(cst_pool) (cst_pool + 1)
 
-#define DEFAULT_HEAP_CAPACITY (1 << 30) /* 1 GB */ 
-#define MAX_HEAP_CAPACITY     (1 << 33) /* 16 GB */
-#define MIN_HEAP_CAPACITY     (1 << 19) /* 512 MB */
+#define DEFAULT_HEAP_CAPACITY ((unsigned long)1 << 30) /* 1 GB */ 
+#define MAX_HEAP_CAPACITY     ((unsigned long)1 << 33) /* 16 GB */
+#define MIN_HEAP_CAPACITY     ((unsigned long)1 << 19) /* 512 MB */
 
-#define DEFAULT_STACK_CAPACITY (1 << 22) /* 4 MB */
-#define MIN_HEAP_CAPACITY      (1 << 21) /* 2 MB */
-#define MAX_HEAP_CAPACITY      (1 << 19) /* 512 MB */
+#define DEFAULT_STACK_CAPACITY ((unsigned long)1 << 22) /* 4 MB */
+#define MIN_STACK_CAPACITY      ((unsigned long)1 << 21) /* 2 MB */
+#define MAX_STACK_CAPACITY      ((unsigned long)1 << 19) /* 512 MB */
 
 #define CSTPOOL_START_POS(rowcode) (rowcode)
 #define INSTR_START_POS(rowcode) (rowcode + sizeof(void *))
@@ -18,10 +18,30 @@
 
 #define IS_STACK_ITEM(position) ((position) >= vm.stack.stack &&  (position) <= (vm.stack.stack + vm.stack.capacity))
 
-extern struct heap;
+#define DEFAULT_SURVIVE_FLAG 0
+
+#define HEAP_META(h)  ((struct heap_item *)h)
+#define META_SIZE(h)  (((struct heap_item *)h)->meta_size)
+#define DATA_SIZE(h)  (((struct heap_item *)h)->data_size)
+#define META_START(h) (h + sizeof(struct heap_item))
+#define DATA_START(h) (h + sizeof(struct heap_item) + (META_SIZE(h)))
+#define HEAP_END(h)   (h + sizeof(struct heap_item) + (META_SIZE(h)) + (DATA_SIZE(h)))
+
+struct heap {
+    int survive_flag;
+    size_t current_size, max_size;
+    struct heap_item *list;
+};
+
+struct heap_item {
+    char gcflag;
+    int meta_size,  data_size;
+    struct heap_item *next;
+};
+
 
 struct conf {
-    size_t stack_capacity, heap_capacity;
+    unsigned long stack_capacity, heap_capacity;
 };
 
 struct stack {
@@ -30,7 +50,7 @@ struct stack {
 };
 
 struct registers {
-    register void *sp, *bp, *hr, *pc;
+    void *sp, *bp, *hr, *pc;
 };
 
 struct inslist {
@@ -63,10 +83,14 @@ int load(const char *src);
 
 int execute();
 
-int halt();
+void halt();
 
 int set_stack_capacity(size_t capacity);
 
 int set_heap_capacity(size_t capacity);
+
+void *allocate(size_t meta_size, size_t data_size);
+
+void gc(struct heap *heap);
 
 #endif
