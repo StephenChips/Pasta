@@ -50,7 +50,7 @@ struct stack {
 };
 
 struct registers {
-    void *sp, *bp, *hr, *pc;
+    char *sp, *bp, *hr, *pc;
 };
 
 struct inslist {

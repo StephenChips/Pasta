@@ -4,13 +4,13 @@
 #include "errlog.h"
 #include "vm.h"
 
-int load_config(struct conf *config);
-int get_config(const char *config_json, struct conf *config);
-int create_default_config(struct conf *config);
+int  load_config(struct conf *config);
+int  get_config(const char *config_json, struct conf *config);
+int  create_default_config(struct conf *config);
 char *read_file_content(FILE *fp);
 void init_heap(size_t size);
-int init_stack(size_t size);
-int load_bytecode_file(const char *src);
+int  init_stack(size_t size);
+int  load_bytecode_file(const char *src);
 void free_stack();
 void free_heap();
 
@@ -186,42 +186,61 @@ int init_stack(size_t size) {
 }
 
 /*
- * BYTECODE FILE STRUCTURE
- * CSTPOOL_START_PTR: sizeof(void *) 
- * INS_START_PTR: sizeof(void *)
- * INS_END_PTR: sizeof(void *)
+ * RAWCODE FILE'S STRUCTURE 
+ * [OFFSETS] [CONSTANT POOL] [INSTRUCTION LIST]
+ *
+ * OFFSETS
+ * [ constant pool start offset <unsigned long int> ] [ instruction start offset <unsigned long int> ] ...
+ * CONSTANT POOL'S STRUCTURE IN RAWCODE
+ * ... [ count number <unsigne long int> ] [ array of constant offset <unsigned long int> ] [ constants ] ...
+ *
+ * INSTRUCTION LIST'S STRUCTURE IN RAWCODE 
+ * ... [ list length <unsigned long int> ] [ array of instr <char> ] ... 
+ *
  */
 int load_bytecode_file(const char *src) {
    
     /* read bytecode file */  
     FILE *fp = NULL;
-    void *rawcode = NULL, *cstpool_start_pos;
-    char *instr_start_pos;
+
+    void *rawcode = NULL;
+
+    void *cstpool_start_pos, *ins_start_pos;
+
+    unsigned long int *offsets;
+    unsigned long int cstpool_start_offset, ins_start_offset;
+    unsigned long int insnum;
+    char *instr;
 
     fp = fopen(src, "r");
     if (fp != NULL) {
         rawcode = read_file_content(fp);
         if (rawcode == NULL) {
-            /* raise error: failed to malloc memory */
+            LOG_ERROR(INTERNAL_ERROR, CANNOT_ALLOCATE_MEMEORY);
             goto error;
         }
     } else {
-        /* raise error: file not exists */
+        LOG_ERROR(INTERNAL_ERROR, FILE_DOES_NOT_EXISTS);
         goto error;
     } 
 
     /* load positions */
-    vm.rawcode = rawcode;
-    cstpool_start_pos = *((void **)rawcode);
-    instr_start_pos = *((void **)(rawcode + sizeof(void *)));
+    offsets = (unsigned long int *)rawcode;
+
+    cstpool_start_offset = offset[0];
+    ins_start_offset = offset[1];
 
     /* initialize constant pool */
-    vm.constant_pool.count = *((int *)cstpool_start_pos);
-    vm.constant_pool.position = (void **)(cstpool_start_pos + sizeof(int));
+    cstpool_start_pos = (void *)((char *)rawcode + cstpool_start_offset);
+    vm.constant_pool.count = *(unsigned long int *)cstpool_start_pos;
+    vm.constant_pool.position = (unsigned long int *)cstpool_start_pos + 1;
+
 
     /* initialize instrs */
-    vm.instructions.length = *((int *)instr_start_pos);
-    vm.instructions.inslist = (char *)(instr_start_pos + sizeof(int));
+    ins_start_pos = (void *)((char *)rawcode + ins_start_offset);
+
+    vm.instructions.length = *(unsigned long int *)instr_start_pos;
+    vm.instructions.inslist = (char *)instr_start_pos + sizeof(unsigned long int);
 
     /* initialize program counter */
     vm.registers.pc = vm.instructions.inslist;
