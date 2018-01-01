@@ -1,1 +1,0 @@
-/usr/bin/cc   -rdynamic CMakeFiles/pastavm.dir/main.c.o CMakeFiles/pastavm.dir/vm.c.o  -o pastavm -lcjson 

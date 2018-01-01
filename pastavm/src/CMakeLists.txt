@@ -1,7 +1,4 @@
-PROJECT(PastaVM)
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
+ADD_LIBRARY (vmcore vm.h vm.c errlog.h)
 
-AUX_SOURCE_DIRECTORY(. FILES)
-ADD_EXECUTABLE(pastavm ${FILES})
-TARGET_LINK_LIBRARIES(pastavm cjson)
-
+ADD_EXECUTABLE(pastavm main.c)
+TARGET_LINK_LIBRARIES(pastavm vmcore cjson)

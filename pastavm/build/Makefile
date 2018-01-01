@@ -48,7 +48,7 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/dongcai/Documents/pasta/pastavm/src
+CMAKE_SOURCE_DIR = /home/dongcai/Documents/pasta/pastavm
 
 # The top-level build directory on which CMake was run.
 CMAKE_BINARY_DIR = /home/dongcai/Documents/pasta/pastavm/build
@@ -66,6 +66,17 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
+	/usr/bin/ctest --force-new-ctest-process $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+
+.PHONY : test/fast
 
 # Special rule for the target edit_cache
 edit_cache:
@@ -111,6 +122,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named vmcore
+
+# Build rule for target.
+vmcore: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 vmcore
+.PHONY : vmcore
+
+# fast build rule for target.
+vmcore/fast:
+	$(MAKE) -f src/CMakeFiles/vmcore.dir/build.make src/CMakeFiles/vmcore.dir/build
+.PHONY : vmcore/fast
+
+#=============================================================================
 # Target rules for targets named pastavm
 
 # Build rule for target.
@@ -120,62 +144,34 @@ pastavm: cmake_check_build_system
 
 # fast build rule for target.
 pastavm/fast:
-	$(MAKE) -f CMakeFiles/pastavm.dir/build.make CMakeFiles/pastavm.dir/build
+	$(MAKE) -f src/CMakeFiles/pastavm.dir/build.make src/CMakeFiles/pastavm.dir/build
 .PHONY : pastavm/fast
 
-main.o: main.c.o
+#=============================================================================
+# Target rules for targets named cjson
 
-.PHONY : main.o
+# Build rule for target.
+cjson: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 cjson
+.PHONY : cjson
 
-# target to build an object file
-main.c.o:
-	$(MAKE) -f CMakeFiles/pastavm.dir/build.make CMakeFiles/pastavm.dir/main.c.o
-.PHONY : main.c.o
+# fast build rule for target.
+cjson/fast:
+	$(MAKE) -f lib/cjson/CMakeFiles/cjson.dir/build.make lib/cjson/CMakeFiles/cjson.dir/build
+.PHONY : cjson/fast
 
-main.i: main.c.i
+#=============================================================================
+# Target rules for targets named Test
 
-.PHONY : main.i
+# Build rule for target.
+Test: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 Test
+.PHONY : Test
 
-# target to preprocess a source file
-main.c.i:
-	$(MAKE) -f CMakeFiles/pastavm.dir/build.make CMakeFiles/pastavm.dir/main.c.i
-.PHONY : main.c.i
-
-main.s: main.c.s
-
-.PHONY : main.s
-
-# target to generate assembly for a file
-main.c.s:
-	$(MAKE) -f CMakeFiles/pastavm.dir/build.make CMakeFiles/pastavm.dir/main.c.s
-.PHONY : main.c.s
-
-vm.o: vm.c.o
-
-.PHONY : vm.o
-
-# target to build an object file
-vm.c.o:
-	$(MAKE) -f CMakeFiles/pastavm.dir/build.make CMakeFiles/pastavm.dir/vm.c.o
-.PHONY : vm.c.o
-
-vm.i: vm.c.i
-
-.PHONY : vm.i
-
-# target to preprocess a source file
-vm.c.i:
-	$(MAKE) -f CMakeFiles/pastavm.dir/build.make CMakeFiles/pastavm.dir/vm.c.i
-.PHONY : vm.c.i
-
-vm.s: vm.c.s
-
-.PHONY : vm.s
-
-# target to generate assembly for a file
-vm.c.s:
-	$(MAKE) -f CMakeFiles/pastavm.dir/build.make CMakeFiles/pastavm.dir/vm.c.s
-.PHONY : vm.c.s
+# fast build rule for target.
+Test/fast:
+	$(MAKE) -f test/CMakeFiles/Test.dir/build.make test/CMakeFiles/Test.dir/build
+.PHONY : Test/fast
 
 # Help Target
 help:
@@ -184,14 +180,12 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... pastavm"
+	@echo "... test"
 	@echo "... edit_cache"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
-	@echo "... vm.o"
-	@echo "... vm.i"
-	@echo "... vm.s"
+	@echo "... vmcore"
+	@echo "... pastavm"
+	@echo "... cjson"
+	@echo "... Test"
 .PHONY : help
 
 

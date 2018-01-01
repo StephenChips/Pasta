@@ -1,0 +1,2 @@
+ADD_SUBDIRECTORY (cjson)
+ADD_SUBDIRECTORY (check)

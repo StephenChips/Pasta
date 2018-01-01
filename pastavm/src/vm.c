@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <cjson/cJSON.h>
+#include "cJSON.h"
 #include "errlog.h"
 #include "vm.h"
 
@@ -216,7 +216,7 @@ int load_bytecode_file(const char *src) {
     if (fp != NULL) {
         rawcode = read_file_content(fp);
         if (rawcode == NULL) {
-            LOG_ERROR(INTERNAL_ERROR, CANNOT_ALLOCATE_MEMEORY);
+            LOG_ERROR(INTERNAL_ERROR, CANNOT_ALLOCATE_MEMORY);
             goto error;
         }
     } else {
@@ -227,8 +227,8 @@ int load_bytecode_file(const char *src) {
     /* load positions */
     offsets = (unsigned long int *)rawcode;
 
-    cstpool_start_offset = offset[0];
-    ins_start_offset = offset[1];
+    cstpool_start_offset = offsets[0];
+    ins_start_offset = offsets[1];
 
     /* initialize constant pool */
     cstpool_start_pos = (void *)((char *)rawcode + cstpool_start_offset);
@@ -239,8 +239,8 @@ int load_bytecode_file(const char *src) {
     /* initialize instrs */
     ins_start_pos = (void *)((char *)rawcode + ins_start_offset);
 
-    vm.instructions.length = *(unsigned long int *)instr_start_pos;
-    vm.instructions.inslist = (char *)instr_start_pos + sizeof(unsigned long int);
+    vm.instructions.length = *(unsigned long int *)ins_start_pos;
+    vm.instructions.inslist = (char *)ins_start_pos + sizeof(unsigned long int);
 
     /* initialize program counter */
     vm.registers.pc = vm.instructions.inslist;
@@ -299,7 +299,7 @@ int set_heap_capacity(size_t capacity) {
     return 0;
 }
 
-void *allocate(size_t meta_size, size_t data_size) {
+void *allocate(size_t meta_size, unsigned long int refcont, size_t data_size) {
     struct heap_item *new_heap_item;
 
     new_heap_item = (struct heap_item *)malloc(sizeof(struct heap_item) + meta_size + data_size);

@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../src/vm.h
+
+../test/check.h
+stddef.h
+-
+string.h
+-
+math.h
+-
+float.h
+-
+check_stdint.h
+-
+sys/types.h
+-
+
+../test/check_stdint.h
+stdint.h
+-
+
+/home/dongcai/Documents/pasta/pastavm/test/test.c
+check.h
+-
+vm.h
+/home/dongcai/Documents/pasta/pastavm/test/vm.h
+

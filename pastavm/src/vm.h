@@ -27,6 +27,17 @@
 #define DATA_START(h) (h + sizeof(struct heap_item) + (META_SIZE(h)))
 #define HEAP_END(h)   (h + sizeof(struct heap_item) + (META_SIZE(h)) + (DATA_SIZE(h)))
 
+#define __CMP_STKLEN_AND_OPRLEN(oprlen) /* TODO */
+#define __CMP_RETLEN_AND_AVAILABLE_STKSZ(retlen) /* TODO */
+#define __IS_REF_INSIDE_INSAREA(ref) /* TODO */
+#define __IS_REF_INSIDE_HEAPAREA(ref) /* TODO */
+#define __IS_STK_FREAM_EXISTS() /* TODO */
+#define __IS_EXN_HDR_EXISTS /* TODO */
+#define __IS_OFFSET_OUT_OF_META_AREA(offset) /* TODO */
+#define __IS_OFFSET_OUT_OF_DATA_AREA(offset) /* TODO */
+#define __IS_IDX_OUT_OF_CSTPOOL(idx) /* TODO */
+#define __IS_IDX_OUT_OF_REF_AREA(idx) /* TODO */
+
 struct heap {
     int survive_flag;
     size_t current_size, max_size;
@@ -60,7 +71,7 @@ struct inslist {
 
 struct constant_pool {
     int count;
-    void **position;
+    unsigned long int *position;
 };
 
 struct vm {
@@ -89,7 +100,7 @@ int set_stack_capacity(size_t capacity);
 
 int set_heap_capacity(size_t capacity);
 
-void *allocate(size_t meta_size, size_t data_size);
+void *allocate(size_t meta_size, unsigned long int ref_count, size_t data_size);
 
 void gc(struct heap *heap);
 
