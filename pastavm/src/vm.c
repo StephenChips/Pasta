@@ -4,16 +4,6 @@
 #include "errlog.h"
 #include "vm.h"
 
-int  load_config(struct conf *config);
-int  get_config(const char *config_json, struct conf *config);
-int  create_default_config(struct conf *config);
-char *read_file_content(FILE *fp);
-void init_heap(size_t size);
-int  init_stack(size_t size);
-int  load_bytecode_file(const char *src);
-void free_stack();
-void free_heap();
-
 int load(const char *src) {
 
     struct conf config;
@@ -21,12 +11,12 @@ int load(const char *src) {
 
     LOG_ERROR(NO_ERROR, OK); 
 
-    err = load_config(&config);    
+    err = __load_config(&config);    
     if (err == 0) {
-        init_heap(config.heap_capacity);
-        err = init_stack(config.stack_capacity);
+        __init_heap(config.heap_capacity);
+        err = __init_stack(config.stack_capacity);
         if (err == 0) {
-            return load_bytecode_file(src);
+            return __load_bytecode_file(src);
         } else {
             return -1;
         }
@@ -35,7 +25,7 @@ int load(const char *src) {
     }
 }
 
-int load_config(struct conf *config) {
+int __load_config(struct conf *config) {
 
     FILE *fp = NULL; 
     struct conf ret;
@@ -44,14 +34,14 @@ int load_config(struct conf *config) {
 
     fp = fopen("./vm.conf", "r");
     if (fp == NULL) {
-        create_default_config(&ret);
+        __create_default_config(&ret);
     } else {
-        config_string = read_file_content(fp);
+        config_string = __read_file_content(fp);
         if (config_string == NULL) {
             goto error;
         }
 
-        if (get_config(config_string, &ret) != 0) {
+        if (__get_config(config_string, &ret) != 0) {
             goto error;
         }
 
@@ -73,7 +63,7 @@ error:
     return -1;
 }
 
-int get_config(const char *config_json, struct conf *config) {
+int __get_config(const char *config_json, struct conf *config) {
 
     unsigned long heap_capacity, stack_capacity;
     cJSON *json_conf, *json_heap_capacity, *json_stack_capacity;
@@ -123,7 +113,7 @@ error:
     return -1;
 }
 
-char *read_file_content(FILE *fp) {
+char *__read_file_content(FILE *fp) {
 
     long length;
     char *buffer; 
@@ -141,7 +131,7 @@ char *read_file_content(FILE *fp) {
     return buffer;
 }
 
-int create_default_config(struct conf *config) {
+int __create_default_config(struct conf *config) {
 
     char *rendered;
     cJSON *json_conf;
@@ -164,16 +154,15 @@ int create_default_config(struct conf *config) {
     }
 }
  
-void init_heap(size_t size) {
+void __init_heap(size_t size) {
     vm.heap.survive_flag = DEFAULT_SURVIVE_FLAG;
     vm.heap.current_size = 0;
-    vm.heap.max_size = size;
+    vm.heap.capacity = size;
     vm.heap.list = NULL;
 }
 
-int init_stack(size_t size) {
+int __init_stack(size_t size) {
     vm.stack.capacity = size; 
-    vm.stack.length = 0;
     vm.stack.stack = malloc(size);
     if (vm.stack.stack == NULL) {
         return -1;
@@ -198,7 +187,7 @@ int init_stack(size_t size) {
  * ... [ list length <unsigned long int> ] [ array of instr <char> ] ... 
  *
  */
-int load_bytecode_file(const char *src) {
+int __load_bytecode_file(const char *src) {
    
     /* read bytecode file */  
     FILE *fp = NULL;
@@ -214,7 +203,7 @@ int load_bytecode_file(const char *src) {
 
     fp = fopen(src, "r");
     if (fp != NULL) {
-        rawcode = read_file_content(fp);
+        rawcode = __read_file_content(fp);
         if (rawcode == NULL) {
             LOG_ERROR(INTERNAL_ERROR, CANNOT_ALLOCATE_MEMORY);
             goto error;
@@ -233,7 +222,7 @@ int load_bytecode_file(const char *src) {
     /* initialize constant pool */
     cstpool_start_pos = (void *)((char *)rawcode + cstpool_start_offset);
     vm.constant_pool.count = *(unsigned long int *)cstpool_start_pos;
-    vm.constant_pool.position = (unsigned long int *)cstpool_start_pos + 1;
+    vm.constant_pool.positions = (unsigned long int *)cstpool_start_pos + 1;
 
 
     /* initialize instrs */
@@ -268,17 +257,17 @@ void halt(struct vm *vm) {
         vm->rawcode = NULL;
     }
 
-    free_stack();
-    free_heap();
+    __free_stack();
+    __free_heap();
 
 }
 
-void free_stack() {
+void __free_stack() {
     free(vm.stack.stack);
-    vm.stack.capacity = vm.stack.length = 0;
+    vm.stack.capacity = 0;
 }
 
-void free_heap(){
+void __free_heap(){
 
     struct heap_item *temp = vm.heap.list;
 
@@ -293,9 +282,9 @@ int set_stack_capacity(size_t capacity) {
 
     return 0;
 }
-
-int set_heap_capacity(size_t capacity) {
     
+int set_heap_capacity(size_t capacity) {
+
     return 0;
 }
 
