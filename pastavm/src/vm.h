@@ -15,26 +15,33 @@
 #define MIN_HEAP_CAPACITY     ((unsigned long)1 << 19) /* 512 MB */
 
 #define DEFAULT_STACK_CAPACITY ((unsigned long)1 << 22) /* 4 MB */
-#define MIN_STACK_CAPACITY      ((unsigned long)1 << 21) /* 2 MB */
-#define MAX_STACK_CAPACITY      ((unsigned long)1 << 19) /* 512 MB */
+#define MIN_STACK_CAPACITY      ((unsigned long)1 << 19) /* 512 KB */
+#define MAX_STACK_CAPACITY      ((unsigned long)1 << 26) /* 64 MB */
 
-/* functions for rawcode location */
-#define __RAWCODE_INDEX(rawcode)  ((void **)rawcode)
-#define __RAWCODE_INDEX_SIZE (2 * sizeof (void *))
-#define __CSTPOOL_START_POS(rawcode) (__RAWCODE_INDEX(rawcode)[0])
-#define __INSTR_START_POS(rawcode) (__RAWCODE_INDEX(rawcode)[1])
-#define __CST_COUNT(rawcode) *((unsigned long int *)CSTPOOL_START_POS(rowcode))
-#define __ARRAY_OF_PTR_TO_CONSTANTS(rawcode) \
-    ((char *)CSTPOOL_START_POS(rawcode) + sizeof(unsigned long int))
-#define __ACCESS_CONSTANT(rawcode, index) (*ARRAY_OF_PTR_OF_CONSTANTS(rawcode)[index])
-#define __INS_LENGTH(rawcode) *((unsigned long int *)INSTR_START_POS(rawcode))
-#define __ARRAY_OF_INSTRUCTION(rawcode) ((char *)INSTR_START_POS(rawcode) + sizeof(unsigned long int))
+#define __CFNAME_HEAP_CAPACITY "HeapCapacity"
+#define __CFNAME_STACK_CAPACITY "StackCapacity"
+#define __CFNAME_CONF_FILE_NAME "vm.conf"
+
+/* ITEMS IN A CONSTANTPOOL WOULD BE
+ * 
+ * 1. integer, float, char
+ * 2. compound data type like array or record, with the form of heap item.
+ */
+
+/* macros for rawcode location */
+#define __RAWCODE_INDEX(rawcode)             ((unsigned long int *)rawcode)
+#define __CSTPOOL_START_POS(rawcode)         ((char *)rawcode + __RAWCODE_INDEX(rawcode)[0])
+#define __INSTR_START_POS(rawcode)           ((char *)rawcode + __RAWCODE_INDEX(rawcode)[1])
+#define __CST_COUNT(rawcode)                 *(unsigned long int *)__CSTPOOL_START_POS(rawcode)
+#define __ARRAY_OF_PTR_TO_CONSTANTS(rawcode) (void **)(__CSTPOOL_START_POS(rawcode) + sizeof(unsigned long int))
+#define __INS_LENGTH(rawcode)                *(unsigned long int *)__INSTR_START_POS(rawcode)
+#define __ARRAY_OF_INSTRUCTION(rawcode)      (__INSTR_START_POS(rawcode) + sizeof(unsigned long int))
 
 #define IS_STACK_ITEM(position) (position >= vm.stack.stack &&  (position) <= vm.stack.stack + vm.stack.capacity)
 
 #define DEFAULT_SURVIVE_FLAG 0
 
-/* heap location */
+/* macros for heap location */
 #define __HEAP_INFO(h)  ((struct heap_item *)h)
 #define __HEAP_INFO_SIZE (sizeof(struct heap_item))
 #define __HEAP_REF_SIZE (sizeof(void *))
@@ -43,6 +50,7 @@
 #define __HEAP_DATA(h) (h + HEAP_INFO_SIZE + HEAP_INFO(h)->meta_size + (HEAP_INFO(h)->ref_count)*HEAP_REF_SIZE )
 #define __HEAP_END(h)   (h + HEAP_INFO_SIZE + HEAP_INFO(h)->meta_size + (HEAP_INFO(h)->ref_count)*HEAP_REF_SIZE + HEAP_INFO(h)->data_size)
 
+/* macros for stack location */
 #define __CMP_STKLEN_AND_OPRLEN(oprlen) /* TODO */
 #define __CMP_RETLEN_AND_AVAILABLE_STKSZ(retlen) /* TODO */
 #define __IS_REF_INSIDE_INSAREA(ref) /* TODO */
@@ -68,7 +76,7 @@ struct heap_item {
 
 
 struct conf {
-    unsigned long stack_capacity, heap_capacity;
+    unsigned long int stack_capacity, heap_capacity;
 };
 
 struct stack {
@@ -97,11 +105,6 @@ struct vm {
     struct constant_pool constant_pool;
     struct heap heap;
     struct inslist instructions;
-};
-
-const struct conf default_config = {
-    DEFAULT_STACK_CAPACITY,
-    DEFAULT_HEAP_CAPACITY
 };
 
 struct vm vm;

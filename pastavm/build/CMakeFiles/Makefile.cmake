@@ -54,6 +54,8 @@ set(CMAKE_MAKEFILE_PRODUCTS
 set(CMAKE_DEPEND_INFO_FILES
   "src/CMakeFiles/vmcore.dir/DependInfo.cmake"
   "src/CMakeFiles/pastavm.dir/DependInfo.cmake"
+  "src/CMakeFiles/codegen.dir/DependInfo.cmake"
   "lib/cjson/CMakeFiles/cjson.dir/DependInfo.cmake"
   "test/CMakeFiles/Test.dir/DependInfo.cmake"
+  "test/CMakeFiles/TestRawcodeGen.dir/DependInfo.cmake"
   )

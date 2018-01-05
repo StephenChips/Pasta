@@ -28,25 +28,24 @@ int load(const char *src) {
 int __load_config(struct conf *config) {
 
     FILE *fp = NULL; 
-    struct conf ret;
     char *config_string = NULL;
     int err;
 
-    fp = fopen("./vm.conf", "r");
+    fp = fopen(__CFNAME_CONF_FILE_NAME, "r");
+    
     if (fp == NULL) {
-        __create_default_config(&ret);
+        __create_default_config(config);
     } else {
         config_string = __read_file_content(fp);
         if (config_string == NULL) {
             goto error;
         }
 
-        if (__get_config(config_string, &ret) != 0) {
+        if (__get_config(config_string, config) != 0) {
             goto error;
         }
 
         fclose(fp);
-        *config = ret;
         free(config_string);
     }
     
@@ -75,8 +74,8 @@ int __get_config(const char *config_json, struct conf *config) {
         goto error;
     }
 
-    json_heap_capacity  = cJSON_GetObjectItemCaseSensitive(json_conf, "heap_capacity");
-    json_stack_capacity = cJSON_GetObjectItemCaseSensitive(json_conf, "stack_capacity");
+    json_heap_capacity  = cJSON_GetObjectItemCaseSensitive(json_conf, __CFNAME_HEAP_CAPACITY);
+    json_stack_capacity = cJSON_GetObjectItemCaseSensitive(json_conf, __CFNAME_STACK_CAPACITY); 
      
     /* verify configuration */
     if (!cJSON_IsNumber(json_heap_capacity)) {
@@ -115,15 +114,14 @@ error:
 
 char *__read_file_content(FILE *fp) {
 
-    long length;
-    char *buffer; 
-    
+    int length;
+    char *buffer = NULL; 
+
     fseek(fp, 0, SEEK_END);
     length = ftell(fp);
     fseek(fp, 0, SEEK_SET);
-    
     buffer = (char *)malloc(length * sizeof(char));
-
+   
     if (buffer != NULL) {
         fread(buffer, 1, length, fp);
     }
@@ -135,12 +133,12 @@ int __create_default_config(struct conf *config) {
 
     char *rendered;
     cJSON *json_conf;
-    FILE *fp = fopen("./vm.conf","w");
+    FILE *fp = fopen(__CFNAME_CONF_FILE_NAME,"w");
 
     if (fp != NULL) {
         json_conf = cJSON_CreateObject();
-        cJSON_AddNumberToObject(json_conf, "heap_capacity", default_config.heap_capacity);
-        cJSON_AddNumberToObject(json_conf, "stack_capacity", default_config.stack_capacity);
+        cJSON_AddNumberToObject(json_conf, __CFNAME_HEAP_CAPACITY, DEFAULT_HEAP_CAPACITY);
+        cJSON_AddNumberToObject(json_conf, __CFNAME_STACK_CAPACITY, DEFAULT_STACK_CAPACITY);
         rendered = cJSON_Print(json_conf); 
         fputs(rendered, fp);
 
@@ -189,17 +187,8 @@ int __init_stack(size_t size) {
  */
 int __load_bytecode_file(const char *src) {
    
-    /* read bytecode file */  
     FILE *fp = NULL;
-
     void *rawcode = NULL;
-
-    void *cstpool_start_pos, *ins_start_pos;
-
-    unsigned long int *offsets;
-    unsigned long int cstpool_start_offset, ins_start_offset;
-    unsigned long int insnum;
-    char *instr;
 
     fp = fopen(src, "r");
     if (fp != NULL) {
@@ -213,26 +202,19 @@ int __load_bytecode_file(const char *src) {
         goto error;
     } 
 
-    /* load positions */
-    offsets = (unsigned long int *)rawcode;
 
-    cstpool_start_offset = offsets[0];
-    ins_start_offset = offsets[1];
+    vm.rawcode = rawcode;
 
     /* initialize constant pool */
-    cstpool_start_pos = (void *)((char *)rawcode + cstpool_start_offset);
-    vm.constant_pool.count = *(unsigned long int *)cstpool_start_pos;
-    vm.constant_pool.positions = (unsigned long int *)cstpool_start_pos + 1;
+    vm.constant_pool.count = __CST_COUNT(rawcode);
+    vm.constant_pool.positions = __ARRAY_OF_PTR_TO_CONSTANTS(rawcode);
 
 
-    /* initialize instrs */
-    ins_start_pos = (void *)((char *)rawcode + ins_start_offset);
-
-    vm.instructions.length = *(unsigned long int *)ins_start_pos;
-    vm.instructions.inslist = (char *)ins_start_pos + sizeof(unsigned long int);
+    vm.instructions.length = __INS_LENGTH(rawcode);
+    vm.instructions.inslist = __ARRAY_OF_INSTRUCTION(rawcode);
 
     /* initialize program counter */
-    vm.registers.pc = vm.instructions.inslist;
+    vm.registers.pc = __ARRAY_OF_INSTRUCTION(rawcode);
 
     return 0;
 

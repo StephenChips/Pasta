@@ -148,6 +148,19 @@ pastavm/fast:
 .PHONY : pastavm/fast
 
 #=============================================================================
+# Target rules for targets named codegen
+
+# Build rule for target.
+codegen: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 codegen
+.PHONY : codegen
+
+# fast build rule for target.
+codegen/fast:
+	$(MAKE) -f src/CMakeFiles/codegen.dir/build.make src/CMakeFiles/codegen.dir/build
+.PHONY : codegen/fast
+
+#=============================================================================
 # Target rules for targets named cjson
 
 # Build rule for target.
@@ -173,6 +186,19 @@ Test/fast:
 	$(MAKE) -f test/CMakeFiles/Test.dir/build.make test/CMakeFiles/Test.dir/build
 .PHONY : Test/fast
 
+#=============================================================================
+# Target rules for targets named TestRawcodeGen
+
+# Build rule for target.
+TestRawcodeGen: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 TestRawcodeGen
+.PHONY : TestRawcodeGen
+
+# fast build rule for target.
+TestRawcodeGen/fast:
+	$(MAKE) -f test/CMakeFiles/TestRawcodeGen.dir/build.make test/CMakeFiles/TestRawcodeGen.dir/build
+.PHONY : TestRawcodeGen/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -184,8 +210,10 @@ help:
 	@echo "... edit_cache"
 	@echo "... vmcore"
 	@echo "... pastavm"
+	@echo "... codegen"
 	@echo "... cjson"
 	@echo "... Test"
+	@echo "... TestRawcodeGen"
 .PHONY : help
 
 

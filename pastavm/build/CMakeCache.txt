@@ -191,7 +191,16 @@ PastaVM_SOURCE_DIR:STATIC=/home/dongcai/Documents/pasta/pastavm
 cjson_LIB_DEPENDS:STATIC=
 
 //Dependencies for target
+codegen_LIB_DEPENDS:STATIC=
+
+//Dependencies for target
 vmcore_LIB_DEPENDS:STATIC=
+
+//Dependencies for target
+vmrawcodegem_LIB_DEPENDS:STATIC=
+
+//Dependencies for target
+vmrawcodegen_LIB_DEPENDS:STATIC=
 
 
 ########################

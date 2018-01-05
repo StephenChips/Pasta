@@ -136,6 +136,21 @@ Test/fast:
 	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f test/CMakeFiles/Test.dir/build.make test/CMakeFiles/Test.dir/build
 .PHONY : Test/fast
 
+# Convenience name for target.
+test/CMakeFiles/TestRawcodeGen.dir/rule:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f CMakeFiles/Makefile2 test/CMakeFiles/TestRawcodeGen.dir/rule
+.PHONY : test/CMakeFiles/TestRawcodeGen.dir/rule
+
+# Convenience name for target.
+TestRawcodeGen: test/CMakeFiles/TestRawcodeGen.dir/rule
+
+.PHONY : TestRawcodeGen
+
+# fast build rule for target.
+TestRawcodeGen/fast:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f test/CMakeFiles/TestRawcodeGen.dir/build.make test/CMakeFiles/TestRawcodeGen.dir/build
+.PHONY : TestRawcodeGen/fast
+
 test.o: test.c.o
 
 .PHONY : test.o
@@ -163,6 +178,33 @@ test.c.s:
 	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f test/CMakeFiles/Test.dir/build.make test/CMakeFiles/Test.dir/test.c.s
 .PHONY : test.c.s
 
+test_rawcode_gen.o: test_rawcode_gen.c.o
+
+.PHONY : test_rawcode_gen.o
+
+# target to build an object file
+test_rawcode_gen.c.o:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f test/CMakeFiles/TestRawcodeGen.dir/build.make test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o
+.PHONY : test_rawcode_gen.c.o
+
+test_rawcode_gen.i: test_rawcode_gen.c.i
+
+.PHONY : test_rawcode_gen.i
+
+# target to preprocess a source file
+test_rawcode_gen.c.i:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f test/CMakeFiles/TestRawcodeGen.dir/build.make test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.i
+.PHONY : test_rawcode_gen.c.i
+
+test_rawcode_gen.s: test_rawcode_gen.c.s
+
+.PHONY : test_rawcode_gen.s
+
+# target to generate assembly for a file
+test_rawcode_gen.c.s:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f test/CMakeFiles/TestRawcodeGen.dir/build.make test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.s
+.PHONY : test_rawcode_gen.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -171,11 +213,15 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... Test"
 	@echo "... test"
+	@echo "... Test"
+	@echo "... TestRawcodeGen"
 	@echo "... test.o"
 	@echo "... test.i"
 	@echo "... test.s"
+	@echo "... test_rawcode_gen.o"
+	@echo "... test_rawcode_gen.i"
+	@echo "... test_rawcode_gen.s"
 .PHONY : help
 
 

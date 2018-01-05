@@ -151,6 +151,21 @@ pastavm/fast:
 	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f src/CMakeFiles/pastavm.dir/build.make src/CMakeFiles/pastavm.dir/build
 .PHONY : pastavm/fast
 
+# Convenience name for target.
+src/CMakeFiles/codegen.dir/rule:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f CMakeFiles/Makefile2 src/CMakeFiles/codegen.dir/rule
+.PHONY : src/CMakeFiles/codegen.dir/rule
+
+# Convenience name for target.
+codegen: src/CMakeFiles/codegen.dir/rule
+
+.PHONY : codegen
+
+# fast build rule for target.
+codegen/fast:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f src/CMakeFiles/codegen.dir/build.make src/CMakeFiles/codegen.dir/build
+.PHONY : codegen/fast
+
 main.o: main.c.o
 
 .PHONY : main.o
@@ -177,6 +192,33 @@ main.s: main.c.s
 main.c.s:
 	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f src/CMakeFiles/pastavm.dir/build.make src/CMakeFiles/pastavm.dir/main.c.s
 .PHONY : main.c.s
+
+rawcode.o: rawcode.c.o
+
+.PHONY : rawcode.o
+
+# target to build an object file
+rawcode.c.o:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f src/CMakeFiles/codegen.dir/build.make src/CMakeFiles/codegen.dir/rawcode.c.o
+.PHONY : rawcode.c.o
+
+rawcode.i: rawcode.c.i
+
+.PHONY : rawcode.i
+
+# target to preprocess a source file
+rawcode.c.i:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f src/CMakeFiles/codegen.dir/build.make src/CMakeFiles/codegen.dir/rawcode.c.i
+.PHONY : rawcode.c.i
+
+rawcode.s: rawcode.c.s
+
+.PHONY : rawcode.s
+
+# target to generate assembly for a file
+rawcode.c.s:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f src/CMakeFiles/codegen.dir/build.make src/CMakeFiles/codegen.dir/rawcode.c.s
+.PHONY : rawcode.c.s
 
 vm.o: vm.c.o
 
@@ -216,9 +258,13 @@ help:
 	@echo "... test"
 	@echo "... vmcore"
 	@echo "... pastavm"
+	@echo "... codegen"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... rawcode.o"
+	@echo "... rawcode.i"
+	@echo "... rawcode.s"
 	@echo "... vm.o"
 	@echo "... vm.i"
 	@echo "... vm.s"

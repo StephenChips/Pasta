@@ -6,6 +6,7 @@
 /home/dongcai/Documents/pasta/pastavm/build/src/CMakeFiles/test.dir
 /home/dongcai/Documents/pasta/pastavm/build/src/CMakeFiles/vmcore.dir
 /home/dongcai/Documents/pasta/pastavm/build/src/CMakeFiles/pastavm.dir
+/home/dongcai/Documents/pasta/pastavm/build/src/CMakeFiles/codegen.dir
 /home/dongcai/Documents/pasta/pastavm/build/lib/CMakeFiles/rebuild_cache.dir
 /home/dongcai/Documents/pasta/pastavm/build/lib/CMakeFiles/test.dir
 /home/dongcai/Documents/pasta/pastavm/build/lib/CMakeFiles/edit_cache.dir
@@ -18,5 +19,6 @@
 /home/dongcai/Documents/pasta/pastavm/build/lib/check/CMakeFiles/edit_cache.dir
 /home/dongcai/Documents/pasta/pastavm/build/test/CMakeFiles/rebuild_cache.dir
 /home/dongcai/Documents/pasta/pastavm/build/test/CMakeFiles/edit_cache.dir
-/home/dongcai/Documents/pasta/pastavm/build/test/CMakeFiles/Test.dir
 /home/dongcai/Documents/pasta/pastavm/build/test/CMakeFiles/test.dir
+/home/dongcai/Documents/pasta/pastavm/build/test/CMakeFiles/Test.dir
+/home/dongcai/Documents/pasta/pastavm/build/test/CMakeFiles/TestRawcodeGen.dir

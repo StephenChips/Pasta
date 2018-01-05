@@ -13,6 +13,7 @@
 #define HEAP_CAPACITY_OUT_OF_RANGE "VMError: Heap Capacity Out Of Range."
 #define CANNOT_ALLOCATE_MEMORY "VMError: Cannot Allocate Memeory."
 #define FILE_DOES_NOT_EXISTS "VMError: File Does Not Exists."
+
 #define LOG_ERROR(err_type, themsg) \
 do { \
     error_logger.err = err_type; \

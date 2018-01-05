@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../src/instr.h
+
+../src/rawcode.h
+instr.h
+../src/instr.h
+
+../test/check.h
+stddef.h
+-
+string.h
+-
+math.h
+-
+float.h
+-
+check_stdint.h
+-
+sys/types.h
+-
+
+../test/check_stdint.h
+stdint.h
+-
+
+/home/dongcai/Documents/pasta/pastavm/test/test_rawcode_gen.c
+check.h
+-
+stdlib.h
+-
+instr.h
+/home/dongcai/Documents/pasta/pastavm/test/instr.h
+rawcode.h
+/home/dongcai/Documents/pasta/pastavm/test/rawcode.h
+

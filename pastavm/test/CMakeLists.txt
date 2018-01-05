@@ -3,4 +3,6 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/test)
 LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/lib/check)
 
 ADD_EXECUTABLE(Test test.c)
+ADD_EXECUTABLE(TestRawcodeGen test_rawcode_gen.c)
 TARGET_LINK_LIBRARIES(Test cjson vmcore check)
+TARGET_LINK_LIBRARIES(TestRawcodeGen codegen check)

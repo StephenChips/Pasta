@@ -1,84 +1,54 @@
-union ins_args {
-    union {
-        int ival;
-        double fval;
-        char cval;
-        void *refval; /* only allow nil value */
-    } cst;
-    struct {
-        unsigned long int addr;
-    } gto;
-    struct {
-        long m;
-    } altsp;
-    struct {
-       unsigned int argnum;
-       unsigned long int addr;
-   } call;
-   struct {
-       unsigned int new_argnum, old_argnum;
-       unsigned long int addr;
-   } tcall;
-   struct {
-       unsigned int sysfuncid, arg_number;
-   } syscall;
-   struct {
-       unsigned int exn;
-   } pushexn;
-   struct {
-       unsigned int exn;
-       unsigned long int addr;
-   } popexn;
-   struct {
-       unsigned int idx;
-   } ldc;
+#ifndef INCLUDED_RAWCODE_H
+#define INCLUDED_RAWCODE_H
+
+#include "instr.h"
+
+#define SET_CONSTANT_FLOAT(constant, fval)
+#define SET_CONSTANT_INT(constant, ival)
+#define SET_CONSTANT_CHAR(constant, cval)
+#define SET_CONSTANT_STRING(constant, sval, length)
+
+struct insqueque {
+    struct ins ins;
+    struct inslist *next;
 };
 
-struct ins_item {
-    unsigned char ins_id;
-    union ins_args args;
-    struct ins_item *next;
-};
-
-struct inslist {
-    struct ins_item *inslist;
-    unsigned int count;
-};
-
-struct cstpool_item {
+struct cstqueue {
     void *ref;
     size_t size;
-    struct cstpool_item *next;
-};
-        
-struct cstpool {
-    int count;
-    struct cstpool_item *cstlist;
+    struct cstqueue *next;
 };
 
-struct rawcode {
-    struct inslist il;
-    struct cstpool cl;
-};
+typedef struct __RawcodeGen {
+    struct inslist *ins_queue;
+    struct cstqueue *cst_queue;
+    size_t ins_list_size, cst_pool_size;
+} RawcodeGen;
 
 
-struct rawcode *init_rawcode();
+RawcodeGen *RawcodeGen_Init();
 
-void delete_rawcode(struct rawcode * rawcode);
+/*
+ * PARAMS: 
+ * rawcode: 
+ *   type: struct rawcode *
+ *   desc: the rawcode object
+ * size:
+ *   type: size_t
+ *   desc: the size of rawcode
+ *
+ * DESC:
+ *   This function will allocate a new memory in the constant linked-list, with the size of *size*, then return it.
+ *   You can set the value of memeory to specific value by macros.
+ */
 
-/* If that instruction doesn't require arguments, the union pointer should be NULL */
-void rawcode_pushins(unsigned char ins_id, union ins_args *ins_args);
+void *RawcodeGen_AddConstant(RawcodeGen *self, size_t size);
 
-void rawcode_pushconst(void *ref, size_t size);
-
-/* Functions for convenience, they will allocate memory first, then initialize value and call function 'rawcode_pushconst' */
-void rawcode_pushchar(char c);
-
-void rawcode_pushstring(char *str, size_t size);
-
-void rawcode_pushdouble(double d);
-
-void rawcode_pushint(int i);
+int RawcodeGen_AddInstruction(RawcodeGen *self, struct ins *ins);
 
 /* generate rawcode */
-void *rawcode_generate(struct rawcode *rawcode);
+void *RawcodeGen_Generate(RawcodeGen *self);
+
+void RawcodeGen_Delete(RawcodeGen *self);
+
+#endif

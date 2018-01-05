@@ -6,6 +6,12 @@
 
 #IncludeRegexTransform: 
 
+../src/cJSON.h
+stddef.h
+-
+
+../src/errlog.h
+
 ../src/vm.h
 stdio.h
 -
@@ -29,8 +35,16 @@ stdint.h
 -
 
 /home/dongcai/Documents/pasta/pastavm/test/test.c
+stdio.h
+-
+stdlib.h
+-
 check.h
 -
 vm.h
 /home/dongcai/Documents/pasta/pastavm/test/vm.h
+errlog.h
+/home/dongcai/Documents/pasta/pastavm/test/errlog.h
+cJSON.h
+/home/dongcai/Documents/pasta/pastavm/test/cJSON.h
 
