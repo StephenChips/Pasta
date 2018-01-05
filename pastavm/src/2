@@ -121,10 +121,11 @@ void __DeleteCstQueue(struct cstqueue *q) {
 
     struct cstqueue *temp = q;
 
+#if 0 
     if (q == NULL) {
         return;
     }
-
+#endif
     while (q != q->next) {
         q = q->next;
         

@@ -9,6 +9,8 @@
 /home/dongcai/Documents/pasta/pastavm/src/instr.h
 
 /home/dongcai/Documents/pasta/pastavm/src/rawcode.c
+stdio.h
+-
 stdlib.h
 -
 rawcode.h

@@ -8,9 +8,9 @@
 #define SET_CONSTANT_CHAR(constant, cval)
 #define SET_CONSTANT_STRING(constant, sval, length)
 
-struct insqueque {
+struct insqueue {
     struct ins ins;
-    struct inslist *next;
+    struct insqueue *next;
 };
 
 struct cstqueue {
@@ -20,7 +20,7 @@ struct cstqueue {
 };
 
 typedef struct __RawcodeGen {
-    struct inslist *ins_queue;
+    struct insqueue *ins_queue;
     struct cstqueue *cst_queue;
     size_t ins_list_size, cst_pool_size;
 } RawcodeGen;
@@ -50,5 +50,13 @@ int RawcodeGen_AddInstruction(RawcodeGen *self, struct ins *ins);
 void *RawcodeGen_Generate(RawcodeGen *self);
 
 void RawcodeGen_Delete(RawcodeGen *self);
+
+
+/* private functions */
+size_t __GetInsSize(int id);
+
+void __DeleteInsQueue(struct insqueue *q);
+
+void __DeleteCstQueue(struct cstqueue *q);
 
 #endif

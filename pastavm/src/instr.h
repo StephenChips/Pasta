@@ -67,13 +67,13 @@
 union ins_args {
     int iconst;
     double fconst;
-    char ccosnt;
+    char cconst;
 
     struct {
         unsigned long int addr;
     } jump, jpz, jpnz;
     struct {
-        signed long m;
+       signed long int m;
     } altsp;
     struct {
        unsigned int argnum;
@@ -88,11 +88,17 @@ union ins_args {
    } syscall;
    struct {
        unsigned int exn;
-   } pushexn;
+   } raise;
    struct {
        unsigned int exn;
        unsigned long int addr;
-   } popexn;
+   } pushexn;
+   struct {
+       unsigned int offset;
+   } getdata;
+   struct {
+       unsigned int offset;
+   } setdata;
    struct {
        unsigned int idx;
    } ldc;
@@ -101,10 +107,6 @@ union ins_args {
 struct ins {
     unsigned char id;
     union ins_args args;
-};
-struct ins_item {
-    struct ins ins;
-    struct ins_item *next;
 };
 
 #endif

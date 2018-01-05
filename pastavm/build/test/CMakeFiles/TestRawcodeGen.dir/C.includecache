@@ -33,6 +33,8 @@ stdint.h
 /home/dongcai/Documents/pasta/pastavm/test/test_rawcode_gen.c
 check.h
 -
+stdio.h
+-
 stdlib.h
 -
 instr.h
