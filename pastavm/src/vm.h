@@ -23,6 +23,8 @@
 #define __CFNAME_STACK_CAPACITY "StackCapacity"
 #define __CFNAME_CONF_FILE_NAME "vm.conf"
 
+#define GC_DEFAULT_SURVIVE_FLAG 1
+
 /* ITEMS IN A CONSTANTPOOL WOULD BE
  * 
  * 1. integer, float, char
@@ -62,7 +64,7 @@ struct heap_list {
 
 struct constant_pool {
     unsigned long int count;
-    unsigned long int *offset;
+    unsigned long int *offsets;
     void *cst_pool;
 };
 

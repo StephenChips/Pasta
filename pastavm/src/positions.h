@@ -18,6 +18,7 @@
 #define __CST_COUNT_SIZE sizeof(unsigned long int)
 #define __CST_OFFSET_SIZE sizeof(unsigned long int)
 #define __CST_OFFSET_ARRAY(_cstpool) (unsigned long int *)((char *)(_cstpool) + __CST_COUNT_SIZE)
+#define __CSTPOOL(_cstpool) (__CST_COUNT_SIZE + __CST_OFFSET_SIZE * __CST_COUNT(_cstpool))
 
 /* MACROS FOR INSTRUCTION LIST */
 #define __INS_LENGTH(_inslist) *((unsigned long int *) (_inslist))

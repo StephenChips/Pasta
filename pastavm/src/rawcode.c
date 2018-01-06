@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "position.h"
+#include "positions.h"
 #include "rawcode.h"
 
 #define INS_UNDEF(ins) (((ins) < ICONST) || ((ins) > LDC))
@@ -235,7 +235,6 @@ void __WriteIns(char *pos, struct ins ins) {
     return;
 }
 
-void __Write
 void RawcodeGen_Delete(RawcodeGen *self) {
     __DeleteInsQueue(self->ins_queue);
     __DeleteCstQueue(self->cst_queue);

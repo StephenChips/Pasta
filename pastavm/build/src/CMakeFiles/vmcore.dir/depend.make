@@ -3,6 +3,7 @@
 
 src/CMakeFiles/vmcore.dir/vm.c.o: ../src/cJSON.h
 src/CMakeFiles/vmcore.dir/vm.c.o: ../src/errlog.h
+src/CMakeFiles/vmcore.dir/vm.c.o: ../src/positions.h
 src/CMakeFiles/vmcore.dir/vm.c.o: ../src/vm.c
 src/CMakeFiles/vmcore.dir/vm.c.o: ../src/vm.h
 

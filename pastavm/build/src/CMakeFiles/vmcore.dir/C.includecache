@@ -12,6 +12,8 @@ stddef.h
 
 /home/dongcai/Documents/pasta/pastavm/src/errlog.h
 
+/home/dongcai/Documents/pasta/pastavm/src/positions.h
+
 /home/dongcai/Documents/pasta/pastavm/src/vm.c
 stdio.h
 -
@@ -27,4 +29,6 @@ vm.h
 /home/dongcai/Documents/pasta/pastavm/src/vm.h
 stdio.h
 -
+positions.h
+/home/dongcai/Documents/pasta/pastavm/src/positions.h
 

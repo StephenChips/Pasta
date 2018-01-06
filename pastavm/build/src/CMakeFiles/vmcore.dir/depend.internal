@@ -4,5 +4,6 @@
 src/CMakeFiles/vmcore.dir/vm.c.o
  /home/dongcai/Documents/pasta/pastavm/src/cJSON.h
  /home/dongcai/Documents/pasta/pastavm/src/errlog.h
+ /home/dongcai/Documents/pasta/pastavm/src/positions.h
  /home/dongcai/Documents/pasta/pastavm/src/vm.c
  /home/dongcai/Documents/pasta/pastavm/src/vm.h

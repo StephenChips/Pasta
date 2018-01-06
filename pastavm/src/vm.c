@@ -210,7 +210,8 @@ int __load_bytecode_file(const char *src) {
 
     /* initialize constant pool */
     vm.constant_pool.count = __CST_COUNT(cstpool);
-    vm.constant_pool.positions = __CST_OFFSET_ARRAY(cstpool);
+    vm.constant_pool.offsets = __CST_OFFSET_ARRAY(cstpool);
+    vm.constant_pool.cst_pool = __CSTPOOL(cstpool);
 
     vm.instructions.length = __INS_LENGTH(inslist);
     vm.instructions.inslist = __INS_ARRAY(inslist);
