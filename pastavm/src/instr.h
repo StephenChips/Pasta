@@ -94,11 +94,20 @@ union ins_args {
        unsigned long int addr;
    } pushexn;
    struct {
-       unsigned int offset;
-   } getdata;
+       unsigned long int offset;
+   } xgetdata;
    struct {
-       unsigned int offset;
-   } setdata;
+       unsigned long int offset;
+   } xsetdata;
+   struct {
+       unsigned long int offset;
+   } getref;
+   struct {
+       unsigned long int offset;
+   } setref;
+   struct {
+       unsigned long int refcnt, datasz;
+   } new;
    struct {
        unsigned int idx;
    } ldc;

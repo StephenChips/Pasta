@@ -19,4 +19,10 @@ rawcode.h
 /home/dongcai/Documents/pasta/pastavm/src/rawcode.h
 instr.h
 /home/dongcai/Documents/pasta/pastavm/src/instr.h
+vm.h
+/home/dongcai/Documents/pasta/pastavm/src/vm.h
+
+/home/dongcai/Documents/pasta/pastavm/src/vm.h
+stdio.h
+-
 

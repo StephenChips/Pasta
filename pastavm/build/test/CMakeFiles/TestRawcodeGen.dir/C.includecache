@@ -11,6 +11,12 @@
 ../src/rawcode.h
 instr.h
 ../src/instr.h
+vm.h
+../src/vm.h
+
+../src/vm.h
+stdio.h
+-
 
 ../test/check.h
 stddef.h

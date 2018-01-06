@@ -2,11 +2,30 @@
 #define INCLUDED_RAWCODE_H
 
 #include "instr.h"
+#include "vm.h"
 
-#define SET_CONSTANT_FLOAT(constant, fval)
-#define SET_CONSTANT_INT(constant, ival)
-#define SET_CONSTANT_CHAR(constant, cval)
-#define SET_CONSTANT_STRING(constant, sval, length)
+/* Assume that the allocated memory is enough to store the value, otherwise, the behaviour is undefined. */
+
+/* PARMS:
+ * constant : void *
+ *  fval : double
+ */
+#define SET_CONSTANT_FLOAT(constant, fval) \
+    cpymem(_cosntant, (void *)&(_fval), sizeof(double));
+
+/* PARMS:
+ * constant : void *
+ *  ival : int
+ */
+#define SET_CONSTANT_INT(constant, ival) \
+    cpymem(_cosntant, (void *)&(_ival), sizeof(int));
+
+/* PARMS:
+ * constant : void *
+ * cval : char
+ */
+#define SET_CONSTANT_CHAR(_constant, _cval) \
+    cpymem(_cosntant, (void *)&(_cval), sizeof(char));
 
 struct insqueue {
     struct ins ins;
@@ -23,6 +42,7 @@ typedef struct __RawcodeGen {
     struct insqueue *ins_queue;
     struct cstqueue *cst_queue;
     size_t ins_list_size, cst_pool_size;
+    unsigned int ins_num, cst_pool_num;
 } RawcodeGen;
 
 

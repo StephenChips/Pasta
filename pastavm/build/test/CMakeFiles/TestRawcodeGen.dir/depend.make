@@ -3,6 +3,7 @@
 
 test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o: ../src/instr.h
 test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o: ../src/rawcode.h
+test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o: ../src/vm.h
 test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o: ../test/check.h
 test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o: ../test/check_stdint.h
 test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o: ../test/test_rawcode_gen.c

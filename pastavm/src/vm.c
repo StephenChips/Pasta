@@ -153,7 +153,7 @@ int __create_default_config(struct conf *config) {
 }
  
 void __init_heap(size_t size) {
-    vm.heap.survive_flag = DEFAULT_SURVIVE_FLAG;
+    vm.heap.survive_flag = GC_DEFAULT_SURVIVE_FLAG;
     vm.heap.current_size = 0;
     vm.heap.capacity = size;
     vm.heap.list = NULL;
@@ -188,7 +188,7 @@ int __init_stack(size_t size) {
 int __load_bytecode_file(const char *src) {
    
     FILE *fp = NULL;
-    void *rawcode = NULL;
+    void *rawcode, *cstpool, *inslist;
 
     fp = fopen(src, "r");
     if (fp != NULL) {
@@ -199,22 +199,24 @@ int __load_bytecode_file(const char *src) {
         }
     } else {
         LOG_ERROR(INTERNAL_ERROR, FILE_DOES_NOT_EXISTS);
-        goto error;
+        goto error;\
     } 
 
 
     vm.rawcode = rawcode;
 
+    cstpool = __RAWCODE_CSTPOOL_ADDR(rawcode);
+    inslist = __RAWCODE_INSLIST_ADDR(rawcode);
+
     /* initialize constant pool */
-    vm.constant_pool.count = __CST_COUNT(rawcode);
-    vm.constant_pool.positions = __ARRAY_OF_PTR_TO_CONSTANTS(rawcode);
+    vm.constant_pool.count = __CST_COUNT(cstpool);
+    vm.constant_pool.positions = __CST_OFFSET_ARRAY(cstpool);
 
-
-    vm.instructions.length = __INS_LENGTH(rawcode);
-    vm.instructions.inslist = __ARRAY_OF_INSTRUCTION(rawcode);
+    vm.instructions.length = __INS_LENGTH(inslist);
+    vm.instructions.inslist = __INS_ARRAY(inslist);
 
     /* initialize program counter */
-    vm.registers.pc = __ARRAY_OF_INSTRUCTION(rawcode);
+    vm.registers.pc = __INS_ARRAY(inslist);
 
     return 0;
 
@@ -251,7 +253,7 @@ void __free_stack() {
 
 void __free_heap(){
 
-    struct heap_item *temp = vm.heap.list;
+    struct heap_list *temp = vm.heap.list;
 
     while (vm.heap.list != NULL) {
         vm.heap.list = vm.heap.list->next;
@@ -270,18 +272,29 @@ int set_heap_capacity(size_t capacity) {
     return 0;
 }
 
-void *allocate(size_t meta_size, unsigned long int refcont, size_t data_size) {
-    struct heap_item *new_heap_item;
+void *allocate(unsigned int refcount, size_t data_size) {
+    struct heap_list *new_heap_item;
 
-    new_heap_item = (struct heap_item *)malloc(sizeof(struct heap_item) + meta_size + data_size);
+    new_heap_item = (struct heap_list *)malloc(sizeof(struct heap_list));
+    if (new_heap_item == NULL) {
+        printf("Cannot allocate memory on heap\n");
+        abort();
+    }
 
-    new_heap_item->gcflag = !vm.heap.survive_flag;
-    new_heap_item->meta_size = meta_size;
-    new_heap_item->data_size = data_size;
+    new_heap_item->data = malloc(sizeof(void *) * refcount + data_size);
+    if (new_heap_item->data == NULL) {
+        printf("Cannot allocate memory on heap.\n");
+        abort();
+    }
+
+    __OBJ_GC_FLAG(new_heap_item->data) = !GC_DEFAULT_SURVIVE_FLAG;
+    __OBJ_REF_COUNT(new_heap_item->data) = refcount;
+    __OBJ_DATA_SIZE(new_heap_item->data) = data_size;
+
     new_heap_item->next = vm.heap.list;
     vm.heap.list = new_heap_item->next;
 
-    return (void *)new_heap_item + sizeof(new_heap_item);
+    return new_heap_item->data;
 }
 
 void gc(struct heap *heap) {

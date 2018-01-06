@@ -37,7 +37,7 @@ do { \
 do {\
     ck_assert_ptr_null(vm.heap.list); \
     ck_assert_int_eq(vm.heap.capacity, TEST_HEAP_CAPACITY); \
-    ck_assert_int_eq(vm.heap.survive_flag, DEFAULT_SURVIVE_FLAG); \
+    ck_assert_int_eq(vm.heap.survive_flag, GC_DEFAULT_SURVIVE_FLAG); \
     ck_assert_int_eq(vm.heap.current_size, 0); \
 } while (0) 
 

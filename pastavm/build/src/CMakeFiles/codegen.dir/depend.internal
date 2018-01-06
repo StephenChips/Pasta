@@ -5,3 +5,4 @@ src/CMakeFiles/codegen.dir/rawcode.c.o
  /home/dongcai/Documents/pasta/pastavm/src/instr.h
  /home/dongcai/Documents/pasta/pastavm/src/rawcode.c
  /home/dongcai/Documents/pasta/pastavm/src/rawcode.h
+ /home/dongcai/Documents/pasta/pastavm/src/vm.h

@@ -4,6 +4,7 @@
 test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o
  ../src/instr.h
  ../src/rawcode.h
+ ../src/vm.h
  ../test/check.h
  ../test/check_stdint.h
  /home/dongcai/Documents/pasta/pastavm/test/test_rawcode_gen.c

@@ -4,4 +4,5 @@
 src/CMakeFiles/codegen.dir/rawcode.c.o: ../src/instr.h
 src/CMakeFiles/codegen.dir/rawcode.c.o: ../src/rawcode.c
 src/CMakeFiles/codegen.dir/rawcode.c.o: ../src/rawcode.h
+src/CMakeFiles/codegen.dir/rawcode.c.o: ../src/vm.h
 
