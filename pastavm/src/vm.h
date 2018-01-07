@@ -23,7 +23,6 @@
 #define __CFNAME_STACK_CAPACITY "StackCapacity"
 #define __CFNAME_CONF_FILE_NAME "vm.conf"
 
-#define GC_DEFAULT_SURVIVE_FLAG 1
 
 /* ITEMS IN A CONSTANTPOOL WOULD BE
  * 
@@ -31,12 +30,6 @@
  * 2. compound data type like array or record, with the form of heap item.
  */
 
-
-struct heap {
-    int survive_flag;
-    size_t current_size, capacity;
-    struct heap_list *list;
-};
 
 
 struct conf {
@@ -55,11 +48,6 @@ struct registers {
 struct inslist {
     unsigned long int length;
     char *inslist;
-};
-
-struct heap_list {
-    void *data;
-    struct heap_list *next;
 };
 
 struct constant_pool {
@@ -88,11 +76,6 @@ void halt();
 int set_stack_capacity(size_t capacity);
 
 int set_heap_capacity(size_t capacity);
-
-void *allocate(unsigned int ref_count, size_t data_size);
-
-void gc(struct heap *heap);
-
 /* PRIVATE FUNCTIONS, DO NOT CALL IT FOR ORDINARY USE */
 int  __load_config(struct conf *config);
 int  __get_config(const char *config_json, struct conf *config);

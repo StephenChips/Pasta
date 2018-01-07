@@ -27,19 +27,22 @@
 
 
 
-/* MACROS FOR OBJECT */
-/* object is generally a block of memory that contains a series of variables and references.
- * which can be either on heap area or constant area.
+/* MACROS FOR HEAP ITEM*/
+/* heap item is a block of memory that contains a series of variables 
+ * and references. Usually it allocated on heap at runtime, but it can locate in 
+ * constant pool as well. 
+ *
+ * We also call `allocate` function while generating rawcode through `RawcodeGen` Object.
  */
-#define __OBJ_INFO_SIZE (sizeof(struct obj_info))
+#define __HEAPITEM_INFO_SIZE (sizeof(struct obj_info))
 
-#define __OBJ_GC_FLAG(h)   (__OBJ_INFO(h)->gcflag)
-#define __OBJ_REF_COUNT(h) (__OBJ_INFO(h)->refcnt)
-#define __OBJ_DATA_SIZE(h) (__OBJ_INFO(h)->dtsz)
+#define __HEAPITEM_GC_FLAG(h)   (__OBJ_INFO(h)->gcflag)
+#define __HEAPITEM_REF_COUNT(h) (__HEAPITEM_INFO(h)->refcnt)
+#define __HEAPITEM_DATA_SIZE(h) (__HEAPITEM_INFO(h)->dtsz)
 
-#define __OBJ_INFO(h)  ((struct obj_info *)h)
-#define __OBJ_REF_ARRAY(h) (void **)((char *)h + __OBJ_INFO_SIZE)
-#define __OBJ_DATA(h) (void *)((char *)h + __OBJ_INFO_SIZE + sizeof(void *)*__OBJ_REF_COUNT(h))
+#define __HEAPITEM_INFO(h)  ((struct obj_info *)h)
+#define __HEAPITEM_REF_ARRAY(h) (void **)((char *)h + __HEAPITEM_INFO_SIZE)
+#define __HEAPITEM_DATA(h) (void *)((char *)h + __HEAPITEM_INFO_SIZE + sizeof(void *)*__HEAPITEM_REF_COUNT(h))
 
 
 /* MACROS FOR STACK LOCATION */
@@ -54,15 +57,5 @@
 #define __IS_IDX_OUT_OF_CSTPOOL(idx) /* TODO */
 #define __IS_IDX_OUT_OF_REF_AREA(idx) /* TODO */
 
-
-struct obj_info {
-    char gcflag;
-    unsigned int refcnt;
-    size_t dtsz;
-};
-
-struct rawcode_offsets {
-    unsigned long int cstpool, inslist;
-};
 
 #endif

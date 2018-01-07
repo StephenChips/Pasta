@@ -1,6 +1,7 @@
 #ifndef INCLUDED_RAWCODE_H
 #define INCLUDED_RAWCODE_H
 
+#include "positions.h"
 #include "instr.h"
 #include "vm.h"
 
@@ -10,22 +11,6 @@
  * constant : void *
  *  fval : double
  */
-#define SET_CONSTANT_FLOAT(constant, fval) \
-    cpymem(_cosntant, (void *)&(_fval), sizeof(double));
-
-/* PARMS:
- * constant : void *
- *  ival : int
- */
-#define SET_CONSTANT_INT(constant, ival) \
-    cpymem(_cosntant, (void *)&(_ival), sizeof(int));
-
-/* PARMS:
- * constant : void *
- * cval : char
- */
-#define SET_CONSTANT_CHAR(_constant, _cval) \
-    cpymem(_cosntant, (void *)&(_cval), sizeof(char));
 
 struct insqueue {
     struct ins ins;
@@ -38,6 +23,10 @@ struct cstqueue {
     struct cstqueue *next;
 };
 
+struct rawcode_offsets {
+    unsigned long int cstpool, inslist;
+};
+
 typedef struct __RawcodeGen {
     struct insqueue *ins_queue;
     struct cstqueue *cst_queue;
@@ -45,35 +34,34 @@ typedef struct __RawcodeGen {
     unsigned int ins_num, cst_pool_num;
 } RawcodeGen;
 
+struct __allocfun {
+    void *(malloc)(size_t);
+    void *(allocate_heap)(unsigned long int, size_t);
+};
 
 RawcodeGen *RawcodeGen_Init();
 
-/*
- * PARAMS: 
- * rawcode: 
- *   type: struct rawcode *
- *   desc: the rawcode object
- * size:
- *   type: size_t
- *   desc: the size of rawcode
- *
- * DESC:
- *   This function will allocate a new memory in the constant linked-list, with the size of *size*, then return it.
- *   You can set the value of memeory to specific value by macros.
- */
+void RawcodeGen_Delete(RawcodeGen *self);
 
-void *RawcodeGen_AddConstant(RawcodeGen *self, size_t size);
+void RawcodeGen_AddFloatConst(RawcodeGen *self, double fval);
 
-int RawcodeGen_AddInstruction(RawcodeGen *self, struct ins *ins);
+void RawcodeGen_AddIntConst(RawcodeGen *self, int ival);
+
+void RawcodeGen_AddCharConst(RawcodeGen *self, char cval);
+
+void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval, size_t slen);
+
+int RawcodeGen_AddInstruction(RawcodeGen *self, struct ins ins);
 
 /* generate rawcode */
 void *RawcodeGen_Generate(RawcodeGen *self);
 
-void RawcodeGen_Delete(RawcodeGen *self);
 
 
 /* private functions */
 size_t __GetInsSize(int id);
+
+void *__RawcodeGen_AddConst(RawcodeGen *self, size_t size, struct kkkk);
 
 void __DeleteInsQueue(struct insqueue *q);
 

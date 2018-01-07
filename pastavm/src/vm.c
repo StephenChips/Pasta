@@ -273,32 +273,3 @@ int set_heap_capacity(size_t capacity) {
     return 0;
 }
 
-void *allocate(unsigned int refcount, size_t data_size) {
-    struct heap_list *new_heap_item;
-
-    new_heap_item = (struct heap_list *)malloc(sizeof(struct heap_list));
-    if (new_heap_item == NULL) {
-        printf("Cannot allocate memory on heap\n");
-        abort();
-    }
-
-    new_heap_item->data = malloc(sizeof(void *) * refcount + data_size);
-    if (new_heap_item->data == NULL) {
-        printf("Cannot allocate memory on heap.\n");
-        abort();
-    }
-
-    __OBJ_GC_FLAG(new_heap_item->data) = !GC_DEFAULT_SURVIVE_FLAG;
-    __OBJ_REF_COUNT(new_heap_item->data) = refcount;
-    __OBJ_DATA_SIZE(new_heap_item->data) = data_size;
-
-    new_heap_item->next = vm.heap.list;
-    vm.heap.list = new_heap_item->next;
-
-    return new_heap_item->data;
-}
-
-void gc(struct heap *heap) {
-
-}
-

@@ -47,7 +47,7 @@ do { \
  *   $codegen : RawcodeGen *
  *   $insptr  : struct ins *
  */
-#define CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(_codegen, _insptr) \
+#define CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(_codegen, _ins) \
 do { \
     size_t actual_inslen;\
     int ret = 0, old_inslist_size; \
@@ -55,7 +55,7 @@ do { \
 \
     old_inslist_size = (_codegen)->ins_list_size;\
 \
-    ret = RawcodeGen_AddInstruction((_codegen), (_insptr));\
+    ret = RawcodeGen_AddInstruction((_codegen), (_ins));\
 \
     ins_queue_item = (_codegen)->ins_queue;\
     actual_inslen = (_codegen)->ins_list_size - old_inslist_size;\
@@ -76,7 +76,7 @@ do { \
     ins.id = ICONST;\
     ins.args.iconst = (_intval);\
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins);\
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins);\
     \
     ins_queue_item = codegen->ins_queue;\
     ck_assert_int_eq(ins_queue_item->ins.args.iconst, ins.args.iconst);\
@@ -93,7 +93,7 @@ do { \
     ins.id = FCONST;\
     ins.args.fconst = (_floatval);\
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins);\
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins);\
     \
     ins_queue_item = codegen->ins_queue;\
     ck_assert_float_eq(ins_queue_item->ins.args.fconst, ins.args.fconst);\
@@ -110,7 +110,7 @@ do { \
     ins.id = CCONST;\
     ins.args.cconst = (_charval);\
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins);\
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins);\
     \
     ins_queue_item = codegen->ins_queue;\
     ck_assert_float_eq(ins_queue_item->ins.args.cconst, ins.args.cconst);\
@@ -127,7 +127,7 @@ do { \
     ins.id = JUMP; \
     ins.args.jump.addr = (_addr); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
     ck_assert_int_eq(ins_queue_item->ins.args.jump.addr, ins.args.jump.addr); \
@@ -143,7 +143,7 @@ do { \
     ins.id = JPZ; \
     ins.args.jpz.addr = (_addr); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
     ck_assert_int_eq(ins_queue_item->ins.args.jpz.addr, ins.args.jpz.addr); \
@@ -159,7 +159,7 @@ do { \
     ins.id = JPNZ; \
     ins.args.jpz.addr = (_addr); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
     ck_assert_int_eq(ins_queue_item->ins.args.jpnz.addr, ins.args.jpnz.addr); \
@@ -175,7 +175,7 @@ do { \
     ins.id = ALTSP; \
     ins.args.altsp.m = (_m); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
     ck_assert_int_eq(ins_queue_item->ins.args.altsp.m, ins.args.altsp.m); \
@@ -192,7 +192,7 @@ do { \
     ins.args.call.argnum = (_argnum); \
     ins.args.call.addr = (_addr); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
     ck_assert_int_eq(ins_queue_item->ins.args.call.argnum, ins.args.call.argnum); \
@@ -211,7 +211,7 @@ do { \
     ins.args.tcall.new_argnum = (_new_argnum); \
     ins.args.tcall.addr = (_addr); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
     ck_assert_int_eq(ins_queue_item->ins.args.tcall.old_argnum, ins.args.tcall.old_argnum); \
@@ -229,7 +229,7 @@ do { \
     ins.id = TCALL; \
     ins.args.syscall.sysfuncid = (_sysfuncid); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
     ck_assert_int_eq(ins_queue_item->ins.args.syscall.sysfuncid, ins.args.syscall.sysfuncid); \
@@ -245,7 +245,7 @@ do { \
     ins.id = PUSHEXN; \
     ins.args.pushexn.exn = (_exn); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
     ck_assert_int_eq(ins_queue_item->ins.args.pushexn.exn, ins.args.pushexn.exn); \
@@ -262,7 +262,7 @@ do { \
     ins.args.popexn.exn = (_exn); \
     ins.args.popexn.addr = (_addr); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
     ck_assert_int_eq(ins_queue_item->ins.args.popexn.exn, ins.args.popexn.exn); \
@@ -280,7 +280,7 @@ do { \
     ins.id = LDC; \
     ins.args.ldc.idx = (_idx); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
     ck_assert_int_eq(ins_queue_item->ins.args.ldc.idx, ins.args.ldc.idx); \
@@ -298,7 +298,7 @@ do { \
 \
     old_inslist_size = codegen->ins_list_size;\
 \
-    ret = RawcodeGen_AddInstruction(codegen, &ins);\
+    ret = RawcodeGen_AddInstruction(codegen, ins);\
 \
     ck_assert_int_eq(ret, -1); /* error */ \
     ck_assert_int_eq(old_inslist_size, codegen->ins_list_size) \

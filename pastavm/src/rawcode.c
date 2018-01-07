@@ -23,7 +23,7 @@ RawcodeGen *RawcodeGen_Init() {
     return codegen;
 }
 
-void *RawcodeGen_AddConstant(RawcodeGen *self, size_t size) {
+void *__RawcodeGen_AddConst(RawcodeGen *self, size_t size) {
   
     struct cstqueue *new_cst_item;
 
@@ -60,7 +60,69 @@ void *RawcodeGen_AddConstant(RawcodeGen *self, size_t size) {
     return new_cst_item->ref;
 }
 
-int RawcodeGen_AddInstruction(RawcodeGen *self, struct ins *ins) {
+void RawcodeGen_AddFloatConst(RawcodeGen *self, double fval) {
+    void *constant = __RawcodeGen_AddConst(self, sizeof(double));
+    memcpy(constant, &fval, sizeof(double));
+}
+
+void RawcodeGen_AddIntConst(RawcodeGen *self, double ival) {
+    void *constant = __RawcodeGen_AddConst(self, sizeof(int));
+    memcpy(constant, &fval, sizeof(int));
+}
+
+void RawcodeGen_AddCharConst(RawcodeGen *self, double cval) {
+    void *constant = __RawcodeGen_AddConst(self, sizeof(char));
+    memcpy(constant, &fval, sizeof(char));
+}
+
+void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval) {
+
+    struct cstqueue *new_cst_item;
+    struct heap_item_info info;
+
+    if (size == 0) {
+        return NULL; 
+    }
+
+    /* initializing */
+    new_cst_item = (struct cstqueue *)malloc(sizeof(struct cstqueue));
+    if (new_cst_item == NULL) {
+        printf("Cannot allocate memory on heap.\n");
+        abort();
+    }
+
+    info.gcflag = !GC_IGNORE_FLAG;
+    info.refcnt = 0;
+    info.dtsz = strlen(sval);
+
+    new_cst_item->ref = Heap_Allocates(info);
+
+    if (new_cst_item->ref == NULL) {
+        printf("Cannot allocate memory on heap.\n");
+        abort();
+    }
+    strcpy((const char *)__HEAPITEM_DATA(new_cst_item->ref), 
+           sval);
+
+    new_cst_item->size = size;
+
+    if (self->cst_queue == NULL) {
+        self->cst_queue = new_cst_item;
+        self->cst_queue->next = self->cst_queue;
+    }
+    else {
+        new_cst_item->next = self->cst_queue->next;
+        self->cst_queue->next = new_cst_item;
+    }
+    
+    self->cst_pool_size += size;
+    self->cst_pool_num++;
+
+    return new_cst_item->ref;
+}
+
+
+int RawcodeGen_AddInstruction(RawcodeGen *self, struct ins ins) {
 
     struct insqueue *new_ins_item;
 
@@ -74,7 +136,7 @@ int RawcodeGen_AddInstruction(RawcodeGen *self, struct ins *ins) {
         abort();
     }
 
-    new_ins_item->ins = *ins;
+    new_ins_item->ins = ins;
 
     if (self->ins_queue == NULL) {
         self->ins_queue = new_ins_item;
@@ -92,7 +154,7 @@ int RawcodeGen_AddInstruction(RawcodeGen *self, struct ins *ins) {
 }
 
 /* generate rawcode */
-void *RawcodeGen_enerate(RawcodeGen *self) {
+void *RawcodeGen_Generate(RawcodeGen *self) {
 
     const size_t cstpool_size = __CST_COUNT_SIZE + self->cst_pool_num * __CST_OFFSET_SIZE + self->cstpool_size;
     const size_t inslist_size = __INS_LENGTH_SIZE + self->ins_list_size;
