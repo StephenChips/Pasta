@@ -1,15 +1,14 @@
 #ifndef POSITIONS_INCLUDED_H
 #define POSITIONS_INCLUDED_H
 
-/* This head file includes marcos and functions for accessing fields of structured raw memory block, like rawcode, object, constant pool, array etc. Since these memory contains some field whose length/size is not fixed at compiling time, it cannot represented through a C structure.
+/* This head file includes marcos and functions for accessing fields of structured raw memory block, like rawcode, heapitemect, constant pool, array etc. Since these memory contains some field whose length/size is not fixed at compiling time, it cannot represented through a C structure.
 */
 
-
+#include "rawcode.h"
 
 /* MACROS FOR RAWCODE OBJECT */
-/*                           */
 #define __RAWCODE_OFFSET(_rawcode) ((struct rawcode_offsets *) _rawcode)
-#define __RAWCODE_OFFSET_SIZE sizeof(struct rawcode_offets)
+#define __RAWCODE_OFFSET_SIZE sizeof(struct rawcode_offsets)
 #define __RAWCODE_CSTPOOL_ADDR(_rawcode) (void *)((char *)(_rawcode) + __RAWCODE_OFFSET(_rawcode)->cstpool)
 #define __RAWCODE_INSLIST_ADDR(_rawcode) (void *)((char *)(_rawcode) + __RAWCODE_OFFSET(_rawcode)->inslist)
 
@@ -34,13 +33,13 @@
  *
  * We also call `allocate` function while generating rawcode through `RawcodeGen` Object.
  */
-#define __HEAPITEM_INFO_SIZE (sizeof(struct obj_info))
+#define __HEAPITEM_INFO_SIZE (sizeof(struct heap_item_info))
 
-#define __HEAPITEM_GC_FLAG(h)   (__OBJ_INFO(h)->gcflag)
+#define __HEAPITEM_GC_FLAG(h)   (__HEAPITEM_INFO(h)->gcflag)
 #define __HEAPITEM_REF_COUNT(h) (__HEAPITEM_INFO(h)->refcnt)
 #define __HEAPITEM_DATA_SIZE(h) (__HEAPITEM_INFO(h)->dtsz)
 
-#define __HEAPITEM_INFO(h)  ((struct obj_info *)h)
+#define __HEAPITEM_INFO(h)  ((struct heap_item_info *)h)
 #define __HEAPITEM_REF_ARRAY(h) (void **)((char *)h + __HEAPITEM_INFO_SIZE)
 #define __HEAPITEM_DATA(h) (void *)((char *)h + __HEAPITEM_INFO_SIZE + sizeof(void *)*__HEAPITEM_REF_COUNT(h))
 

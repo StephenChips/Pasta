@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
+  "/home/dongcai/Documents/pasta/pastavm/src/heap.c" "/home/dongcai/Documents/pasta/pastavm/build/src/CMakeFiles/vmcore.dir/heap.c.o"
   "/home/dongcai/Documents/pasta/pastavm/src/vm.c" "/home/dongcai/Documents/pasta/pastavm/build/src/CMakeFiles/vmcore.dir/vm.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")

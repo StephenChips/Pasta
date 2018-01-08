@@ -7,6 +7,7 @@
  */
 #include <stdio.h>
 #include "positions.h"
+#include "heap.h"
 
 #define CSTPOOL_INDEX_TABLE_LEN(cst_pool) (*((int *)cst_pool))
 #define CSTPOOL_INDEX_TABLE(cst_pool) (cst_pool + 1)
@@ -30,8 +31,6 @@
  * 2. compound data type like array or record, with the form of heap item.
  */
 
-
-
 struct conf {
     unsigned long int stack_capacity, heap_capacity;
 };
@@ -53,7 +52,6 @@ struct inslist {
 struct constant_pool {
     unsigned long int count;
     unsigned long int *offsets;
-    void *cst_pool;
 };
 
 struct vm {
@@ -61,7 +59,7 @@ struct vm {
     struct stack stack;
     struct registers registers;
     struct constant_pool constant_pool;
-    struct heap heap;
+    Heap heap;
     struct inslist instructions;
 };
 

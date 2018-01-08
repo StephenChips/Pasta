@@ -1,4 +1,4 @@
-#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
 
 #IncludeRegexScan: ^.*$
 
@@ -6,9 +6,17 @@
 
 #IncludeRegexTransform: 
 
+../src/heap.h
+
 ../src/instr.h
 
+../src/positions.h
+rawcode.h
 ../src/rawcode.h
+
+../src/rawcode.h
+positions.h
+../src/positions.h
 instr.h
 ../src/instr.h
 vm.h
@@ -17,6 +25,10 @@ vm.h
 ../src/vm.h
 stdio.h
 -
+positions.h
+../src/positions.h
+heap.h
+../src/heap.h
 
 ../test/check.h
 stddef.h

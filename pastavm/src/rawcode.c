@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include "instr.h"
 #include "positions.h"
 #include "rawcode.h"
+#include "heap.h"
 
-#define INS_UNDEF(ins) (((ins) < ICONST) || ((ins) > LDC))
+#define INS_UNDEF(ins) (((ins.id) < ICONST) || ((ins.id) > LDC))
 
 RawcodeGen *RawcodeGen_Init() {
     
@@ -65,24 +69,22 @@ void RawcodeGen_AddFloatConst(RawcodeGen *self, double fval) {
     memcpy(constant, &fval, sizeof(double));
 }
 
-void RawcodeGen_AddIntConst(RawcodeGen *self, double ival) {
+void RawcodeGen_AddIntConst(RawcodeGen *self, int ival) {
     void *constant = __RawcodeGen_AddConst(self, sizeof(int));
-    memcpy(constant, &fval, sizeof(int));
+    memcpy(constant, &ival, sizeof(int));
 }
 
-void RawcodeGen_AddCharConst(RawcodeGen *self, double cval) {
+void RawcodeGen_AddCharConst(RawcodeGen *self, char cval) {
     void *constant = __RawcodeGen_AddConst(self, sizeof(char));
-    memcpy(constant, &fval, sizeof(char));
+    memcpy(constant, &cval, sizeof(char));
 }
 
+/* ASSUME STRING TERMIATED WITH '\0' */
 void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval) {
 
     struct cstqueue *new_cst_item;
     struct heap_item_info info;
-
-    if (size == 0) {
-        return NULL; 
-    }
+    size_t slen = strlen(sval);
 
     /* initializing */
     new_cst_item = (struct cstqueue *)malloc(sizeof(struct cstqueue));
@@ -93,18 +95,18 @@ void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval) {
 
     info.gcflag = !GC_IGNORE_FLAG;
     info.refcnt = 0;
-    info.dtsz = strlen(sval);
+    info.dtsz = slen;
 
-    new_cst_item->ref = Heap_Allocates(info);
+    new_cst_item->ref = AllocateHeapItem(info);
 
     if (new_cst_item->ref == NULL) {
         printf("Cannot allocate memory on heap.\n");
         abort();
     }
-    strcpy((const char *)__HEAPITEM_DATA(new_cst_item->ref), 
+    strcpy((char *)__HEAPITEM_DATA(new_cst_item->ref), 
            sval);
 
-    new_cst_item->size = size;
+    new_cst_item->size = slen + 1; /* add size of '\0' */
 
     if (self->cst_queue == NULL) {
         self->cst_queue = new_cst_item;
@@ -115,10 +117,8 @@ void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval) {
         self->cst_queue->next = new_cst_item;
     }
     
-    self->cst_pool_size += size;
+    self->cst_pool_size += slen + 1;
     self->cst_pool_num++;
-
-    return new_cst_item->ref;
 }
 
 
@@ -126,7 +126,7 @@ int RawcodeGen_AddInstruction(RawcodeGen *self, struct ins ins) {
 
     struct insqueue *new_ins_item;
 
-    if (INS_UNDEF(ins->id)) {
+    if (INS_UNDEF(ins)) {
         return -1;
     }
     
@@ -147,7 +147,7 @@ int RawcodeGen_AddInstruction(RawcodeGen *self, struct ins ins) {
         self->ins_queue->next = new_ins_item;
     }
 
-    self->ins_list_size += __GetInsSize(ins->id);
+    self->ins_list_size += __GetInsSize(ins);
     self->ins_num++;
 
     return 0;
@@ -156,15 +156,15 @@ int RawcodeGen_AddInstruction(RawcodeGen *self, struct ins ins) {
 /* generate rawcode */
 void *RawcodeGen_Generate(RawcodeGen *self) {
 
-    const size_t cstpool_size = __CST_COUNT_SIZE + self->cst_pool_num * __CST_OFFSET_SIZE + self->cstpool_size;
+    const size_t cstpool_size = __CST_COUNT_SIZE + self->cst_pool_num * __CST_OFFSET_SIZE + self->cst_pool_size;
     const size_t inslist_size = __INS_LENGTH_SIZE + self->ins_list_size;
 
     void *rawcode = malloc(__RAWCODE_OFFSET_SIZE + cstpool_size + inslist_size);
     
     void *cstpool = (void *)((char *)rawcode + __RAWCODE_OFFSET_SIZE);
-    void *inslist = (void *)((char *)rawcode + __RAWCODE_OFFSET+ cstpool_size) 
+    void *inslist = (void *)((char *)rawcode + __RAWCODE_OFFSET_SIZE + cstpool_size);
 
-    __InitRawcodeOffset(self, rawcode);
+    __InitRawcodeHead(self, rawcode);
     
     __InitConstantPool(self, cstpool);
 
@@ -176,7 +176,7 @@ void *RawcodeGen_Generate(RawcodeGen *self) {
 void __InitRawcodeHead(RawcodeGen *self, void *rawcode) {
 
     __RAWCODE_OFFSET(rawcode)->cstpool = __RAWCODE_OFFSET_SIZE;
-    __RAWCODE_OFFSET(rawcode)->inslist = __RAWCODE_OFFSET_SIZE + self->inslist_size;
+    __RAWCODE_OFFSET(rawcode)->inslist = __RAWCODE_OFFSET_SIZE + self->ins_list_size;
 }
 
 void __InitConstantPool(RawcodeGen *self, void *cstpool) {
@@ -185,20 +185,22 @@ void __InitConstantPool(RawcodeGen *self, void *cstpool) {
     char *cursor;
     struct cstqueue *current;
 
-    unsigned long int *cst_count = (unsigned long int *)cstpool, 
+    unsigned long int *cst_count = (unsigned long int *)cstpool;
     unsigned long int  *cst_offsets = cstpool + __CST_COUNT_SIZE;
     char *cstpool_start_pos = (char *)cstpool + __CST_COUNT_SIZE + __CST_OFFSET_SIZE * self->cst_pool_num;
 
     *cst_count = self->cst_pool_num;
 
+    i = 0;
     cursor = cstpool_start_pos;
     current = self->cst_queue;
-    for (i = 0; i < self->ins_num; i++) {
-        memcpy(cursor, current->cst_queue, current->size); 
+    while (cursor - cstpool_start_pos < self->ins_num) {
+        memcpy(cursor, current->ref, current->size); 
         cst_offsets[i] = cursor - cstpool_start_pos;
 
-        cursor += size;
+        cursor += current->size;
         current = current->next;
+        i++;
     }
 }
 
@@ -229,68 +231,68 @@ void __WriteIns(char *pos, struct ins ins) {
     
     switch (ins.id) {
     case ICONST: 
-        *(int *)pos = ins.iconst;
+        *(int *)pos = ins.args.iconst.val;
         break;
     case FCONST:
-        *(double *)pos = ins.fconst;
+        *(double *)pos = ins.args.fconst.val;
         break;
     case CCONST:
-        *(char *)pos = ins.cconst;
+        *(char *)pos = ins.args.cconst.val;
         break;
     case JUMP:
-        *(unsigned long int *)pos = ins.jump.addr;
+        *(unsigned long int *)pos = ins.args.jump.addr;
         break;
     case JPZ:
-        *(unsigned long int *)pos = ins.jump.addr;
+        *(unsigned long int *)pos = ins.args.jump.addr;
         break;
     case JPNZ:
-        *(unsigned long int *)pos = ins.jump.addr;
+        *(unsigned long int *)pos = ins.args.jump.addr;
         break;
     case ALTSP:
-        *(signed long int *)pos = ins.altsp.m;
+        *(signed long int *)pos = ins.args.altsp.m;
         break;
     case CALL:
-        *(unsigned int *)pos = ins.call.argnum; 
+        *(unsigned int *)pos = ins.args.call.argnum; 
         pos += sizeof(unsigned int);
-        *(unsigned long int *)pos = ins.call.addr;
+        *(unsigned long int *)pos = ins.args.call.addr;
         break;
     case TCALL:
-        *(unsigned int *)pos = ins.call.new_argnum; 
+        *(unsigned int *)pos = ins.args.tcall.new_argnum; 
         pos += sizeof(unsigned int);
-        *(unsigned int *)pos = ins.call.old_argnum; 
+        *(unsigned int *)pos = ins.args.tcall.old_argnum; 
         pos += sizeof(unsigned int);
-        *(unsigned long int *)pos = ins.call.addr;
+        *(unsigned long int *)pos = ins.args.call.addr;
         break;
     case SYSCALL:
-        *(unsigned int *)pos = ins.syscall.sysfuncid;
+        *(unsigned int *)pos = ins.args.syscall.sysfuncid;
         break;
     case RAISE:
-        *(unsigned int *)pos = ins.raise.exn;
+        *(unsigned int *)pos = ins.args.raise.exn;
         break;
     case PUSHEXN:
-        *(unsigned int *)pos = ins.pushexn.exn;
+        *(unsigned int *)pos = ins.args.pushexn.exn;
         pos += sizeof(unsigned int);
-        *(unsigned long int *)pos = ins.pushexn.addr;
+        *(unsigned long int *)pos = ins.args.pushexn.addr;
         break;
     case IGETDATA: case FGETDATA: case CGETDATA:
-        *(unsigned long int *)pos = ins.xgetdata.offset;
+        *(unsigned long int *)pos = ins.args.xgetdata.offset;
         break;
     case ISETDATA: case FSETDATA: case CSETDATA:
-        *(unsigned long int *)pos = ins.xsetdata.offset;
+        *(unsigned long int *)pos = ins.args.xsetdata.offset;
         break;
     case GETREF:
-        *(unsigned long int *)pos = ins.getref.offset;
+        *(unsigned long int *)pos = ins.args.getref.offset;
         break;
     case SETREF:
-        *(unsigned long int *)pos = ins.setref.offset;
+        *(unsigned long int *)pos = ins.args.setref.offset;
         break;
     case NEW:
-        *(unsigned long int *)pos = ins.new.refcnt;
+        *(unsigned long int *)pos = ins.args.new.refcnt;
         pos += sizeof(unsigned long int);
-        *(unsigned long int *)pos = ins.new.datasz;
+        *(unsigned long int *)pos = ins.args.new.datasz;
         break;
     case LDC:
-        *(unsigned int)pos = ins.ldc.idx;
+        *(unsigned int *)pos = ins.args.ldc.idx;
         break;
     }
 
@@ -343,11 +345,11 @@ void __DeleteCstQueue(struct cstqueue *q) {
     free(q);
 }
 
-size_t __GetInsSize(int id) {
+size_t __GetInsSize(struct ins ins) {
 
     size_t size;
 
-    switch (id) {
+    switch (ins.id) {
 
     case ICONST:
         size = sizeof(unsigned char) + sizeof(int);

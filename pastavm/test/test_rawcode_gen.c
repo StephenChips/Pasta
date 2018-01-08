@@ -1,6 +1,7 @@
 #include <check.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "instr.h"
 #include "rawcode.h"
 
@@ -14,13 +15,14 @@ do { \
 \
     old_cstpool_size = codegen->cst_pool_size; \
 \
-    mem = RawcodeGen_AddConstant(codegen, allocate_size); \
+    mem = __RawcodeGen_AddConst(codegen, allocate_size); \
 \
     constant = codegen->cst_queue; \
 \
     ck_assert_ptr_nonnull(constant->ref); \
     ck_assert_ptr_nonnull(mem); \
     ck_assert_int_eq(constant->size, allocate_size); \
+\
     /* cstqueue is a cycle list */ \
     ck_assert_ptr_nonnull(constant->next); \
     ck_assert_int_eq(codegen->cst_pool_size - old_cstpool_size, allocate_size); \
@@ -34,7 +36,7 @@ do { \
     RawcodeGen *codegen = RawcodeGen_Init(); \
     size_t old_cstpool_size = codegen->cst_pool_size, allocate_size = ($size); \
 \
-    mem = RawcodeGen_AddConstant(codegen, allocate_size); \
+    mem = __RawcodeGen_AddConst(codegen, allocate_size); \
 \
     ck_assert_ptr_null(mem); \
     ck_assert_int_eq(codegen->cst_pool_size - old_cstpool_size, 0); \
@@ -61,9 +63,9 @@ do { \
     actual_inslen = (_codegen)->ins_list_size - old_inslist_size;\
 \
     ck_assert_int_eq(ret, 0); /* no error */ \
-    ck_assert_int_eq((_insptr)->id, ins_queue_item->ins.id); \
+    ck_assert_int_eq(_ins.id, ins_queue_item->ins.id); \
 \
-    ck_assert_int_eq(__GetInsSize((_insptr)->id), actual_inslen); \
+    ck_assert_int_eq(__GetInsSize(_ins), actual_inslen); \
  \
 } while (0) 
 
@@ -74,12 +76,12 @@ do { \
     struct insqueue *ins_queue_item;\
 \
     ins.id = ICONST;\
-    ins.args.iconst = (_intval);\
+    ins.args.iconst.val = (_intval);\
 \
     CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins);\
     \
     ins_queue_item = codegen->ins_queue;\
-    ck_assert_int_eq(ins_queue_item->ins.args.iconst, ins.args.iconst);\
+    ck_assert_int_eq(ins_queue_item->ins.args.iconst.val, ins.args.iconst.val);\
 \
     RawcodeGen_Delete(codegen); \
 } while (0)
@@ -91,12 +93,12 @@ do { \
     struct insqueue *ins_queue_item;\
 \
     ins.id = FCONST;\
-    ins.args.fconst = (_floatval);\
+    ins.args.fconst.val = (_floatval);\
 \
     CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins);\
     \
     ins_queue_item = codegen->ins_queue;\
-    ck_assert_float_eq(ins_queue_item->ins.args.fconst, ins.args.fconst);\
+    ck_assert_float_eq(ins_queue_item->ins.args.fconst.val, ins.args.fconst.val);\
 \
     RawcodeGen_Delete(codegen); \
 } while (0)
@@ -108,12 +110,12 @@ do { \
     struct insqueue *ins_queue_item;\
 \
     ins.id = CCONST;\
-    ins.args.cconst = (_charval);\
+    ins.args.cconst.val = (_charval);\
 \
     CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins);\
     \
     ins_queue_item = codegen->ins_queue;\
-    ck_assert_float_eq(ins_queue_item->ins.args.cconst, ins.args.cconst);\
+    ck_assert_int_eq(ins_queue_item->ins.args.cconst.val, ins.args.cconst.val);\
 \
     RawcodeGen_Delete(codegen); \
 } while (0)

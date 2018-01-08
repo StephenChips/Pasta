@@ -1,1 +1,1 @@
-/usr/bin/cc   -rdynamic CMakeFiles/pastavm.dir/main.c.o  -o pastavm libvmcore.a ../lib/cjson/libcjson.a 
+/usr/bin/cc     CMakeFiles/pastavm.dir/main.c.o  -o pastavm -rdynamic libvmcore.a ../lib/cjson/libcjson.a 

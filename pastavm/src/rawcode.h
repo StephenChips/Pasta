@@ -34,10 +34,6 @@ typedef struct __RawcodeGen {
     unsigned int ins_num, cst_pool_num;
 } RawcodeGen;
 
-struct __allocfun {
-    void *(malloc)(size_t);
-    void *(allocate_heap)(unsigned long int, size_t);
-};
 
 RawcodeGen *RawcodeGen_Init();
 
@@ -49,7 +45,7 @@ void RawcodeGen_AddIntConst(RawcodeGen *self, int ival);
 
 void RawcodeGen_AddCharConst(RawcodeGen *self, char cval);
 
-void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval, size_t slen);
+void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval);
 
 int RawcodeGen_AddInstruction(RawcodeGen *self, struct ins ins);
 
@@ -59,12 +55,22 @@ void *RawcodeGen_Generate(RawcodeGen *self);
 
 
 /* private functions */
-size_t __GetInsSize(int id);
+size_t __GetInsSize(struct ins ins);
 
-void *__RawcodeGen_AddConst(RawcodeGen *self, size_t size, struct kkkk);
+void *__RawcodeGen_AddConst(RawcodeGen *self, size_t size);
 
 void __DeleteInsQueue(struct insqueue *q);
 
 void __DeleteCstQueue(struct cstqueue *q);
+
+void __WriteIns(char *pos, struct ins ins);
+
+void __InitRawcodeHead(RawcodeGen *self, void *rawcode);
+
+void __InitInstructionList(RawcodeGen *self, void *inslist);
+
+void __InitConstantPool(RawcodeGen *self, void *cstpool);
+
+void *__RawcodeGen_AddConst(RawcodeGen *self, size_t size);
 
 #endif

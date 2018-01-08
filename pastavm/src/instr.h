@@ -65,10 +65,15 @@
 #define LDC      0x3D
 
 union ins_args {
-    int iconst;
-    double fconst;
-    char cconst;
-
+    struct {
+        int val;
+    } iconst;
+    struct {
+        double val;
+    } fconst;
+    struct {
+        char val;
+    } cconst;
     struct {
         unsigned long int addr;
     } jump, jpz, jpnz;
