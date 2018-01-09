@@ -59,4 +59,18 @@ instr.h
 /home/dongcai/Documents/pasta/pastavm/test/instr.h
 rawcode.h
 /home/dongcai/Documents/pasta/pastavm/test/rawcode.h
+positions.h
+/home/dongcai/Documents/pasta/pastavm/test/positions.h
+testhelper.h
+/home/dongcai/Documents/pasta/pastavm/test/testhelper.h
+
+/home/dongcai/Documents/pasta/pastavm/test/testhelper.c
+testhelper.h
+/home/dongcai/Documents/pasta/pastavm/test/testhelper.h
+instr.h
+/home/dongcai/Documents/pasta/pastavm/test/instr.h
+
+/home/dongcai/Documents/pasta/pastavm/test/testhelper.h
+instr.h
+/home/dongcai/Documents/pasta/pastavm/test/instr.h
 

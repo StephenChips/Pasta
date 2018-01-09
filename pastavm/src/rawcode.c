@@ -164,6 +164,7 @@ void *RawcodeGen_Generate(RawcodeGen *self) {
     void *cstpool = (void *)((char *)rawcode + __RAWCODE_OFFSET_SIZE);
     void *inslist = (void *)((char *)rawcode + __RAWCODE_OFFSET_SIZE + cstpool_size);
 
+
     __InitRawcodeHead(self, rawcode);
     
     __InitConstantPool(self, cstpool);
@@ -175,8 +176,12 @@ void *RawcodeGen_Generate(RawcodeGen *self) {
 
 void __InitRawcodeHead(RawcodeGen *self, void *rawcode) {
 
-    __RAWCODE_OFFSET(rawcode)->cstpool = __RAWCODE_OFFSET_SIZE;
-    __RAWCODE_OFFSET(rawcode)->inslist = __RAWCODE_OFFSET_SIZE + self->ins_list_size;
+    unsigned long int cstpool_offset = __RAWCODE_OFFSET_SIZE;
+    unsigned long int cstpool_size = __CST_COUNT_SIZE + __CST_OFFSET_SIZE * self->cst_pool_num + self->cst_pool_size;
+    unsigned long int inslist_offset = __RAWCODE_OFFSET_SIZE + cstpool_size;
+
+    __RAWCODE_OFFSET(rawcode)->cstpool = cstpool_offset;
+    __RAWCODE_OFFSET(rawcode)->inslist = inslist_offset; 
 }
 
 void __InitConstantPool(RawcodeGen *self, void *cstpool) {
@@ -191,21 +196,23 @@ void __InitConstantPool(RawcodeGen *self, void *cstpool) {
 
     *cst_count = self->cst_pool_num;
 
-    i = 0;
     cursor = cstpool_start_pos;
     current = self->cst_queue;
-    while (cursor - cstpool_start_pos < self->ins_num) {
+    printf("=======\n");
+    for (i = 0; i < self->cst_pool_num; i++) {
         memcpy(cursor, current->ref, current->size); 
-        cst_offsets[i] = cursor - cstpool_start_pos;
+        cst_offsets[i] = cursor - (char *)cstpool;
 
+        printf("size: %d\n", current->size);
         cursor += current->size;
         current = current->next;
-        i++;
+       /* i++; */ /* THIS STUBID BUD IS MEMORABLE! FUCK!!!!!*/
     }
 }
 
 void __InitInstructionList(RawcodeGen *self, void *inslist) {
 
+    int i;
     char *cursor;
     struct insqueue *current;
 
@@ -213,10 +220,10 @@ void __InitInstructionList(RawcodeGen *self, void *inslist) {
     char *inslist_start_pos = (char *)inslist + __INS_LENGTH_SIZE;
 
     *ins_list_size = self->ins_list_size;    
-
+    
     cursor = inslist_start_pos;
     current = self->ins_queue;
-    while (cursor - inslist_start_pos < self->ins_list_size) {
+    for(i = 0; i < self->ins_num; i++) {
         __WriteIns(cursor, current->ins);
         
         cursor += __GetInsSize(current->ins);
@@ -302,7 +309,6 @@ void __WriteIns(char *pos, struct ins ins) {
 void RawcodeGen_Delete(RawcodeGen *self) {
     __DeleteInsQueue(self->ins_queue);
     __DeleteCstQueue(self->cst_queue);
-    
     free(self);
 }
 
@@ -315,11 +321,10 @@ void __DeleteInsQueue(struct insqueue *q) {
     }
 
     while (q != q->next) {
-        q = q->next;
-
+        temp = q->next;
+        q->next = q->next->next;
+        
         free(temp);
-
-        temp = q;
     }
 
     free(q);
@@ -334,12 +339,11 @@ void __DeleteCstQueue(struct cstqueue *q) {
     }
 
     while (q != q->next) {
-        q = q->next;
+        temp = q->next;
+        q->next = q->next->next;
         
         free(temp->ref);
         free(temp);
-
-        temp = q;
     }
     
     free(q);
@@ -392,7 +396,7 @@ size_t __GetInsSize(struct ins ins) {
         break;
 
     default:
-       size = sizeof(char); 
+       size = sizeof(unsigned char); 
        break;
     }
 

@@ -205,6 +205,33 @@ test_rawcode_gen.c.s:
 	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f test/CMakeFiles/TestRawcodeGen.dir/build.make test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.s
 .PHONY : test_rawcode_gen.c.s
 
+testhelper.o: testhelper.c.o
+
+.PHONY : testhelper.o
+
+# target to build an object file
+testhelper.c.o:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f test/CMakeFiles/TestRawcodeGen.dir/build.make test/CMakeFiles/TestRawcodeGen.dir/testhelper.c.o
+.PHONY : testhelper.c.o
+
+testhelper.i: testhelper.c.i
+
+.PHONY : testhelper.i
+
+# target to preprocess a source file
+testhelper.c.i:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f test/CMakeFiles/TestRawcodeGen.dir/build.make test/CMakeFiles/TestRawcodeGen.dir/testhelper.c.i
+.PHONY : testhelper.c.i
+
+testhelper.s: testhelper.c.s
+
+.PHONY : testhelper.s
+
+# target to generate assembly for a file
+testhelper.c.s:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f test/CMakeFiles/TestRawcodeGen.dir/build.make test/CMakeFiles/TestRawcodeGen.dir/testhelper.c.s
+.PHONY : testhelper.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -222,6 +249,9 @@ help:
 	@echo "... test_rawcode_gen.o"
 	@echo "... test_rawcode_gen.i"
 	@echo "... test_rawcode_gen.s"
+	@echo "... testhelper.o"
+	@echo "... testhelper.i"
+	@echo "... testhelper.s"
 .PHONY : help
 
 

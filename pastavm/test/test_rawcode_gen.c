@@ -4,6 +4,8 @@
 
 #include "instr.h"
 #include "rawcode.h"
+#include "positions.h"
+#include "testhelper.h"
 
 #define CHECK_ADD_CONSTANT_TO_RAWCODE_GENERATOR($size) \
 do { \
@@ -308,8 +310,152 @@ do { \
     Rawcode_Delete(codegen); \
 } while (0) 
 
+#define ASSERT_INS_EQ(_expect, _actual, _size)  ck_assert_mem_eq(&(_expect), &(_actual), (_size));
+
+/*
+ * inslist: char *
+ * expectlen: int
+ * expectlist: struct ins []
+ */
+
+START_TEST(test_rawcode_generate_1) /* one constant and no intruction */
+{
+    RawcodeGen *codegen = RawcodeGen_Init();
+    
+    int constant = 10, cstnum = 1;
+
+    int cstpool_size = __CST_COUNT_SIZE + __CST_OFFSET_SIZE + sizeof(int);
+
+    RawcodeGen_AddIntConst(codegen, constant);
+    void *rawcode = RawcodeGen_Generate(codegen);
+
+    ck_assert_int_eq(__RAWCODE_OFFSET(rawcode)->cstpool, __RAWCODE_OFFSET_SIZE);
+    ck_assert_int_eq(__RAWCODE_OFFSET(rawcode)->inslist, __RAWCODE_OFFSET_SIZE + cstpool_size);
+
+    void *cstpool = (void *)((char *)rawcode + __RAWCODE_OFFSET_SIZE);
+    void *inslist = (void *)((char *)rawcode + __RAWCODE_OFFSET_SIZE + cstpool_size); 
+
+    ck_assert_int_eq(__CST_COUNT(cstpool), cstnum);
+    ck_assert_int_eq(*(int *)__ACCESS_CONST(cstpool, 0), constant);
+
+    ck_assert_int_eq(__INS_LENGTH(inslist), 0);
+
+    RawcodeGen_Delete(codegen);
+}
+END_TEST
+
+START_TEST(test_rawcode_generate_2) /* one instruction and no constant */
+{
+    RawcodeGen *codegen = RawcodeGen_Init();
+    
+    struct ins ins, instr;
+    int insnum = 1;
+    int inslist_len = 5;
+
+    int cstpool_size = __CST_COUNT_SIZE;
+
+    ins.id = ICONST;
+    ins.args.iconst.val = 10;
+
+    RawcodeGen_AddInstruction(codegen, ins);
+    void *rawcode = RawcodeGen_Generate(codegen);
+
+    ck_assert_int_eq(__RAWCODE_OFFSET(rawcode)->cstpool, __RAWCODE_OFFSET_SIZE);
+    ck_assert_int_eq(__RAWCODE_OFFSET(rawcode)->inslist, __RAWCODE_OFFSET_SIZE + cstpool_size);
+
+    void *cstpool = (void *)((char *)rawcode + __RAWCODE_OFFSET_SIZE);
+    void *inslist = (void *)((char *)rawcode + __RAWCODE_OFFSET_SIZE + cstpool_size); 
+
+    ck_assert_int_eq(__INS_LENGTH(inslist), inslist_len);
+   
+    size_t size = __GetInsSize(ins); 
+
+    TestHelper_ReadIns(__INS_ARRAY(inslist), &instr);
+
+    ck_assert_int_eq(is_instr_eq(ins, instr), 1);
+
+    RawcodeGen_Delete(codegen);
+}
+END_TEST
+
+START_TEST(test_rawcode_generate_3) /* two instructions and no constant */
+{
+    RawcodeGen *codegen = RawcodeGen_Init();
+    
+    struct ins ins[2];
+    int insnum = 2;
+
+    ins[0].id = ICONST;
+    ins[0].args.iconst.val = 10;
+
+    ins[1].id = IGETDATA;
+
+    int inslist_len = __GetInsSize(ins[0]) + __GetInsSize(ins[1]);
+    int cstpool_size = __CST_COUNT_SIZE;
+
+    RawcodeGen_AddInstruction(codegen, ins[0]);
+    RawcodeGen_AddInstruction(codegen, ins[1]);
+
+    void *rawcode = RawcodeGen_Generate(codegen);
+
+    ck_assert_int_eq(__RAWCODE_OFFSET(rawcode)->cstpool, __RAWCODE_OFFSET_SIZE);
+    ck_assert_int_eq(__RAWCODE_OFFSET(rawcode)->inslist, __RAWCODE_OFFSET_SIZE + cstpool_size);
+
+    void *cstpool = (void *)((char *)rawcode + __RAWCODE_OFFSET_SIZE);
+    void *inslist = (void *)((char *)rawcode + __RAWCODE_OFFSET_SIZE + cstpool_size); 
+
+    ck_assert_int_eq(__INS_LENGTH(inslist), inslist_len);
+  
+    int i;
+    char *cursor = __INS_ARRAY(inslist);
+    for (i = 0; i < insnum; i++) {
+        struct ins instr;
+        size_t size = __GetInsSize(ins[i]); 
+        TestHelper_ReadIns(cursor, &instr);
+        ck_assert_int_eq(is_instr_eq(ins[i], instr), 1);
+        cursor += size;
+    } 
+    RawcodeGen_Delete(codegen);
+}
+END_TEST
+
+
+START_TEST(test_rawcode_generate_4) /* no instructions and two constant */
+{
+    RawcodeGen *codegen = RawcodeGen_Init();
+    
+    int cst1 = 10;
+    double cst2 = 100.13;
+    int cstnum = 2;
+    int cstpool_size = __CST_COUNT_SIZE + __CST_OFFSET_SIZE * 2  + sizeof(int) + sizeof(double);
+
+    RawcodeGen_AddIntConst(codegen, cst1);
+    RawcodeGen_AddFloatConst(codegen, cst2);
+    void *rawcode = RawcodeGen_Generate(codegen);
+
+    int cstpool_start_pos = __RAWCODE_OFFSET(rawcode)->cstpool;
+    int inslist_start_pos = __RAWCODE_OFFSET(rawcode)->inslist;
+    
+    ck_assert_int_eq(cstpool_start_pos, __RAWCODE_OFFSET_SIZE);
+    ck_assert_int_eq(inslist_start_pos, __RAWCODE_OFFSET_SIZE + cstpool_size);
+    void *cstpool = (void *)((char *)rawcode + __RAWCODE_OFFSET_SIZE);
+    void *inslist = (void *)((char *)rawcode + __RAWCODE_OFFSET_SIZE + cstpool_size); 
+
+    
+    int    actual_cst1 = *(int *)__ACCESS_CONST(cstpool, 0); 
+    double actual_cst2 = *(double *)__ACCESS_CONST(cstpool, 1);  /* FIXME: SegmentFault here */
+                                                                 /* BUG FOUND: index[2] not initialized */
+    ck_assert_int_eq(__CST_COUNT(cstpool), cstnum);
+
+    ck_assert_int_eq(actual_cst1, cst1);
+    ck_assert_double_eq(actual_cst2, cst2);
+    ck_assert_int_eq(__INS_LENGTH(inslist), 0);
+    RawcodeGen_Delete(codegen);
+}
+END_TEST
+
 /* TEST ADD CONSTANT TO RAWCODE GENERATOR
- * Permise:
+  Permise:
  *   1. The Function `RawcodeGen_Init`, `RawcodeGen_Delete` should work correctly.
  */
 START_TEST(test_rawcode_gen_init) 
@@ -631,7 +777,8 @@ Suite *test_rawcode_generator() {
           *test_add_altsp = tcase_create("Altsp"),
           *test_add_call = tcase_create("Call"),
           *test_add_tcall = tcase_create("TCall"),
-          *test_add_syscall = tcase_create("Syscall");
+          *test_add_syscall = tcase_create("Syscall"),
+          *test_generate = tcase_create("Generate");
 
     /* test add cosntants */
     tcase_add_test(test_add_constant, Test_RawcodeGen_AddConstant_1);
@@ -698,6 +845,11 @@ Suite *test_rawcode_generator() {
     tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_7);
     tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_8);
 
+    tcase_add_test(test_generate, test_rawcode_generate_1);
+    tcase_add_test(test_generate, test_rawcode_generate_2);
+    tcase_add_test(test_generate, test_rawcode_generate_3);
+    tcase_add_test(test_generate, test_rawcode_generate_4);
+
     suite_add_tcase(s, test_add_constant);
     suite_add_tcase(s, test_add_iconst);
     suite_add_tcase(s, test_add_fconst);
@@ -705,6 +857,8 @@ Suite *test_rawcode_generator() {
     suite_add_tcase(s, test_add_jxxx);
     suite_add_tcase(s, test_add_altsp);
     suite_add_tcase(s, test_add_call);
+    suite_add_tcase(s, test_generate);
+
     return s;
 }
 

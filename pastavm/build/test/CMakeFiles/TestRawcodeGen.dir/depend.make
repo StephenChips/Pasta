@@ -9,4 +9,9 @@ test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o: ../src/vm.h
 test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o: ../test/check.h
 test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o: ../test/check_stdint.h
 test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o: ../test/test_rawcode_gen.c
+test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o: ../test/testhelper.h
+
+test/CMakeFiles/TestRawcodeGen.dir/testhelper.c.o: ../src/instr.h
+test/CMakeFiles/TestRawcodeGen.dir/testhelper.c.o: ../test/testhelper.c
+test/CMakeFiles/TestRawcodeGen.dir/testhelper.c.o: ../test/testhelper.h
 

@@ -16,8 +16,9 @@
 #define __CST_COUNT(_cstpool) *((unsigned long int *) (_cstpool))
 #define __CST_COUNT_SIZE sizeof(unsigned long int)
 #define __CST_OFFSET_SIZE sizeof(unsigned long int)
-#define __CST_OFFSET_ARRAY(_cstpool) (unsigned long int *)((char *)(_cstpool) + __CST_COUNT_SIZE)
-#define __CSTPOOL(_cstpool) (__CST_COUNT_SIZE + __CST_OFFSET_SIZE * __CST_COUNT(_cstpool))
+#define __CST_OFFSET_ARRAY(_cstpool) ((unsigned long int *)((char *)(_cstpool) + __CST_COUNT_SIZE))
+#define __CSTPOOL(_cstpool) ((char *)(_cstpool) + __CST_COUNT_SIZE + __CST_OFFSET_SIZE * __CST_COUNT(_cstpool))
+#define __ACCESS_CONST(_cstpool, _idx) ((void *)((char *)_cstpool + __CST_OFFSET_ARRAY(_cstpool)[(_idx)]))
 
 /* MACROS FOR INSTRUCTION LIST */
 #define __INS_LENGTH(_inslist) *((unsigned long int *) (_inslist))

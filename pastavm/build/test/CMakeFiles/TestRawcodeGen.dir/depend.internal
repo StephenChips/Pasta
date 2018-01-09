@@ -10,3 +10,8 @@ test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o
  ../test/check.h
  ../test/check_stdint.h
  /home/dongcai/Documents/pasta/pastavm/test/test_rawcode_gen.c
+ /home/dongcai/Documents/pasta/pastavm/test/testhelper.h
+test/CMakeFiles/TestRawcodeGen.dir/testhelper.c.o
+ ../src/instr.h
+ /home/dongcai/Documents/pasta/pastavm/test/testhelper.c
+ /home/dongcai/Documents/pasta/pastavm/test/testhelper.h

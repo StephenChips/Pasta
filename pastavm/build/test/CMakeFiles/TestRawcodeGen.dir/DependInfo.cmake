@@ -5,6 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
   "/home/dongcai/Documents/pasta/pastavm/test/test_rawcode_gen.c" "/home/dongcai/Documents/pasta/pastavm/build/test/CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o"
+  "/home/dongcai/Documents/pasta/pastavm/test/testhelper.c" "/home/dongcai/Documents/pasta/pastavm/build/test/CMakeFiles/TestRawcodeGen.dir/testhelper.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 
