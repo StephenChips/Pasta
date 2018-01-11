@@ -169,6 +169,7 @@ int __init_stack(size_t size) {
     vm.registers.sp = vm.stack.stack;
     vm.registers.bp = vm.registers.hr = NULL;
 
+    __PUSH_STACK_REF_COUNT(vm);
     return 0;
 }
 

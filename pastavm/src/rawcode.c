@@ -80,6 +80,7 @@ void RawcodeGen_AddCharConst(RawcodeGen *self, char cval) {
 }
 
 /* ASSUME STRING TERMIATED WITH '\0' */
+/* need to be changed */
 void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval) {
 
     struct cstqueue *new_cst_item;
@@ -154,16 +155,16 @@ int RawcodeGen_AddInstruction(RawcodeGen *self, struct ins ins) {
 }
 
 /* generate rawcode */
-void *RawcodeGen_Generate(RawcodeGen *self) {
+Rawcode *RawcodeGen_Generate(RawcodeGen *self) {
 
     const size_t cstpool_size = __CST_COUNT_SIZE + self->cst_pool_num * __CST_OFFSET_SIZE + self->cst_pool_size;
     const size_t inslist_size = __INS_LENGTH_SIZE + self->ins_list_size;
+    const size_t rawcode_size = __RAWCODE_OFFSET_SIZE + cstpool_size + inslist_size;
 
-    void *rawcode = malloc(__RAWCODE_OFFSET_SIZE + cstpool_size + inslist_size);
+    void *rawcode = malloc(rawcode_size);
     
     void *cstpool = (void *)((char *)rawcode + __RAWCODE_OFFSET_SIZE);
     void *inslist = (void *)((char *)rawcode + __RAWCODE_OFFSET_SIZE + cstpool_size);
-
 
     __InitRawcodeHead(self, rawcode);
     
@@ -171,7 +172,7 @@ void *RawcodeGen_Generate(RawcodeGen *self) {
 
     __InitInstructionList(self, inslist);
 
-    return rawcode;
+    return Rawcode_Init(rawcode, rawcode_size);
 }
 
 void __InitRawcodeHead(RawcodeGen *self, void *rawcode) {
@@ -198,12 +199,10 @@ void __InitConstantPool(RawcodeGen *self, void *cstpool) {
 
     cursor = cstpool_start_pos;
     current = self->cst_queue;
-    printf("=======\n");
     for (i = 0; i < self->cst_pool_num; i++) {
         memcpy(cursor, current->ref, current->size); 
         cst_offsets[i] = cursor - (char *)cstpool;
 
-        printf("size: %d\n", current->size);
         cursor += current->size;
         current = current->next;
        /* i++; */ /* THIS STUBID BUD IS MEMORABLE! FUCK!!!!!*/
@@ -401,4 +400,21 @@ size_t __GetInsSize(struct ins ins) {
     }
 
     return size;
+}
+
+Rawcode *Rawcode_Init(void *rawcode, size_t size) {
+    Rawcode *new_rawcode = (Rawcode *)malloc(sizeof(Rawcode));
+    if (new_rawcode == NULL) {
+        return NULL;
+    }
+
+    new_rawcode->rawcode = rawcode;
+    new_rawcode->size = size;
+
+    return new_rawcode;
+}
+
+void Rawcode_Delete(Rawcode *self) {
+    free(self->rawcode);
+    free(self);
 }

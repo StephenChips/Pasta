@@ -174,6 +174,19 @@ cjson/fast:
 .PHONY : cjson/fast
 
 #=============================================================================
+# Target rules for targets named TestIns
+
+# Build rule for target.
+TestIns: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 TestIns
+.PHONY : TestIns
+
+# fast build rule for target.
+TestIns/fast:
+	$(MAKE) -f test/CMakeFiles/TestIns.dir/build.make test/CMakeFiles/TestIns.dir/build
+.PHONY : TestIns/fast
+
+#=============================================================================
 # Target rules for targets named Test
 
 # Build rule for target.
@@ -212,6 +225,7 @@ help:
 	@echo "... codegen"
 	@echo "... pastavm"
 	@echo "... cjson"
+	@echo "... TestIns"
 	@echo "... Test"
 	@echo "... TestRawcodeGen"
 .PHONY : help

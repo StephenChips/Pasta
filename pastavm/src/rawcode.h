@@ -35,22 +35,31 @@ typedef struct __RawcodeGen {
 } RawcodeGen;
 
 
+typedef struct Rawcode {
+    size_t size;
+    void *rawcode;
+} Rawcode;
+
+Rawcode *Rawcode_Init(void *rawcode, size_t size);
+
+void Rawcode_Delete(Rawcode *self);
+
 RawcodeGen *RawcodeGen_Init();
 
 void RawcodeGen_Delete(RawcodeGen *self);
 
-void RawcodeGen_AddFloatConst(RawcodeGen *self, double fval);
+void RawcodeGen_AddFloatConst(RawcodeGen *self, double fval); 
 
-void RawcodeGen_AddIntConst(RawcodeGen *self, int ival);
+void RawcodeGen_AddIntConst(RawcodeGen *self, int ival); 
 
-void RawcodeGen_AddCharConst(RawcodeGen *self, char cval);
+void RawcodeGen_AddCharConst(RawcodeGen *self, char cval); 
 
-void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval);
+void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval); /* need to be modified */
 
 int RawcodeGen_AddInstruction(RawcodeGen *self, struct ins ins);
 
 /* generate rawcode */
-void *RawcodeGen_Generate(RawcodeGen *self);
+Rawcode *RawcodeGen_Generate(RawcodeGen *self);
 
 
 

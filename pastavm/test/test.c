@@ -32,7 +32,7 @@ do { \
 do { \
     ck_assert_ptr_null((_vm).registers.hr); \
     ck_assert_ptr_null((_vm).registers.bp); \
-    ck_assert_ptr_eq((_vm).registers.sp, (_vm).stack.stack); \
+    ck_assert_ptr_eq((_vm).registers.sp, (_vm).stack.stack + sizeof(int)); \
     ck_assert_ptr_eq((_vm).registers.pc, (_vm).instructions.inslist); \
 } while (0)
 

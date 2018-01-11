@@ -122,6 +122,21 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
+test/CMakeFiles/TestIns.dir/rule:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f CMakeFiles/Makefile2 test/CMakeFiles/TestIns.dir/rule
+.PHONY : test/CMakeFiles/TestIns.dir/rule
+
+# Convenience name for target.
+TestIns: test/CMakeFiles/TestIns.dir/rule
+
+.PHONY : TestIns
+
+# fast build rule for target.
+TestIns/fast:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f test/CMakeFiles/TestIns.dir/build.make test/CMakeFiles/TestIns.dir/build
+.PHONY : TestIns/fast
+
+# Convenience name for target.
 test/CMakeFiles/Test.dir/rule:
 	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f CMakeFiles/Makefile2 test/CMakeFiles/Test.dir/rule
 .PHONY : test/CMakeFiles/Test.dir/rule
@@ -177,6 +192,33 @@ test.s: test.c.s
 test.c.s:
 	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f test/CMakeFiles/Test.dir/build.make test/CMakeFiles/Test.dir/test.c.s
 .PHONY : test.c.s
+
+test_ins.o: test_ins.c.o
+
+.PHONY : test_ins.o
+
+# target to build an object file
+test_ins.c.o:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f test/CMakeFiles/TestIns.dir/build.make test/CMakeFiles/TestIns.dir/test_ins.c.o
+.PHONY : test_ins.c.o
+
+test_ins.i: test_ins.c.i
+
+.PHONY : test_ins.i
+
+# target to preprocess a source file
+test_ins.c.i:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f test/CMakeFiles/TestIns.dir/build.make test/CMakeFiles/TestIns.dir/test_ins.c.i
+.PHONY : test_ins.c.i
+
+test_ins.s: test_ins.c.s
+
+.PHONY : test_ins.s
+
+# target to generate assembly for a file
+test_ins.c.s:
+	cd /home/dongcai/Documents/pasta/pastavm/build && $(MAKE) -f test/CMakeFiles/TestIns.dir/build.make test/CMakeFiles/TestIns.dir/test_ins.c.s
+.PHONY : test_ins.c.s
 
 test_rawcode_gen.o: test_rawcode_gen.c.o
 
@@ -239,13 +281,17 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... test"
+	@echo "... edit_cache"
+	@echo "... TestIns"
 	@echo "... Test"
 	@echo "... TestRawcodeGen"
-	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... test.o"
 	@echo "... test.i"
 	@echo "... test.s"
+	@echo "... test_ins.o"
+	@echo "... test_ins.i"
+	@echo "... test_ins.s"
 	@echo "... test_rawcode_gen.o"
 	@echo "... test_rawcode_gen.i"
 	@echo "... test_rawcode_gen.s"

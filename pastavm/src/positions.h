@@ -25,7 +25,62 @@
 #define __INS_LENGTH_SIZE sizeof(unsigned long int)
 #define __INS_ARRAY(_inslist) ((char *)(_inslist) + __INS_LENGTH_SIZE)
 
+typedef item_t long long int;
 
+#define __ITEM_FLAG_VAL 1
+#define __ITEM_SIZE sizeof(item_t)
+#define __ITEM_FLAG(_item) ((_item) << (__ITEM_SIZE - 1))
+#define __ITEM_ISREF(_item) (__ITEM_FLAG(_item) == __ITEM_FLAG_VAL)
+#define __ITEM_DISABLE_FLAG(_item) ((_item) = (_item) & (0xFFFFFFFFFFFFFFFF - 1))
+#define __ITEM_ENABLE_FLAG(_item) ((_item) = (_item) | 0x1)
+
+#define __ITEM_SET_INT(_itemptr, _ival) \
+do { \
+    (_itemptr) = (_ival); \
+    (_itemptr) = (_itemptr) << 1; \
+    __ITEM_DISABLE_FLAG(_itemptr);\
+} while (0)
+
+#define __ITEM_SET_FLOAT(_itemptr, _fval) \
+do { \
+    *(double *)(&(_itemptr)) = (_fval); \
+    (_itemptr) = (_itemptr << 1); \
+    __ITEM_DISABLE_FLAG(_itemptr); \
+} while (0)
+
+#define __ITEM_SET_CHAR(_itemptr, _cval) \
+do { \
+    *(char *)(&(item)) = (_cval);\
+    (_itemptr) = (_itemptr) << 1;\
+    __ITEM_DISALBE_FLAG(_itemptr)\
+} while (0)
+
+#define __ITEM_SET_REF(_itemptr, _rval) \
+do {\
+    *(void **)(&(_itemptr)) = (_rval); \
+    (_itemptr) = (_itemptr) << 1; \
+    __ITEM_ENABLE_FLAG(_itemptr);\
+} while (0)
+
+#define __ITEM_GET_INT(_itemptr, _retptr)\
+do {\
+     *(retptr) = (int)(*(_itemptr) >> 1)\
+} while (0)\
+
+#define __ITEM_GET_CHAR(_itemptr, _retptr)\
+do {\
+    *(_retptr) = (char)(*(_itemptr) >> 1)\
+} while (0)
+
+#define __ITEM_GET_REF(_itemptr, _retptr)\
+do {\
+    *(_retptr) = (void *)(*(_itemptr) >> 1)\
+} while (0)
+
+#define _ITEM_GET_FLOAT(_itemptr, _retptr) \
+do {\
+    *(long *)(_retptr) = *(_itemptr >> 1)\
+} while (0)
 
 /* MACROS FOR HEAP ITEM*/
 /* heap item is a block of memory that contains a series of variables 
@@ -36,26 +91,25 @@
  */
 #define __HEAPITEM_INFO_SIZE (sizeof(struct heap_item_info))
 
+#define DEFAULT_SURVIVE_FLAG 1
+
 #define __HEAPITEM_GC_FLAG(h)   (__HEAPITEM_INFO(h)->gcflag)
-#define __HEAPITEM_REF_COUNT(h) (__HEAPITEM_INFO(h)->refcnt)
 #define __HEAPITEM_DATA_SIZE(h) (__HEAPITEM_INFO(h)->dtsz)
 
 #define __HEAPITEM_INFO(h)  ((struct heap_item_info *)h)
-#define __HEAPITEM_REF_ARRAY(h) (void **)((char *)h + __HEAPITEM_INFO_SIZE)
-#define __HEAPITEM_DATA(h) (void *)((char *)h + __HEAPITEM_INFO_SIZE + sizeof(void *)*__HEAPITEM_REF_COUNT(h))
-
+#define __HEAPITEM_DATA(h) (void **)((char *)h + __HEAPITEM_INFO_SIZE)
+#define __HEAPITEM_GCFLAG(h) (__HEAP_ITEM_INFO(h)->gcflag)
+#define __HEAPITEM_DTSZ(h) (__HEAP_ITEM_INFO(h)->dtsz)
 
 /* MACROS FOR STACK LOCATION */
-#define __CMP_STKLEN_AND_OPRLEN(oprlen) /* TODO */
-#define __CMP_RETLEN_AND_AVAILABLE_STKSZ(retlen) /* TODO */
-#define __IS_REF_INSIDE_INSAREA(ref) /* TODO */
-#define __IS_REF_INSIDE_HEAPAREA(ref) /* TODO */
-#define __IS_STK_FREAM_EXISTS() /* TODO */
-#define __IS_EXN_HDR_EXISTS /* TODO */
-#define __IS_OFFSET_OUT_OF_META_AREA(offset) /* TODO */
-#define __IS_OFFSET_OUT_OF_DATA_AREA(offset) /* TODO */
-#define __IS_IDX_OUT_OF_CSTPOOL(idx) /* TODO */
-#define __IS_IDX_OUT_OF_REF_AREA(idx) /* TODO */
+#define __AVALIABLE_STKSZ(_vm) ((_vm).stack.capacity - ((_vm).registers.sp - (_vm).stack.stack))
 
+#define __IS_STACK_ADDR(vm, ref)  ((_ref) >= (_vm).stack.stack && (_ref) <= (_vm).stack.stack + (_vm.stack.capacity))
+#define __IS_STK_FREAM_EXISTS(_vm) ((_vm).registers.bp < 0)
+#define __IS_EXN_HDR_EXISTS(_vm) ((_vm).registers.hr < 0)
+
+#define __IS_IDX_OUT_OF_REF_AREA(_heapitem, _idx) ((_idx) > __HEAPITEM_REF_COUNT(_heapitem))
+#define __IS_OFFSET_OUT_OF_DATA_AREA(_heapitem, _offset, _size) ((_offset) > (_heapitem) - (_size))
+#define __IS_IDX_OUT_OF_CSTPOOL(_cstpool, idx) ((_idx) > __CST_COUNT(_cstpool))
 
 #endif

@@ -52,17 +52,20 @@
 #define IGETDATA 0x30
 #define FGETDATA 0x31
 #define CGETDATA 0x32
-#define ISETDATA 0x33
-#define FSETDATA 0x34
-#define CSETDATA 0x35
-#define GETREF   0x36
-#define SETREF   0x37
+#define RGETDATA 0x33
+#define ISETDATA 0x34
+#define FSETDATA 0x35
+#define CSETDATA 0x36
+#define RSETDATA 0x37
 #define NEW      0x38
 #define I2F      0x39
 #define I2C      0x3A
 #define F2I      0x3B
 #define C2I      0x3C
-#define LDC      0x3D
+#define ILDC     0x3D
+#define FLDC     0x3E
+#define CLDC     0x3F
+#define RLDC     0x40
 
 union ins_args {
     struct {
@@ -76,7 +79,7 @@ union ins_args {
     } cconst;
     struct {
         unsigned long int addr;
-    } jump, jpz, jpnz;
+    } jxxx; /* instruction jump, jpz and jpnz */
     struct {
        signed long int m;
     } altsp;
@@ -105,17 +108,11 @@ union ins_args {
        unsigned long int offset;
    } xsetdata;
    struct {
-       unsigned long int offset;
-   } getref;
-   struct {
-       unsigned long int offset;
-   } setref;
-   struct {
        unsigned long int refcnt, datasz;
    } new;
    struct {
        unsigned int idx;
-   } ldc;
+   } xldc; /* changed */
 };
 
 struct ins {
