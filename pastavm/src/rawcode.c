@@ -7,7 +7,7 @@
 #include "rawcode.h"
 #include "heap.h"
 
-#define INS_UNDEF(ins) (((ins.id) < ICONST) || ((ins.id) > LDC))
+#define INS_UNDEF(ins) (((ins.id) < ICONST) || ((ins.id) > RLDC))
 
 RawcodeGen *RawcodeGen_Init() {
     
@@ -56,6 +56,7 @@ void *__RawcodeGen_AddConst(RawcodeGen *self, size_t size) {
     else {
         new_cst_item->next = self->cst_queue->next;
         self->cst_queue->next = new_cst_item;
+        self->cst_queue = self->cst_queue->next;
     }
     
     self->cst_pool_size += size;
@@ -86,6 +87,8 @@ void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval) {
     struct cstqueue *new_cst_item;
     struct heap_item_info info;
     size_t slen = strlen(sval);
+    int i;
+    item_t *data;
 
     /* initializing */
     new_cst_item = (struct cstqueue *)malloc(sizeof(struct cstqueue));
@@ -95,14 +98,18 @@ void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval) {
     }
 
     info.gcflag = !GC_IGNORE_FLAG;
-    info.refcnt = 0;
-    info.dtsz = slen;
+    info.item_count = slen + 1;
 
     new_cst_item->ref = AllocateHeapItem(info);
 
     if (new_cst_item->ref == NULL) {
         printf("Cannot allocate memory on heap.\n");
         abort();
+    }
+
+    data = __HEAPITEM_DATA(new_cst_item->ref);
+    for (i = 0; i < slen; i++) {
+        __ITEM_SET_CHAR(&(data[i]), sval[i]);
     }
     strcpy((char *)__HEAPITEM_DATA(new_cst_item->ref), 
            sval);
@@ -116,6 +123,7 @@ void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval) {
     else {
         new_cst_item->next = self->cst_queue->next;
         self->cst_queue->next = new_cst_item;
+        self->cst_queue = self->cst_queue->next;
     }
     
     self->cst_pool_size += slen + 1;
@@ -146,6 +154,7 @@ int RawcodeGen_AddInstruction(RawcodeGen *self, struct ins ins) {
     else {
         new_ins_item->next = self->ins_queue->next;
         self->ins_queue->next = new_ins_item;
+        self->ins_queue = self->ins_queue->next;
     }
 
     self->ins_list_size += __GetInsSize(ins);
@@ -172,6 +181,7 @@ Rawcode *RawcodeGen_Generate(RawcodeGen *self) {
 
     __InitInstructionList(self, inslist);
 
+
     return Rawcode_Init(rawcode, rawcode_size);
 }
 
@@ -183,25 +193,23 @@ void __InitRawcodeHead(RawcodeGen *self, void *rawcode) {
 
     __RAWCODE_OFFSET(rawcode)->cstpool = cstpool_offset;
     __RAWCODE_OFFSET(rawcode)->inslist = inslist_offset; 
+    
 }
 
 void __InitConstantPool(RawcodeGen *self, void *cstpool) {
 
+    __CST_COUNT(cstpool) = self->cst_pool_num;
+
+    if (self->cst_queue == NULL) {
+        return;
+    }
+
     int i;
-    char *cursor;
-    struct cstqueue *current;
-
-    unsigned long int *cst_count = (unsigned long int *)cstpool;
-    unsigned long int  *cst_offsets = cstpool + __CST_COUNT_SIZE;
-    char *cstpool_start_pos = (char *)cstpool + __CST_COUNT_SIZE + __CST_OFFSET_SIZE * self->cst_pool_num;
-
-    *cst_count = self->cst_pool_num;
-
-    cursor = cstpool_start_pos;
-    current = self->cst_queue;
+    char *cursor = (char *)cstpool + __CST_COUNT_SIZE + __CST_OFFSET_SIZE * self->cst_pool_num;
+    struct cstqueue *current = self->cst_queue->next;
     for (i = 0; i < self->cst_pool_num; i++) {
         memcpy(cursor, current->ref, current->size); 
-        cst_offsets[i] = cursor - (char *)cstpool;
+        __CST_OFFSET_ARRAY(cstpool)[i] = cursor - (char *)cstpool;
 
         cursor += current->size;
         current = current->next;
@@ -211,17 +219,17 @@ void __InitConstantPool(RawcodeGen *self, void *cstpool) {
 
 void __InitInstructionList(RawcodeGen *self, void *inslist) {
 
-    int i;
-    char *cursor;
-    struct insqueue *current;
+    /* write length of instruction list, if there are no instruction */
+    __INS_LENGTH(inslist) = self->ins_list_size;
 
-    unsigned long int *ins_list_size = (unsigned long int *)inslist;
-    char *inslist_start_pos = (char *)inslist + __INS_LENGTH_SIZE;
-
-    *ins_list_size = self->ins_list_size;    
+    if (self->ins_queue == NULL) {
+        return;
+    }
     
-    cursor = inslist_start_pos;
-    current = self->ins_queue;
+    /* init instruction list */
+    int i;
+    char *cursor = (char *)inslist + __INS_LENGTH_SIZE;
+    struct insqueue *current = self->ins_queue->next;
     for(i = 0; i < self->ins_num; i++) {
         __WriteIns(cursor, current->ins);
         
@@ -245,15 +253,8 @@ void __WriteIns(char *pos, struct ins ins) {
     case CCONST:
         *(char *)pos = ins.args.cconst.val;
         break;
-    case JUMP:
-        *(unsigned long int *)pos = ins.args.jump.addr;
-        break;
-    case JPZ:
-        *(unsigned long int *)pos = ins.args.jump.addr;
-        break;
-    case JPNZ:
-        *(unsigned long int *)pos = ins.args.jump.addr;
-        break;
+    case JUMP: case JPZ: case JPNZ:
+        *(unsigned long int *)pos = ins.args.jxxx.addr;
     case ALTSP:
         *(signed long int *)pos = ins.args.altsp.m;
         break;
@@ -280,25 +281,19 @@ void __WriteIns(char *pos, struct ins ins) {
         pos += sizeof(unsigned int);
         *(unsigned long int *)pos = ins.args.pushexn.addr;
         break;
-    case IGETDATA: case FGETDATA: case CGETDATA:
+    case IGETDATA: case FGETDATA: case CGETDATA: case RGETDATA:
         *(unsigned long int *)pos = ins.args.xgetdata.offset;
         break;
-    case ISETDATA: case FSETDATA: case CSETDATA:
+    case ISETDATA: case FSETDATA: case CSETDATA: case RSETDATA:
         *(unsigned long int *)pos = ins.args.xsetdata.offset;
-        break;
-    case GETREF:
-        *(unsigned long int *)pos = ins.args.getref.offset;
-        break;
-    case SETREF:
-        *(unsigned long int *)pos = ins.args.setref.offset;
         break;
     case NEW:
         *(unsigned long int *)pos = ins.args.new.refcnt;
         pos += sizeof(unsigned long int);
         *(unsigned long int *)pos = ins.args.new.datasz;
         break;
-    case LDC:
-        *(unsigned int *)pos = ins.args.ldc.idx;
+    case ILDC: case FLDC: case CLDC: case RLDC:
+        *(unsigned int *)pos = ins.args.xldc.idx;
         break;
     }
 
@@ -390,7 +385,7 @@ size_t __GetInsSize(struct ins ins) {
         size = sizeof(unsigned char) + sizeof(unsigned int) + sizeof (unsigned long int);
         break;
 
-    case LDC:
+    case ILDC: case FLDC: case CLDC: case RLDC:
         size = sizeof(unsigned char) + sizeof(unsigned int);
         break;
 

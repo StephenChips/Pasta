@@ -23,18 +23,9 @@
 #define RLT 0x13
 #define CLT 0x14
 #define NOT 0x15
-#define IDUP 0x16
-#define FDUP 0x17
-#define RDUP 0x18
-#define CDUP 0x19
-#define ILOAD 0x1A
-#define FLOAD 0x1B
-#define RLOAD 0x1C
-#define CLOAD 0x1D
-#define ISTORE 0x1E
-#define FSTORE 0x1F
-#define RSTORE 0x20
-#define CSTORE 0x21
+#define DUP 0x16
+#define LOAD 0x1A
+#define STORE 0x1E
 #define GETBP  0x22
 #define GETSP  0x23
 #define ALTSP  0x24
@@ -67,6 +58,31 @@
 #define CLDC     0x3F
 #define RLDC     0x40
 
+#define INS_ICONST_SIZE (sizeof(char) + sizeof(int))
+#define INS_FCONST_SIZE (sizeof(char) + sizeof(double))
+#define INS_CCONST_SIZE (sizeof(char) + sizeof(char))
+#define INS_IADD_SIZE (sizeof(char))
+#define INS_FADD_SIZE (sizeof(char))
+#define INS_ISUB_SIZE (sizeof(char))
+#define INS_FSUB_SIZE (sizeof(char))
+#define INS_IMUL_SIZE (sizeof(char))
+#define INS_FMUL_SIZE (sizeof(char))
+#define INS_IDIV_SIZE (sizeof(char))
+#define INS_FDIV_SIZE (sizeof(char))
+#define INS_MOD_SIZE (sizeof(char))
+#define INS_IEQ_SIZE (sizeof(char))
+#define INS_FEQ_SIZE (sizeof(char))
+#define INS_CEQ_SIZE (sizeof(char))
+#define INS_REQ_SIZE (sizeof(char))
+#define INS_ILT_SIZE (sizeof(char))
+#define INS_FLT_SIZE (sizeof(char))
+#define INS_CLT_SIZE (sizeof(char))
+#define INS_RLT_SIZE (sizeof(char))
+#define INS_NOT_SIZE (sizeof(char))
+#define INS_DUP_SIZE (sizeof(char))
+#define INS_LOAD_SIZE (sizeof(char))
+#define INS_STORE_SIZE (sizeof(char))
+
 union ins_args {
     struct {
         int val;
@@ -79,7 +95,7 @@ union ins_args {
     } cconst;
     struct {
         unsigned long int addr;
-    } jxxx; /* instruction jump, jpz and jpnz */
+    } jxxx;
     struct {
        signed long int m;
     } altsp;

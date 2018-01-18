@@ -47,6 +47,8 @@ cJSON.h
 /home/dongcai/Documents/pasta/pastavm/src/cJSON.h
 errlog.h
 /home/dongcai/Documents/pasta/pastavm/src/errlog.h
+rawcode.h
+/home/dongcai/Documents/pasta/pastavm/src/rawcode.h
 vm.h
 /home/dongcai/Documents/pasta/pastavm/src/vm.h
 

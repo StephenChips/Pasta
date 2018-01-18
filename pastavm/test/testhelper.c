@@ -19,14 +19,8 @@ void TestHelper_ReadIns(char *inslist, struct ins *instr) {
     case CCONST:
         ins.args.cconst.val = *(char *)pos;
         break;
-    case JUMP:
-        ins.args.jump.addr = *(unsigned long int *)pos;
-        break;
-    case JPZ:
-        ins.args.jump.addr = *(unsigned long int *)pos;
-        break;
-    case JPNZ:
-       ins.args.jump.addr = *(unsigned long int *)pos;
+    case JUMP: case JPZ: case JPNZ:
+        ins.args.jxxx.addr = *(unsigned long int *)pos;
         break;
     case ALTSP:
         ins.args.altsp.m = *(signed long int *)pos;
@@ -60,19 +54,13 @@ void TestHelper_ReadIns(char *inslist, struct ins *instr) {
     case ISETDATA: case FSETDATA: case CSETDATA:
         ins.args.xsetdata.offset = *(unsigned long int *)pos;
         break;
-    case GETREF:
-        ins.args.getref.offset = *(unsigned long int *)pos;
-        break;
-    case SETREF:
-        ins.args.setref.offset = *(unsigned long int *)pos;
-        break;
     case NEW:
         ins.args.new.refcnt = *(unsigned long int *)pos;
         pos += sizeof(unsigned long int);
         ins.args.new.datasz = *(unsigned long int *)pos;
         break;
-    case LDC:
-        ins.args.ldc.idx = *(unsigned int *)pos;
+    case ILDC: case FLDC: case RLDC: case CLDC:
+        ins.args.xldc.idx = *(unsigned int *)pos;
         break;
     }
 
@@ -96,13 +84,13 @@ int is_instr_eq(struct ins expect, struct ins actual) {
         return expect.args.cconst.val == actual.args.fconst.val;
 
     case JUMP:
-        return expect.args.jump.addr == actual.args.jump.addr;
+        return expect.args.jxxx.addr == actual.args.jxxx.addr;
 
     case JPZ:
-        return expect.args.jpz.addr == actual.args.jpz.addr;
+        return expect.args.jxxx.addr == actual.args.jxxx.addr;
 
     case JPNZ:
-       return expect.args.jpnz.addr == actual.args.jpnz.addr;
+       return expect.args.jxxx.addr == actual.args.jxxx.addr;
 
     case ALTSP:
         return expect.args.altsp.m == actual.args.altsp.m;
@@ -132,18 +120,12 @@ int is_instr_eq(struct ins expect, struct ins actual) {
     case ISETDATA: case FSETDATA: case CSETDATA:
         return expect.args.xsetdata.offset == actual.args.xsetdata.offset;
 
-    case GETREF:
-        return expect.args.getref.offset == actual.args.getref.offset;
-
-    case SETREF:
-        return expect.args.setref.offset == actual.args.setref.offset;
-
     case NEW:
         return expect.args.new.refcnt == actual.args.new.refcnt &&
                expect.args.new.datasz == actual.args.new.datasz;
 
-    case LDC:
-        return expect.args.ldc.idx == actual.args.ldc.idx;
+    case ILDC: case FLDC: case RLDC: case CLDC:
+        return expect.args.xldc.idx == actual.args.xldc.idx;
     default:
         return 1;
     }

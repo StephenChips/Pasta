@@ -54,7 +54,7 @@ void RawcodeGen_AddIntConst(RawcodeGen *self, int ival);
 
 void RawcodeGen_AddCharConst(RawcodeGen *self, char cval); 
 
-void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval); /* need to be modified */
+void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval);
 
 int RawcodeGen_AddInstruction(RawcodeGen *self, struct ins ins);
 

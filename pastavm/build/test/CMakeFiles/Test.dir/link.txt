@@ -1,1 +1,1 @@
-/usr/bin/cc     CMakeFiles/Test.dir/test.c.o  -o Test  -L/home/dongcai/Documents/pasta/pastavm/lib/check -rdynamic ../lib/cjson/libcjson.a ../src/libvmcore.a -lcheck -Wl,-rpath,/home/dongcai/Documents/pasta/pastavm/lib/check 
+/usr/bin/cc     CMakeFiles/Test.dir/test.c.o  -o Test  -L/home/dongcai/Documents/pasta/pastavm/lib/check -rdynamic ../lib/cjson/libcjson.a ../src/libcodegen.a ../src/libvmcore.a -lcheck ../lib/cjson/libcjson.a -Wl,-rpath,/home/dongcai/Documents/pasta/pastavm/lib/check 

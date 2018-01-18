@@ -91,7 +91,9 @@ Test_EXTERNAL_OBJECTS =
 test/Test: test/CMakeFiles/Test.dir/test.c.o
 test/Test: test/CMakeFiles/Test.dir/build.make
 test/Test: lib/cjson/libcjson.a
+test/Test: src/libcodegen.a
 test/Test: src/libvmcore.a
+test/Test: lib/cjson/libcjson.a
 test/Test: test/CMakeFiles/Test.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/dongcai/Documents/pasta/pastavm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable Test"
 	cd /home/dongcai/Documents/pasta/pastavm/build/test && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Test.dir/link.txt --verbose=$(VERBOSE)

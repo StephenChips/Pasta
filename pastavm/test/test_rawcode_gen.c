@@ -129,12 +129,12 @@ do { \
     struct insqueue *ins_queue_item;\
 \
     ins.id = JUMP; \
-    ins.args.jump.addr = (_addr); \
+    ins.args.jxxx.addr = (_addr); \
 \
     CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
-    ck_assert_int_eq(ins_queue_item->ins.args.jump.addr, ins.args.jump.addr); \
+    ck_assert_int_eq(ins_queue_item->ins.args.jxxx.addr, ins.args.jxxx.addr); \
     RawcodeGen_Delete(codegen); \
 } while (0) 
 
@@ -145,12 +145,12 @@ do { \
     struct insqueue *ins_queue_item;\
 \
     ins.id = JPZ; \
-    ins.args.jpz.addr = (_addr); \
+    ins.args.jxxx.addr = (_addr); \
 \
     CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
-    ck_assert_int_eq(ins_queue_item->ins.args.jpz.addr, ins.args.jpz.addr); \
+    ck_assert_int_eq(ins_queue_item->ins.args.jxxx.addr, ins.args.jxxx.addr); \
     RawcodeGen_Delete(codegen); \
 } while (0) 
 
@@ -161,12 +161,12 @@ do { \
     struct insqueue *ins_queue_item;\
 \
     ins.id = JPNZ; \
-    ins.args.jpz.addr = (_addr); \
+    ins.args.jxxx.addr = (_addr); \
 \
     CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
-    ck_assert_int_eq(ins_queue_item->ins.args.jpnz.addr, ins.args.jpnz.addr); \
+    ck_assert_int_eq(ins_queue_item->ins.args.jxxx.addr, ins.args.jxxx.addr); \
     RawcodeGen_Delete(codegen); \
 } while (0) 
 
@@ -275,19 +275,19 @@ do { \
     RawcodeGen_Delete(codegen); \
 } while (0) 
 
-#define CHECK_ADD_LDC_TO_RAWCODE_GENERATOR(_idx)  \
+#define CHECK_ADD_ILDC_TO_RAWCODE_GENERATOR(_idx)  \
 do { \
     RawcodeGen *codegen = RawcodeGen_Init(); \
     struct ins ins;\
     struct insqueue *ins_queue_item;\
 \
-    ins.id = LDC; \
+    ins.id = ILDC; \
     ins.args.ldc.idx = (_idx); \
 \
     CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
-    ck_assert_int_eq(ins_queue_item->ins.args.ldc.idx, ins.args.ldc.idx); \
+    ck_assert_int_eq(ins_queue_item->ins.args.xldc.idx, ins.args.xldc.idx); \
 \
     RawcodeGen_Delete(codegen); \
 } while (0) 
@@ -380,23 +380,26 @@ START_TEST(test_rawcode_generate_2) /* one instruction and no constant */
 }
 END_TEST
 
-START_TEST(test_rawcode_generate_3) /* two instructions and no constant */
+START_TEST(test_rawcode_generate_3) /* three instructions and no constant */
 {
     RawcodeGen *codegen = RawcodeGen_Init();
     
-    struct ins ins[2];
-    int insnum = 2;
+    struct ins ins[3];
+    int insnum = 3;
 
     ins[0].id = ICONST;
     ins[0].args.iconst.val = 10;
+    ins[1].id = ICONST;
+    ins[1].args.iconst.val = 100;
+    ins[2].id = IADD;
 
-    ins[1].id = IGETDATA;
-
-    int inslist_len = __GetInsSize(ins[0]) + __GetInsSize(ins[1]);
+    int inslist_len = __GetInsSize(ins[0]) + __GetInsSize(ins[1]) + __GetInsSize(ins[2]);
     int cstpool_size = __CST_COUNT_SIZE;
+
 
     RawcodeGen_AddInstruction(codegen, ins[0]);
     RawcodeGen_AddInstruction(codegen, ins[1]);
+    RawcodeGen_AddInstruction(codegen, ins[2]);
 
     Rawcode *rawcode = RawcodeGen_Generate(codegen);
 
@@ -404,12 +407,13 @@ START_TEST(test_rawcode_generate_3) /* two instructions and no constant */
     ck_assert_int_eq(__RAWCODE_OFFSET(rawcode->rawcode)->inslist, __RAWCODE_OFFSET_SIZE + cstpool_size);
 
     void *cstpool = (void *)((char *)rawcode->rawcode + __RAWCODE_OFFSET_SIZE);
-    void *inslist = (void *)((char *)rawcode->rawcode + __RAWCODE_OFFSET_SIZE + cstpool_size); 
+    void *inslist = (void *)((char *)rawcode->rawcode + __RAWCODE_OFFSET_SIZE + cstpool_size);
 
     ck_assert_int_eq(__INS_LENGTH(inslist), inslist_len);
   
     int i;
-    char *cursor = __INS_ARRAY(inslist);
+    unsigned char *cursor = __INS_ARRAY(inslist);
+    printf("%ld\n", cursor - (unsigned char *)rawcode->rawcode);
     for (i = 0; i < insnum; i++) {
         struct ins instr;
         size_t size = __GetInsSize(ins[i]); 
@@ -417,6 +421,7 @@ START_TEST(test_rawcode_generate_3) /* two instructions and no constant */
         ck_assert_int_eq(is_instr_eq(ins[i], instr), 1);
         cursor += size;
     } 
+
     RawcodeGen_Delete(codegen);
     Rawcode_Delete(rawcode);
 }
@@ -579,12 +584,24 @@ START_TEST(Test_RawcodeGen_AddFConst_6)
 }
 END_TEST
 
+
 START_TEST(Test_RawcodeGen_AddFConst_7)
 {
     CHECK_ADD_FCONST_TO_RAWCODE_GENERATOR(- 10141234123352343.4331);
 }
 END_TEST
 
+START_TEST(Test_RawcodeGen_AddFConst_8)
+{
+    CHECK_ADD_FCONST_TO_RAWCODE_GENERATOR(- 1E30l);
+}
+END_TEST
+
+START_TEST(Test_RawcodeGen_AddFConst_9)
+{
+    CHECK_ADD_FCONST_TO_RAWCODE_GENERATOR(1E30l);
+}
+END_TEST
 
 START_TEST(Test_RawcodeGen_AddCConst_1)
 {
@@ -807,6 +824,7 @@ Suite *test_rawcode_generator() {
     tcase_add_test(test_add_fconst, Test_RawcodeGen_AddFConst_5);
     tcase_add_test(test_add_fconst, Test_RawcodeGen_AddFConst_6);
     tcase_add_test(test_add_fconst, Test_RawcodeGen_AddFConst_7);
+    tcase_add_test(test_add_fconst, Test_RawcodeGen_AddFConst_8);
 
     /* test add cconst instruction */
     tcase_add_test(test_add_cconst, Test_RawcodeGen_AddCConst_1);

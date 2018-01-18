@@ -177,8 +177,8 @@ cjson_LIB_DEPENDS:STATIC=
 //Dependencies for target
 codegen_LIB_DEPENDS:STATIC=
 
-//Dependencies for target
-vmcore_LIB_DEPENDS:STATIC=
+//Dependencies for the target
+vmcore_LIB_DEPENDS:STATIC=general;cjson;
 
 
 ########################

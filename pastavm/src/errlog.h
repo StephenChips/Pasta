@@ -22,10 +22,12 @@
 #define ILLEGAL_ARG_COUNT "VMError: The Count of Argument Should be Positive."
 #define NO_SUCH_SYSFUNC "VMError: No Such System Function."
 #define NO_STACK_FRAME "VMError: No Stack Frame."
+#define UNKNOWN_INS "VMError: Unknown Instruction."
+
 #define NO_EXN_HDLR "VMError: No Exception Handler on the Stack."
 
 #define IDX_OUT_OF_RANGE "Exception: Index Out Of Range."
-#define NIL_RERERENCE_EXCEPTION "Exception: Ni Reference Exception."
+#define NIL_RERERENCE_EXCEPTION "Exception: Nil Reference Exception."
 #define LOG_ERROR(err_type, themsg) \
 do { \
     error_logger.err = err_type; \
