@@ -82,14 +82,13 @@ do {\
 #define __HEAPITEM_GETITEM(_h, _idx) (__HEAPITEM_DATA(h)[(_idx)])
 
 /* MACROS FOR STACK LOCATION */
+#define __CURRENT_ITEM_COUNT(_vm) ((item_t)((_vm).registers.sp - (_vm).stack.stack))
 #define __AVALIABLE_STKSZ(_vm) ((_vm).stack.capacity - ((_vm).registers.sp - (_vm).stack.stack))
 
 #define __IS_STACK_ADDR(vm, ref)  ((_ref) >= (_vm).stack.stack && (_ref) <= (_vm).stack.stack + (_vm.stack.capacity))
 #define __IS_STK_FREAM_EXISTS(_vm) ((_vm).registers.bp < 0)
 #define __IS_EXN_HDR_EXISTS(_vm) ((_vm).registers.hr < 0)
 
-#define __IS_IDX_OUT_OF_REF_AREA(_heapitem, _idx) ((_idx) > __HEAPITEM_REF_COUNT(_heapitem))
-#define __IS_OFFSET_OUT_OF_DATA_AREA(_heapitem, _offset, _size) ((_offset) > (_heapitem) - (_size))
 #define __IS_IDX_OUT_OF_CSTPOOL(_cstpool, idx) ((_idx) > __CST_COUNT(_cstpool))
 
 /* MACROS FOR INS */

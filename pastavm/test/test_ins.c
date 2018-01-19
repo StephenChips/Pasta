@@ -34,7 +34,7 @@ do {\
 \
     Rawcode_Delete(rawcode);\
     halt();\
-} while (0)\
+} while (0)
 
 #define TEST_FCONST(_fval) \
 do {\
@@ -853,6 +853,61 @@ do {\
     halt();\
 } while (0)
 
+#define TEST_ALTSP(_origin, _m) \
+do {\
+    RawcodeGen *codegen = RawcodeGen_Init();\
+    FILE *fp = fopen(SAMPLE_RAWCODE_FILE_NAME, "wb");\
+    long long int ret;\
+    struct ins ins;\
+\
+    ins.id = ALTSP;\
+    ins.args.altsp.m = (_m);\
+\
+    RawcodeGen_AddInstruction(codegen, ins);\
+\
+    Rawcode *rawcode = RawcodeGen_Generate(codegen);\
+    fwrite(rawcode->rawcode, rawcode->size, 1, fp);\
+    fclose(fp);\
+\
+    load(SAMPLE_RAWCODE_FILE_NAME);\
+\
+    vm.registers.sp += (_origin);\
+    execute(SAMPLE_RAWCODE_FILE_NAME);\
+\
+    ck_assert_ptr_eq(vm.stack.stack + (_origin) + (_m), vm.registers.sp);\
+\
+    Rawcode_Delete(rawcode);\
+   halt();\
+}  while (0)
+
+#define TEST_ALTSP_ILLARGS(_origin, _m) \
+do {\
+    RawcodeGen *codegen = RawcodeGen_Init();\
+    FILE *fp = fopen(SAMPLE_RAWCODE_FILE_NAME, "wb");\
+    long long int ret;\
+    struct ins ins;\
+\
+    ins.id = ALTSP;\
+    ins.args.altsp.m = (_m);\
+\
+    RawcodeGen_AddInstruction(codegen, ins);\
+\
+    Rawcode *rawcode = RawcodeGen_Generate(codegen);\
+    fwrite(rawcode->rawcode, rawcode->size, 1, fp);\
+    fclose(fp);\
+\
+    vm.registers.sp = vm.stack.stack + (_origin);\
+\
+    load(SAMPLE_RAWCODE_FILE_NAME);\
+    execute(SAMPLE_RAWCODE_FILE_NAME);\
+\
+    ck_assert_int_eq(error_logger.err, INTERNAL_ERROR);\
+    ck_assert_str_eq(error_logger.msg, ILLEGAL_ALTSP_ARGS);\
+\
+    Rawcode_Delete(rawcode);\
+    halt();\
+} while (0)
+
 START_TEST(test_iconst_1) 
 {
     TEST_ICONST(10);
@@ -1317,6 +1372,82 @@ START_TEST(test_storeerr_2)
 }
 END_TEST
 
+START_TEST(test_altsp_1)
+{
+    TEST_ALTSP(10, -3);
+}
+END_TEST
+
+START_TEST(test_altsp_2)
+{
+    TEST_ALTSP(10, 3);
+}
+END_TEST
+
+START_TEST(test_altsp_3)
+{
+    TEST_ALTSP(10, 0);
+}
+END_TEST
+
+START_TEST(test_altsperr_1)
+{
+    TEST_ALTSP_ILLARGS(10, 100);
+}
+END_TEST
+
+START_TEST(test_altsperr_2)
+{
+    TEST_ALTSP_ILLARGS(10, -100);
+}
+END_TEST
+
+START_TEST(test_getsp)
+{
+    RawcodeGen *codegen = RawcodeGen_Init();
+    FILE *fp = fopen(SAMPLE_RAWCODE_FILE_NAME, "wb");
+    double ret;
+    struct ins ins;
+
+    ins.id = GETSP;
+    RawcodeGen_AddInstruction(codegen, ins);
+    Rawcode *rawcode = RawcodeGen_Generate(codegen);
+    fwrite(rawcode->rawcode, rawcode->size, 1, fp);
+    fclose(fp);
+
+    load(SAMPLE_RAWCODE_FILE_NAME);
+    execute(SAMPLE_RAWCODE_FILE_NAME);
+
+    ck_assert_int_eq(__ITEM_GET_INT(vm.registers.sp - 1), (int)(long long int)(vm.registers.sp - 1));
+
+    Rawcode_Delete(rawcode);
+    halt();
+}
+END_TEST
+
+START_TEST(test_getbp)
+{
+    RawcodeGen *codegen = RawcodeGen_Init();
+    FILE *fp = fopen(SAMPLE_RAWCODE_FILE_NAME, "wb");
+    double ret;
+    struct ins ins;
+
+    ins.id = GETBP;
+    RawcodeGen_AddInstruction(codegen, ins);
+    Rawcode *rawcode = RawcodeGen_Generate(codegen);
+    fwrite(rawcode->rawcode, rawcode->size, 1, fp);
+    fclose(fp);
+
+    load(SAMPLE_RAWCODE_FILE_NAME);
+    execute(SAMPLE_RAWCODE_FILE_NAME);
+
+    ck_assert_int_eq(__ITEM_GET_INT(vm.registers.sp - 1), (int)(long long int)vm.registers.bp);
+
+    Rawcode_Delete(rawcode);
+    halt();
+}
+END_TEST
+
 Suite *test_ins() {
 
     Suite *s = suite_create("Test Instructions");
@@ -1426,6 +1557,15 @@ Suite *test_ins() {
     tcase_add_test(test_stkacc, test_storeerr_1); 
     tcase_add_test(test_stkacc, test_storeerr_2); 
 
+    TCase *test_regacc = tcase_create("Test Registers Access Instruction");
+    tcase_add_test(test_regacc, test_getsp);
+    tcase_add_test(test_regacc, test_getbp);
+    tcase_add_test(test_regacc, test_altsp_1);
+    tcase_add_test(test_regacc, test_altsp_2);
+    tcase_add_test(test_regacc, test_altsp_3);
+    tcase_add_test(test_regacc, test_altsperr_1);
+    tcase_add_test(test_regacc, test_altsperr_2);
+
     suite_add_tcase(s, test_xconst);
     suite_add_tcase(s, test_add);
     suite_add_tcase(s, test_sub);
@@ -1436,6 +1576,7 @@ Suite *test_ins() {
     suite_add_tcase(s, test_xlt);
     suite_add_tcase(s, test_not);
     suite_add_tcase(s, test_stkacc);
+    suite_add_tcase(s, test_regacc);
 
     return s;
 }

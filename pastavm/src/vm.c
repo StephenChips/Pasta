@@ -5,6 +5,8 @@
 #include "rawcode.h"
 #include "vm.h"
 
+#define __ABS(a) ((a) < 0 ? (-a) : a)
+
 int load(const char *src) {
 
     struct conf config;
@@ -415,6 +417,26 @@ int execute(void) {
             vm.registers.pc += INS_STORE_SIZE;
             vm.registers.sp++;
             break;
+        case GETSP:
+            __ITEM_SET_INT(vm.registers.sp, (int)(long long int)vm.registers.sp);
+           vm.registers.sp++;
+           vm.registers.pc += INS_GETSP_SIZE;
+           break;
+        case GETBP:
+            __ITEM_SET_INT(vm.registers.sp, (int)(long long int)vm.registers.bp);
+           vm.registers.sp++;
+           vm.registers.pc += INS_GETBP_SIZE;
+           break;
+        case ALTSP:
+           itmp1 = *(signed long int *)(vm.registers.pc + sizeof(char));
+           if (__ABS(itmp1) > __CURRENT_ITEM_COUNT(vm)) {
+               error_logger.err = INTERNAL_ERROR;
+               error_logger.msg = ILLEGAL_ALTSP_ARGS;
+               return -1;
+           }
+           vm.registers.sp += *(signed long int *)(vm.registers.pc + sizeof(char));
+           vm.registers.pc += INS_ALTSP_SIZE;
+           break;
         default:
             LOG_ERROR(INTERNAL_ERROR, UNKNOWN_INS);
             return -1;

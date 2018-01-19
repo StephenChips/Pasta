@@ -82,7 +82,9 @@
 #define INS_DUP_SIZE (sizeof(char))
 #define INS_LOAD_SIZE (sizeof(char))
 #define INS_STORE_SIZE (sizeof(char))
-
+#define INS_GETSP_SIZE (sizeof(char))
+#define INS_GETBP_SIZE (sizeof(char))
+#define INS_ALTSP_SIZE (sizeof(char) + sizeof(signed long int))
 union ins_args {
     struct {
         int val;

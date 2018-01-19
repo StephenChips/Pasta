@@ -388,7 +388,10 @@ size_t __GetInsSize(struct ins ins) {
     case ILDC: case FLDC: case CLDC: case RLDC:
         size = sizeof(unsigned char) + sizeof(unsigned int);
         break;
-
+    
+    case ALTSP:
+        size = sizeof(unsigned char) + sizeof(signed long int);
+        break;
     default:
        size = sizeof(unsigned char); 
        break;
