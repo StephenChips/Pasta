@@ -908,6 +908,115 @@ do {\
     halt();\
 } while (0)
 
+/* generate a sequence of rawcode with format:
+ * jump (_addr)
+ * iconst 1 
+ * iconst 2
+ * ...
+ * iconst (_inslen)
+ */
+#define TEST_JUMP(_inslen, _addr)\
+do {\
+    RawcodeGen *codegen = RawcodeGen_Init();\
+    FILE *fp = fopen(SAMPLE_RAWCODE_FILE_NAME, "wb");\
+    long long int ret;\
+    struct ins ins[(_inslen) + 1];\
+    int i;\
+\
+    ins[0].id = JUMP;\
+    ins[1].args.jxxx.addr = (_addr);\
+    for (i = 1; i <= (_inslen); i++) {\
+        ins[i].id = ICONST;\
+        ins[i].args.iconst.val = i;\
+    }\
+\
+    for (i = 0; i < (_inslen) + 1; i++) {\
+        RawcodeGen_AddInstruction(codegen, ins[i]);\
+    }\
+\
+    Rawcode *rawcode = RawcodeGen_Generate(codegen);\
+    fwrite(rawcode->rawcode, rawcode->size, 1, fp);\
+    fclose(fp);\
+\
+    load(SAMPLE_RAWCODE_FILE_NAME);\
+\
+    vm.instructions.length = (_inslen);\
+    execute(SAMPLE_RAWCODE_FILE_NAME);\
+\
+    ck_assert_ptr_eq(vm.registers.pc, vm.instructions.inslist + ins[0].args.jxxx.addr);\
+\
+    Rawcode_Delete(rawcode);\
+    halt();\
+} while (0)
+
+#define TEST_JUMP_ILLARGS(_inslen, _addr)\
+do {\
+    RawcodeGen *codegen = RawcodeGen_Init();\
+    FILE *fp = fopen(SAMPLE_RAWCODE_FILE_NAME, "wb");\
+    long long int ret;\
+    struct ins ins[(_inslen) + 1];\
+    int i;\
+\
+    ins[0].id = JUMP;\
+    ins[1].args.jxxx.addr = (_addr);\
+    for (i = 1; i <= (_inslen); i++) {\
+        ins[i].id = ICONST;\
+        ins[i].args.iconst.val = i;\
+    }\
+\
+    for (i = 0; i < (_inslen) + 1; i++) {\
+        RawcodeGen_AddInstruction(codegen, ins[i]);\
+    }\
+\
+    Rawcode *rawcode = RawcodeGen_Generate(codegen);\
+    fwrite(rawcode->rawcode, rawcode->size, 1, fp);\
+    fclose(fp);\
+\
+    load(SAMPLE_RAWCODE_FILE_NAME);\
+    vm.instructions.length = (_inslen);\
+    execute(SAMPLE_RAWCODE_FILE_NAME);\
+\
+    ck_assert_int_eq(error_logger.err, INTERNAL_ERROR);\
+    ck_assert_str_eq(error_logger.msg, ILLEGAL_JUMPING_ADDR);\
+\
+    Rawcode_Delete(rawcode);\
+    halt();\
+} while (0)
+
+#define TEST_CALL(_m, _a)\
+do {\
+    RawcodeGen *codegen = RawcodeGen_Init();\
+    FILE *fp = fopen(SAMPLE_RAWCODE_FILE_NAME, "wb");\
+    long long int ret;\
+    struct ins ins[(_inslen) + 1];\
+    int i;\
+\
+    ins[0].id = CALL;\
+    ins[1].args.jxxx.addr = (_addr);\
+    for (i = 1; i <= (_inslen); i++) {\
+        ins[i].id = ICONST;\
+        ins[i].args.iconst.val = i;\
+    }\
+\
+    for (i = 0; i < (_inslen) + 1; i++) {\
+        RawcodeGen_AddInstruction(codegen, ins[i]);\
+    }\
+\
+    Rawcode *rawcode = RawcodeGen_Generate(codegen);\
+    fwrite(rawcode->rawcode, rawcode->size, 1, fp);\
+    fclose(fp);\
+\
+    load(SAMPLE_RAWCODE_FILE_NAME);\
+    vm.instructions.length = (_inslen);\
+    execute(SAMPLE_RAWCODE_FILE_NAME);\
+\
+    ck_assert_int_eq(error_logger.err, INTERNAL_ERROR);\
+    ck_assert_str_eq(error_logger.msg, ILLEGAL_JUMPING_ADDR);\
+\
+    Rawcode_Delete(rawcode);\
+    halt();\
+} while (0)
+
 START_TEST(test_iconst_1) 
 {
     TEST_ICONST(10);
@@ -1448,6 +1557,44 @@ START_TEST(test_getbp)
 }
 END_TEST
 
+/* cannot test, need to adjust interface */
+/*
+START_TEST(test_jump_1)
+{
+    TEST_JUMP(120, 50);
+}
+END_TEST
+
+START_TEST(test_jump_2)
+{
+    TEST_JUMP(120, 10);
+}
+END_TEST
+
+START_TEST(test_jump_3)
+{
+    TEST_JUMP(120, 119);
+}
+END_TEST
+
+START_TEST(test_jumperr_1)
+{
+    TEST_JUMP_ILLARGS(120, -1);
+}
+END_TEST
+
+START_TEST(test_jumperr_2)
+{
+    TEST_JUMP_ILLARGS(120, 120);
+}
+END_TEST
+
+START_TEST(test_jumperr_3)
+{
+    TEST_JUMP_ILLARGS(120, 200);
+}
+END_TEST
+*/
 Suite *test_ins() {
 
     Suite *s = suite_create("Test Instructions");

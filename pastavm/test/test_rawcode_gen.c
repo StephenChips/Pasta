@@ -204,39 +204,21 @@ do { \
     RawcodeGen_Delete(codegen); \
 } while (0) 
 
-#define CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(_new_argnum, _old_argnum, _addr)  \
+#define CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(_argnum, _addr)  \
 do { \
     RawcodeGen *codegen = RawcodeGen_Init(); \
     struct ins ins;\
     struct insqueue *ins_queue_item;\
 \
     ins.id = TCALL; \
-    ins.args.tcall.old_argnum = (_old_argnum); \
-    ins.args.tcall.new_argnum = (_new_argnum); \
-    ins.args.tcall.addr = (_addr); \
+    ins.args.call.argnum = (_argnum); \
+    ins.args.call.addr = (_addr); \
 \
     CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
-    ck_assert_int_eq(ins_queue_item->ins.args.tcall.old_argnum, ins.args.tcall.old_argnum); \
-    ck_assert_int_eq(ins_queue_item->ins.args.tcall.new_argnum, ins.args.tcall.new_argnum); \
+    ck_assert_int_eq(ins_queue_item->ins.args.tcall.argnum, ins.args.tcall.argnum); \
     ck_assert_int_eq(ins_queue_item->ins.args.tcall.addr, ins.args.tcall.addr); \
-    RawcodeGen_Delete(codegen); \
-} while (0) 
-
-#define CHECK_ADD_SYSCALL_TO_RAWCODE_GENERATOR(_sysfuncid)  \
-do { \
-    RawcodeGen *codegen = RawcodeGen_Init(); \
-    struct ins ins;\
-    struct insqueue *ins_queue_item;\
-\
-    ins.id = TCALL; \
-    ins.args.syscall.sysfuncid = (_sysfuncid); \
-\
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
-\
-    ins_queue_item = codegen->ins_queue; \
-    ck_assert_int_eq(ins_queue_item->ins.args.syscall.sysfuncid, ins.args.syscall.sysfuncid); \
     RawcodeGen_Delete(codegen); \
 } while (0) 
 
@@ -731,59 +713,26 @@ END_TEST
 
 START_TEST(Test_RawcodeGen_AddTcall_1)
 {
-   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(0, 0, 0x00000000);
+   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(0, 0x00000000);
 }
 END_TEST
 
 START_TEST(Test_RawcodeGen_AddTcall_2)
 {
-   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(10000, 0, 0x00000000);
+   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(10000, 0x00000000);
 }
 END_TEST
+
 
 START_TEST(Test_RawcodeGen_AddTcall_3)
 {
-   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(0, 10000, 0x00000000);
+   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(0, 0xABCDEFAB);
 }
 END_TEST
+
 START_TEST(Test_RawcodeGen_AddTcall_4)
 {
-   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(10000, 10000, 0x00000000);
-}
-END_TEST
-
-START_TEST(Test_RawcodeGen_AddTcall_5)
-{
-   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(0, 0, 0xABCDEFAB);
-}
-END_TEST
-START_TEST(Test_RawcodeGen_AddTcall_6)
-{
-   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(10000, 0, 0xABCDEFAB);
-}
-END_TEST
-
-START_TEST(Test_RawcodeGen_AddTcall_7)
-{
-   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(0, 10000, 0xABCDEFAB);
-}
-END_TEST
-
-START_TEST(Test_RawcodeGen_AddTcall_8)
-{
-   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(10000, 10000, 0xABCDEFAB);
-}
-END_TEST
-
-START_TEST(Test_RawcodeGen_AddSyscall_1)
-{
-   CHECK_ADD_SYSCALL_TO_RAWCODE_GENERATOR(1);
-}
-END_TEST
-
-START_TEST(Test_RawcodeGen_AddSyscall_2)
-{
-   CHECK_ADD_SYSCALL_TO_RAWCODE_GENERATOR(1 << 31);
+   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(10000, 0xABCDEFAB);
 }
 END_TEST
 
@@ -798,7 +747,6 @@ Suite *test_rawcode_generator() {
           *test_add_altsp = tcase_create("Altsp"),
           *test_add_call = tcase_create("Call"),
           *test_add_tcall = tcase_create("TCall"),
-          *test_add_syscall = tcase_create("Syscall"),
           *test_generate = tcase_create("Generate");
 
     /* test add cosntants */
@@ -862,10 +810,6 @@ Suite *test_rawcode_generator() {
     tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_2);
     tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_3);
     tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_4);
-    tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_5);
-    tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_6);
-    tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_7);
-    tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_8);
 
     tcase_add_test(test_generate, test_rawcode_generate_1);
     tcase_add_test(test_generate, test_rawcode_generate_2);

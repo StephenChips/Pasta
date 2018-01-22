@@ -33,6 +33,7 @@
 #define __ITEM_DISABLE_FLAG(_itemptr) (*(_itemptr) = *(_itemptr) & (0xFFFFFFFFFFFFFFFF - 1))
 #define __ITEM_ENABLE_FLAG(_item) (*(_item) = *(_item) | 0x1)
 
+
 #define __ITEM_SET_INT(_itemptr, _ival) \
 do { \
     *(_itemptr) = (long)(_ival) << 1; \
@@ -86,8 +87,15 @@ do {\
 #define __AVALIABLE_STKSZ(_vm) ((_vm).stack.capacity - ((_vm).registers.sp - (_vm).stack.stack))
 
 #define __IS_STACK_ADDR(vm, ref)  ((_ref) >= (_vm).stack.stack && (_ref) <= (_vm).stack.stack + (_vm.stack.capacity))
-#define __IS_STK_FREAM_EXISTS(_vm) ((_vm).registers.bp < 0)
-#define __IS_EXN_HDR_EXISTS(_vm) ((_vm).registers.hr < 0)
+#define __IS_STK_FREAM_EXISTS(_vm) ((_vm).registers.bp != NULL)
+#define __IS_EXN_HDR_EXISTS(_vm) ((_vm).registers.hr != NULL)
+
+#define __STKFRAME_RETADDR(_bp) __ITEM_GET_INT(_bp)
+#define __STKFRAME_OLDBP(_bp) __ITEM_GET_INT((_bp) + 1)
+
+#define __EXNHDR_EXNID(_hr) __ITEM_GET_INT(_hr)
+#define __EXNHDR_JUMPOFFSET(_hr) __ITEM_GET_INT((_hr) + 1)
+#define __EXNHDR_OUTERHDR(_hr) __ITEM_GET_INT((_hr) + 2)
 
 #define __IS_IDX_OUT_OF_CSTPOOL(_cstpool, idx) ((_idx) > __CST_COUNT(_cstpool))
 

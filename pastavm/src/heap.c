@@ -14,7 +14,7 @@ void *AllocateHeapItem(struct heap_item_info info) {
     __HEAPITEM_GC_FLAG(new_heap_item) = !info.gcflag;
     __HEAPITEM_ITEM_COUNT(new_heap_item) = info.item_count;
 
-    return new_heap_item;
+    return (char *)new_heap_item + __HEAPITEM_INFO_SIZE;
 }
 
 void *Heap_Allocate(Heap *self, size_t item_count) {
@@ -37,6 +37,17 @@ void *Heap_Allocate(Heap *self, size_t item_count) {
     vm.heap.list = new_heap_item->next;
 
     return new_heap_item->data;
+}
+
+void Heap_DeleteAll(Heap *self) {
+
+    struct heap_list *temp = self->list;
+
+    while (self->list != NULL) {
+        self->list = self->list->next;
+        free(temp);
+        temp = self->list;
+    }
 }
 
 void Heap_Gc(Heap *self) {

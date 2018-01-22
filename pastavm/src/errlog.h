@@ -3,6 +3,7 @@
 #define STACK_OVERFLOW_ERROR 2
 #define OUT_OF_MEMOERY_ERROR 3
 #define INTERNAL_ERROR 4
+#define EXCEPTION_RAISED 5
 
 #define OK "OK"
 #define CANNOT_OPEN_CONFIG_FILE "VMError: Cannot Open Configuration File" 
@@ -24,7 +25,7 @@
 #define NO_STACK_FRAME "VMError: No Stack Frame."
 #define UNKNOWN_INS "VMError: Unknown Instruction."
 
-#define NO_EXN_HDLR "VMError: No Exception Handler on the Stack."
+#define NO_EXN_HDR "VMError: No Exception Handler on the Stack."
 
 #define IDX_OUT_OF_RANGE "Exception: Index Out Of Range."
 #define NIL_RERERENCE_EXCEPTION "Exception: Nil Reference Exception."

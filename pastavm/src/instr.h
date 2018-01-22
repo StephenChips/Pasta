@@ -24,39 +24,30 @@
 #define CLT 0x14
 #define NOT 0x15
 #define DUP 0x16
-#define LOAD 0x1A
-#define STORE 0x1E
-#define GETBP  0x22
-#define GETSP  0x23
-#define ALTSP  0x24
-#define JUMP   0x25
-#define JPZ    0x26
-#define JPNZ   0x27
-#define CALL   0x28
-#define TCALL  0x29
-#define SYSCALL  0x2A
-#define RETURN   0x2B
-#define STOP     0x2C
-#define RAISE    0x2D
-#define PUSHEXN  0x2E
-#define POPEXN   0x2F
-#define IGETDATA 0x30
-#define FGETDATA 0x31
-#define CGETDATA 0x32
-#define RGETDATA 0x33
-#define ISETDATA 0x34
-#define FSETDATA 0x35
-#define CSETDATA 0x36
-#define RSETDATA 0x37
-#define NEW      0x38
-#define I2F      0x39
-#define I2C      0x3A
-#define F2I      0x3B
-#define C2I      0x3C
-#define ILDC     0x3D
-#define FLDC     0x3E
-#define CLDC     0x3F
-#define RLDC     0x40
+#define LOAD 0x17
+#define STORE 0x18
+#define GETBP  0x19
+#define GETSP  0x20
+#define ALTSP  0x21
+#define JUMP   0x22
+#define JPZ    0x23
+#define JPNZ   0x24
+#define CALL   0x25
+#define TCALL  0x26
+#define SYSCALL  0x27
+#define RETURN   0x28
+#define STOP     0x29
+#define RAISE    0x2A
+#define PUSHEXN  0x2B
+#define POPEXN   0x2C
+#define GETDATA  0x2D
+#define SETDATA  0x2E
+#define NEW      0x2F
+#define I2F      0x30
+#define I2C      0x31
+#define F2I      0x32
+#define C2I      0x33
+#define LDC     0x34
 
 #define INS_ICONST_SIZE (sizeof(char) + sizeof(int))
 #define INS_FCONST_SIZE (sizeof(char) + sizeof(double))
@@ -85,6 +76,25 @@
 #define INS_GETSP_SIZE (sizeof(char))
 #define INS_GETBP_SIZE (sizeof(char))
 #define INS_ALTSP_SIZE (sizeof(char) + sizeof(signed long int))
+#define INS_JUMP_SIZE (sizeof(char) + sizeof(unsigned long int))
+#define INS_JPZ_SIZE  (sizeof(char) + sizeof(unsigned long int))
+#define INS_JPNZ_SIZE (sizeof(char) + sizeof(unsigned long int))
+#define INS_CALL_SIZE (sizeof(char) + sizeof(unsigned int) + sizeof(unsigned long int))
+#define INS_TCALL_SIZE (sizeof(char) + sizeof(unsigned int) * 2 + sizeof(unsigned long int))
+#define INS_RETURN_SIZE (sizeof(char))
+#define INS_STOP_SIZE (sizeof(char))
+#define INS_RAISE_SIZE (sizeof(char) + sizeof(unsigned int))
+#define INS_PUSHEXN_SIZE (sizeof(char) + sizeof(unsigned int) + sizeof(unsigned long int))
+#define INS_POPEXN_SIZE (sizeof(char))
+#define INS_GETDATA_SIZE (sizeof(char))
+#define INS_SETDATA_SIZE (sizeof(char))
+#define INS_NEW_SIZE (sizeof(char) + sizeof(unsigned long int))
+#define INS_I2F_SIZE (sizeof(char))
+#define INS_I2C_SIZE (sizeof(char))
+#define INS_F2I_SIZE (sizeof(char))
+#define INS_C2I_SIZE (sizeof(char))
+#define INS_LDC_SIZE (sizeof(char))
+
 union ins_args {
     struct {
         int val;
@@ -104,14 +114,7 @@ union ins_args {
     struct {
        unsigned int argnum;
        unsigned long int addr;
-   } call;
-   struct {
-       unsigned int new_argnum, old_argnum;
-       unsigned long int addr;
-   } tcall;
-   struct {
-       unsigned int sysfuncid;
-   } syscall;
+   } call, tcall;
    struct {
        unsigned int exn;
    } raise;
@@ -120,17 +123,11 @@ union ins_args {
        unsigned long int addr;
    } pushexn;
    struct {
-       unsigned long int offset;
-   } xgetdata;
-   struct {
-       unsigned long int offset;
-   } xsetdata;
-   struct {
-       unsigned long int refcnt, datasz;
+       unsigned long int count;
    } new;
    struct {
        unsigned int idx;
-   } xldc; /* changed */
+   } ldc; /* changed */
 };
 
 struct ins {

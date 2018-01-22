@@ -7,7 +7,7 @@
 #include "rawcode.h"
 #include "heap.h"
 
-#define INS_UNDEF(ins) (((ins.id) < ICONST) || ((ins.id) > RLDC))
+#define INS_UNDEF(ins) (((ins.id) < ICONST) || ((ins.id) > LDC))
 
 RawcodeGen *RawcodeGen_Init() {
     
@@ -258,20 +258,10 @@ void __WriteIns(char *pos, struct ins ins) {
     case ALTSP:
         *(signed long int *)pos = ins.args.altsp.m;
         break;
-    case CALL:
+    case CALL: case TCALL:
         *(unsigned int *)pos = ins.args.call.argnum; 
         pos += sizeof(unsigned int);
         *(unsigned long int *)pos = ins.args.call.addr;
-        break;
-    case TCALL:
-        *(unsigned int *)pos = ins.args.tcall.new_argnum; 
-        pos += sizeof(unsigned int);
-        *(unsigned int *)pos = ins.args.tcall.old_argnum; 
-        pos += sizeof(unsigned int);
-        *(unsigned long int *)pos = ins.args.call.addr;
-        break;
-    case SYSCALL:
-        *(unsigned int *)pos = ins.args.syscall.sysfuncid;
         break;
     case RAISE:
         *(unsigned int *)pos = ins.args.raise.exn;
@@ -281,19 +271,11 @@ void __WriteIns(char *pos, struct ins ins) {
         pos += sizeof(unsigned int);
         *(unsigned long int *)pos = ins.args.pushexn.addr;
         break;
-    case IGETDATA: case FGETDATA: case CGETDATA: case RGETDATA:
-        *(unsigned long int *)pos = ins.args.xgetdata.offset;
-        break;
-    case ISETDATA: case FSETDATA: case CSETDATA: case RSETDATA:
-        *(unsigned long int *)pos = ins.args.xsetdata.offset;
-        break;
     case NEW:
-        *(unsigned long int *)pos = ins.args.new.refcnt;
-        pos += sizeof(unsigned long int);
-        *(unsigned long int *)pos = ins.args.new.datasz;
+        *(unsigned long int *)pos = ins.args.new.count;
         break;
-    case ILDC: case FLDC: case CLDC: case RLDC:
-        *(unsigned int *)pos = ins.args.xldc.idx;
+    case LDC:
+        *(unsigned int *)pos = ins.args.ldc.idx;
         break;
     }
 
@@ -384,14 +366,18 @@ size_t __GetInsSize(struct ins ins) {
     case POPEXN:
         size = sizeof(unsigned char) + sizeof(unsigned int) + sizeof (unsigned long int);
         break;
+    
+    case NEW:
+        size = INS_NEW_SIZE;
 
-    case ILDC: case FLDC: case CLDC: case RLDC:
+    case LDC:
         size = sizeof(unsigned char) + sizeof(unsigned int);
         break;
-    
+
     case ALTSP:
         size = sizeof(unsigned char) + sizeof(signed long int);
         break;
+
     default:
        size = sizeof(unsigned char); 
        break;

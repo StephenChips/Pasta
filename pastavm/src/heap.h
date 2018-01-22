@@ -22,6 +22,8 @@ struct heap_item_info {
 
 void *Heap_Allocate(Heap *self, size_t data_size);
 
+void Heap_DeleteAll(Heap *self);
+
 void Heap_Gc(Heap *self);
 
 void *AllocateHeapItem(struct heap_item_info info);

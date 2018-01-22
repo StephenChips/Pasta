@@ -20,27 +20,13 @@
 #define MIN_STACK_CAPACITY      ((unsigned long)1 << 19) /* 512 KB */
 #define MAX_STACK_CAPACITY      ((unsigned long)1 << 26) /* 64 MB */
 
-#define OPEN_VAL 1
-#define CLOSE_VAL 0
-#define __OPEN_RR(vm) ((_vm).registers.rr = RR_OPEN_VAL)
-#define __CLOSE_RR(vm) ((_vm).registers.rr = RR_CLOSE_VAL)
-#define __IS_RR_OPEN(vm) ((_vm).registers.rr == RR_OPEN_VAL)
-
-#define INIT_STK_REF_COUNT 0
 #define __CFNAME_HEAP_CAPACITY  "HeapCapacity"
 #define __CFNAME_STACK_CAPACITY "StackCapacity"
 #define __CFNAME_CONF_FILE_NAME "vm.conf"
 
-#define __STACK_REF_COUNT(_stack) \
-    ((vm.registers.bp < 0) ? (*(int *)vm.stack.stack) : (*(int *)vm.registers.bp))
-
 typedef long long int item_t;
 
-/* ITEMS IN A CONSTANTPOOL WOULD BE
- * 
- * 1. integer, float, char
- * 2. compound data type like array or record, with the form of heap item.
- */
+/* ITEMS IN THE CONSTANT POOL WOULD BE HEAP ITEMS */
 
 struct conf {
     unsigned long int stack_capacity, heap_capacity;
@@ -51,9 +37,10 @@ struct stack {
     item_t *stack;
 };
 
+/* These registers store offsets instead of real address */
 struct registers {
-    item_t *sp, *bp, *hr; /* stack registers */
-    char *pc; /* program counter */
+    item_t *sp, *bp, *hr; 
+    char *pc; 
 };
 
 struct inslist {

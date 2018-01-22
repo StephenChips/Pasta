@@ -5,7 +5,7 @@
 #include "rawcode.h"
 #include "vm.h"
 
-#define __ABS(a) ((a) < 0 ? (-a) : a)
+#define __ABS(_a) ((_a) < 0 ? - (_a) : (_a))
 
 int load(const char *src) {
 
@@ -239,7 +239,9 @@ int execute(void) {
 
     long long int itmp1, itmp2;
     double ftmp1, ftmp2;
-    void *rtmp1, *rtmp2;
+    item_t *rtmp1, *rtmp2;
+
+    int i;
 
     while (vm.registers.pc - vm.instructions.inslist < vm.instructions.length) {
         switch(*(vm.registers.pc)) {
@@ -437,6 +439,252 @@ int execute(void) {
            vm.registers.sp += *(signed long int *)(vm.registers.pc + sizeof(char));
            vm.registers.pc += INS_ALTSP_SIZE;
            break;
+        case JUMP:
+            itmp1 = *(unsigned long int *)(vm.registers.pc + sizeof(char));
+            if (itmp1 < 0 || itmp1 >= vm.instructions.length) {
+                error_logger.err = INTERNAL_ERROR;
+                error_logger.msg = ILLEGAL_JUMPING_ADDR;
+                return -1;
+            }
+            vm.registers.pc = vm.instructions.inslist + itmp1;
+            break;
+        case JPZ:
+            itmp1 = *(unsigned long int *)(vm.registers.pc + sizeof(char));
+            itmp2 = __ITEM_GET_INT(--vm.registers.sp); 
+
+            if (itmp1 < 0 || itmp1 >= vm.instructions.length) {
+                error_logger.err = INTERNAL_ERROR;
+                error_logger.msg = ILLEGAL_JUMPING_ADDR;
+                return -1;
+            }
+
+            if (itmp1 == 0) {
+                vm.registers.pc = vm.instructions.inslist + itmp1;
+            }
+            break;
+        case JPNZ:
+            itmp1 = *(unsigned long int *)(vm.registers.pc + sizeof(char));
+            itmp2 = __ITEM_GET_INT(--vm.registers.sp); 
+
+            if (itmp1 < 0 || itmp1 >= vm.instructions.length) {
+                error_logger.err = INTERNAL_ERROR;
+                error_logger.msg = ILLEGAL_JUMPING_ADDR;
+                return -1;
+            }
+
+            if (itmp1 != 0) {
+                vm.registers.pc = vm.instructions.inslist + itmp1;
+            }
+            break;
+        case CALL:
+            itmp1 = *(unsigned int *)(vm.registers.pc + sizeof(char));
+            itmp2 = *(unsigned long int *)(vm.registers.pc + sizeof(char) + sizeof(unsigned int));
+
+            /* if number of argument negetive */
+            if (itmp1 < 0) {
+                error_logger.err = INTERNAL_ERROR;
+                error_logger.msg = ILLEGAL_ARG_COUNT;
+                return -1;
+            }
+
+            /* if function start offset out of range */
+            if (itmp2 < 0 || itmp2 >= vm.instructions.length) {
+                error_logger.err = INTERNAL_ERROR;
+                error_logger.msg = ILLEGAL_JUMPING_ADDR;
+                return -1;
+            }
+
+            /* move up items with 2 offset, n equals the number of function's argument */
+            vm.registers.sp--;
+            for (i = 0; i < itmp1; i++) {
+                *(vm.registers.sp + 2) = *vm.registers.sp;
+                vm.registers.sp--;
+            }
+
+            /* store offsets instead of address */
+            __ITEM_SET_INT(vm.registers.sp, (unsigned int)(vm.registers.pc - vm.instructions.inslist)); /* return address */
+            __ITEM_SET_INT(vm.registers.sp + 1, (unsigned int)(vm.registers.bp - vm.stack.stack));      /* old stack frame base pointer */
+
+            vm.registers.pc = vm.instructions.inslist + itmp2;
+            vm.registers.bp = vm.registers.sp;
+            vm.registers.sp += 2;
+            break;
+
+        case TCALL:
+            itmp1 = *(unsigned int *)(vm.registers.pc + sizeof(char));
+            itmp2 = *(unsigned long int *)(vm.registers.pc + sizeof(char) + sizeof(unsigned int));
+
+            /* if number of argument negetive */
+            if (itmp1 < 0) {
+                error_logger.err = INTERNAL_ERROR;
+                error_logger.msg = ILLEGAL_ARG_COUNT;
+                return -1;
+            }
+
+            /* if function start offset out of range */
+            if (itmp2 < 0 || itmp2 >= vm.instructions.length) {
+                error_logger.err = INTERNAL_ERROR;
+                error_logger.msg = ILLEGAL_JUMPING_ADDR;
+                return -1;
+            }
+
+            for (i = itmp1 - 1; i >- 0; i--) {
+                (vm.registers.bp + 2)[i] = *vm.registers.sp;
+                vm.registers.sp--;
+            }
+
+            vm.registers.sp = vm.registers.bp + 2;
+            vm.registers.pc = vm.instructions.inslist + itmp2;
+
+            break;
+        case RETURN:
+            /* set program counter to the old context */
+            vm.registers.pc = vm.instructions.inslist + __STKFRAME_RETADDR(vm.registers.bp);
+
+            /* assign res to ret */
+            *vm.registers.bp = *(vm.registers.sp - 1);
+
+            /* delete current stack frame */
+            vm.registers.sp = vm.registers.bp + 1;
+
+            /* resume the old stack frame */
+            vm.registers.bp = vm.stack.stack + __STKFRAME_OLDBP(vm.registers.bp);
+            break;
+        case STOP:
+            Heap_DeleteAll(&(vm.heap));
+            vm.registers.sp = vm.stack.stack;
+            vm.registers.pc = vm.instructions.inslist;
+            vm.registers.bp = vm.registers.hr = NULL; 
+            return 0;
+        case RAISE:
+            /* raise exception if no handler is set */
+            if (vm.registers.hr == NULL) {
+                error_logger.err = EXCEPTION_RAISED;
+                return -1;
+            }
+
+            /* do loop and match exception id with exception id giving by instruction */
+            while (1) {
+                 itmp1 = *(unsigned int *)(vm.registers.pc + sizeof(char));
+
+                 /* matched, then jump to correspondence address */
+                 if (__EXNHDR_EXNID(vm.registers.hr) == itmp1) { 
+                     vm.registers.pc = vm.instructions.inslist + __EXNHDR_JUMPOFFSET(vm.registers.hr);
+                     break;
+                 } 
+                 /* unmatched, but has outer excepiton handlers */
+                 else if (__EXNHDR_OUTERHDR(vm.registers.hr) >= 0) {
+                     vm.registers.hr = vm.stack.stack + __EXNHDR_OUTERHDR(vm.registers.hr);
+                 }
+                 /* unmatched, no more outer exception handers */
+                 else {
+                     error_logger.err = EXCEPTION_RAISED;
+                     return -1;
+                 }
+             } 
+
+             break;
+        case PUSHEXN:
+            itmp1 = *(unsigned int *)(vm.registers.pc + sizeof(char));
+            itmp2 = *(unsigned long int *)(vm.registers.pc + sizeof(char) + sizeof(unsigned int));
+
+            __ITEM_SET_INT(vm.registers.sp, itmp1); /* store exception id */
+            vm.registers.sp++;
+            __ITEM_SET_INT(vm.registers.sp, itmp2); /* store jumping offset */
+            vm.registers.sp++;
+
+            /* store current exception handler's offset to stack */
+            if (vm.registers.hr == NULL) {
+                __ITEM_SET_INT(vm.registers.sp, -999);    
+            } else {
+                __ITEM_SET_INT(vm.registers.sp, vm.registers.hr - vm.stack.stack);
+            }
+            vm.registers.sp++;
+            vm.registers.pc += INS_NEW_SIZE;
+            break;
+        case POPEXN:
+            if (vm.registers.hr == NULL) {
+                error_logger.err = INTERNAL_ERROR;
+                error_logger.msg = NO_EXN_HDR;
+                return -1;
+            }
+
+            if (__EXNHDR_OUTERHDR(vm.registers.hr) <= 0) {
+                vm.registers.hr = NULL;
+            }
+            else {
+                vm.registers.hr = vm.stack.stack + __EXNHDR_OUTERHDR(vm.registers.hr);
+            }
+
+            vm.registers.sp -= 3;
+            vm.registers.pc += INS_POPEXN_SIZE;
+            break;
+        case NEW:
+            itmp1 = *(unsigned long int *)(vm.registers.pc + sizeof(char));
+            rtmp1 = Heap_Allocate(&(vm.heap), itmp1);
+            __ITEM_SET_REF(vm.registers.sp, rtmp1);
+            vm.registers.sp++;
+            vm.registers.pc += INS_NEW_SIZE;
+            break;
+
+        case GETDATA:
+            itmp1 = __ITEM_GET_INT(--vm.registers.sp);
+            rtmp1 = __ITEM_GET_REF(--vm.registers.sp);
+
+            *(vm.registers.sp) = rtmp1[itmp1];
+            vm.registers.sp++;
+            vm.registers.pc += INS_GETDATA_SIZE; 
+            break;
+        case SETDATA:
+            itmp1 = *(--vm.registers.sp);
+            itmp2 = __ITEM_GET_INT(--vm.registers.sp);
+            rtmp1 = __ITEM_GET_REF(--vm.registers.sp);
+
+            rtmp1[itmp2] = itmp1;
+            vm.registers.pc += INS_SETDATA_SIZE;
+            break;
+        case I2F:
+            ftmp1 = __ITEM_GET_INT(--vm.registers.sp);
+            __ITEM_SET_INT(vm.registers.sp, ftmp1);
+
+            vm.registers.sp++;
+            vm.registers.pc += INS_I2F_SIZE;
+            break;
+        case F2I:
+            itmp1 = __ITEM_GET_FLOAT(--vm.registers.sp);
+            __ITEM_SET_INT(vm.registers.sp, itmp1);
+
+            vm.registers.sp++;
+            vm.registers.pc += INS_F2I_SIZE;
+            break;
+        case C2I:
+            itmp1 = __ITEM_GET_CHAR(--vm.registers.sp);
+
+            __ITEM_SET_INT(vm.registers.sp, itmp1);
+            vm.registers.sp++;
+            vm.registers.pc += INS_C2I_SIZE;
+            break;
+        case I2C:
+            itmp1 = (char)__ITEM_GET_INT(--vm.registers.sp);
+            __ITEM_SET_CHAR(vm.registers.sp, itmp1);
+
+            vm.registers.sp++;
+            vm.registers.pc += INS_C2I_SIZE;
+            break;
+        case LDC:
+            itmp1 = *(unsigned int *)(vm.registers.pc + sizeof(char));
+
+            if (itmp1 >= vm.constant_pool.count) {
+                error_logger.err = INTERNAL_ERROR;
+                error_logger.msg = IDX_OUT_OF_RANGE;
+                return -1;
+            }
+            rtmp1 = (item_t *)(vm.constant_pool.offsets[itmp1] + __HEAPITEM_INFO_SIZE);
+
+            __ITEM_SET_REF(vm.registers.sp, rtmp1);
+            vm.registers.sp++;
+            vm.registers.pc += INS_LDC_SIZE;
+            break;
         default:
             LOG_ERROR(INTERNAL_ERROR, UNKNOWN_INS);
             return -1;
@@ -464,13 +712,7 @@ void __free_stack() {
 
 void __free_heap(){
 
-    struct heap_list *temp = vm.heap.list;
-
-    while (vm.heap.list != NULL) {
-        vm.heap.list = vm.heap.list->next;
-        free(temp);
-        temp = vm.heap.list;
-    }
+    Heap_DeleteAll(&(vm.heap));
 }
 
 int set_stack_capacity(size_t capacity) {
