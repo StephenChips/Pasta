@@ -3,6 +3,7 @@
 #include "cJSON.h"
 #include "errlog.h"
 #include "rawcode.h"
+#include "positions.h"
 #include "vm.h"
 
 #define __ABS(_a) ((_a) < 0 ? - (_a) : (_a))
@@ -240,6 +241,7 @@ int execute(void) {
     long long int itmp1, itmp2;
     double ftmp1, ftmp2;
     item_t *rtmp1, *rtmp2;
+    void *mtmp1;
 
     int i;
 
@@ -495,15 +497,14 @@ int execute(void) {
             }
 
             /* move up items with 2 offset, n equals the number of function's argument */
-            vm.registers.sp--;
             for (i = 0; i < itmp1; i++) {
-                *(vm.registers.sp + 2) = *vm.registers.sp;
                 vm.registers.sp--;
+                *(vm.registers.sp + 2) = *vm.registers.sp;
             }
 
             /* store offsets instead of address */
-            __ITEM_SET_INT(vm.registers.sp, (unsigned int)(vm.registers.pc - vm.instructions.inslist)); /* return address */
-            __ITEM_SET_INT(vm.registers.sp + 1, (unsigned int)(vm.registers.bp - vm.stack.stack));      /* old stack frame base pointer */
+            __ITEM_SET_INT(vm.registers.sp, (int)(vm.registers.pc - vm.instructions.inslist + INS_CALL_SIZE)); /* return address */
+            __ITEM_SET_INT(vm.registers.sp + 1, (int)(vm.registers.bp - vm.stack.stack));      /* old stack frame base pointer */
 
             vm.registers.pc = vm.instructions.inslist + itmp2;
             vm.registers.bp = vm.registers.sp;
@@ -528,9 +529,9 @@ int execute(void) {
                 return -1;
             }
 
-            for (i = itmp1 - 1; i >- 0; i--) {
-                (vm.registers.bp + 2)[i] = *vm.registers.sp;
+            for (i = itmp1 - 1; i >= 0; i--) {
                 vm.registers.sp--;
+                (vm.registers.bp + 2)[i] = *vm.registers.sp;
             }
 
             vm.registers.sp = vm.registers.bp + 2;
@@ -548,7 +549,7 @@ int execute(void) {
             vm.registers.sp = vm.registers.bp + 1;
 
             /* resume the old stack frame */
-            vm.registers.bp = vm.stack.stack + __STKFRAME_OLDBP(vm.registers.bp);
+            vm.registers.bp = vm.stack.stack + *(vm.registers.bp + 1);
             break;
         case STOP:
             Heap_DeleteAll(&(vm.heap));
@@ -568,8 +569,11 @@ int execute(void) {
                  itmp1 = *(unsigned int *)(vm.registers.pc + sizeof(char));
 
                  /* matched, then jump to correspondence address */
-                 if (__EXNHDR_EXNID(vm.registers.hr) == itmp1) { 
+                 if (__EXNHDR_EXNID(vm.registers.hr) == itmp1) {
                      vm.registers.pc = vm.instructions.inslist + __EXNHDR_JUMPOFFSET(vm.registers.hr);
+                     vm.registers.sp = vm.registers.hr;
+                     vm.registers.hr = (__EXNHDR_OUTERHDR(vm.registers.hr) < 0) ? NULL : (vm.stack.stack + __EXNHDR_OUTERHDR(vm.registers.hr));
+
                      break;
                  } 
                  /* unmatched, but has outer excepiton handlers */
@@ -600,7 +604,7 @@ int execute(void) {
                 __ITEM_SET_INT(vm.registers.sp, vm.registers.hr - vm.stack.stack);
             }
             vm.registers.sp++;
-            vm.registers.pc += INS_NEW_SIZE;
+            vm.registers.pc += INS_PUSHEXN_SIZE;
             break;
         case POPEXN:
             if (vm.registers.hr == NULL) {
@@ -609,14 +613,8 @@ int execute(void) {
                 return -1;
             }
 
-            if (__EXNHDR_OUTERHDR(vm.registers.hr) <= 0) {
-                vm.registers.hr = NULL;
-            }
-            else {
-                vm.registers.hr = vm.stack.stack + __EXNHDR_OUTERHDR(vm.registers.hr);
-            }
-
-            vm.registers.sp -= 3;
+            vm.registers.sp = vm.registers.hr;
+            (__EXNHDR_OUTERHDR(vm.registers.hr) <= 0) ? NULL : ((vm.stack.stack) + __EXNHDR_OUTERHDR(vm.registers.hr));
             vm.registers.pc += INS_POPEXN_SIZE;
             break;
         case NEW:
@@ -626,21 +624,20 @@ int execute(void) {
             vm.registers.sp++;
             vm.registers.pc += INS_NEW_SIZE;
             break;
-
         case GETDATA:
             itmp1 = __ITEM_GET_INT(--vm.registers.sp);
-            rtmp1 = __ITEM_GET_REF(--vm.registers.sp);
+            mtmp1 = __ITEM_GET_REF(--vm.registers.sp);
 
-            *(vm.registers.sp) = rtmp1[itmp1];
+            *(vm.registers.sp) = __HEAPITEM_GETITEM(mtmp1, itmp1);
             vm.registers.sp++;
             vm.registers.pc += INS_GETDATA_SIZE; 
             break;
         case SETDATA:
             itmp1 = *(--vm.registers.sp);
             itmp2 = __ITEM_GET_INT(--vm.registers.sp);
-            rtmp1 = __ITEM_GET_REF(--vm.registers.sp);
+            mtmp1 = __ITEM_GET_REF(--vm.registers.sp);
 
-            rtmp1[itmp2] = itmp1;
+            __HEAPITEM_GETITEM(mtmp1, itmp2) = itmp1;
             vm.registers.pc += INS_SETDATA_SIZE;
             break;
         case I2F:
@@ -651,7 +648,7 @@ int execute(void) {
             vm.registers.pc += INS_I2F_SIZE;
             break;
         case F2I:
-            itmp1 = __ITEM_GET_FLOAT(--vm.registers.sp);
+            itmp1 = (int)__ITEM_GET_FLOAT(--vm.registers.sp);
             __ITEM_SET_INT(vm.registers.sp, itmp1);
 
             vm.registers.sp++;

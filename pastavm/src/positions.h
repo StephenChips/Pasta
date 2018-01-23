@@ -28,10 +28,10 @@
 
 #define __ITEM_FLAG_VAL 1
 #define __ITEM_SIZE sizeof(item_t)
-#define __ITEM_FLAG(_item) ((_item) << (__ITEM_SIZE - 1))
-#define __ITEM_ISREF(_item) (__ITEM_FLAG(_item) == __ITEM_FLAG_VAL)
+#define __ITEM_FLAG(_itemptr) (*(_itemptr) << (__ITEM_SIZE - 1))
+#define __ITEM_ISREF(_itemptr) (__ITEM_FLAG(_itemptr) == __ITEM_FLAG_VAL)
 #define __ITEM_DISABLE_FLAG(_itemptr) (*(_itemptr) = *(_itemptr) & (0xFFFFFFFFFFFFFFFF - 1))
-#define __ITEM_ENABLE_FLAG(_item) (*(_item) = *(_item) | 0x1)
+#define __ITEM_ENABLE_FLAG(_itemptr) (*(_itemptr) = *(_itemptr) | 0x1)
 
 
 #define __ITEM_SET_INT(_itemptr, _ival) \
@@ -80,7 +80,7 @@ do {\
 #define __HEAPITEM_ITEM_COUNT(h) (__HEAPITEM_INFO(h)->item_count)
 #define __HEAPITEM_INFO(h)  ((struct heap_item_info *)h)
 #define __HEAPITEM_DATA(h) ((item_t *)((char *)h + __HEAPITEM_INFO_SIZE))
-#define __HEAPITEM_GETITEM(_h, _idx) (__HEAPITEM_DATA(h)[(_idx)])
+#define __HEAPITEM_GETITEM(_h, _idx) (__HEAPITEM_DATA(_h)[(_idx)])
 
 /* MACROS FOR STACK LOCATION */
 #define __CURRENT_ITEM_COUNT(_vm) ((item_t)((_vm).registers.sp - (_vm).stack.stack))

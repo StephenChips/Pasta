@@ -300,33 +300,6 @@ do { \
  * expectlist: struct ins []
  */
 
-START_TEST(test_rawcode_generate_1) /* one constant and no intruction */
-{
-    RawcodeGen *codegen = RawcodeGen_Init();
-    
-    int constant = 10, cstnum = 1;
-
-    int cstpool_size = __CST_COUNT_SIZE + __CST_OFFSET_SIZE + sizeof(int);
-
-    RawcodeGen_AddIntConst(codegen, constant);
-    Rawcode *rawcode = RawcodeGen_Generate(codegen);
-
-    ck_assert_int_eq(__RAWCODE_OFFSET(rawcode->rawcode)->cstpool, __RAWCODE_OFFSET_SIZE);
-    ck_assert_int_eq(__RAWCODE_OFFSET(rawcode->rawcode)->inslist, __RAWCODE_OFFSET_SIZE + cstpool_size);
-
-    void *cstpool = (void *)((char *)rawcode->rawcode + __RAWCODE_OFFSET_SIZE);
-    void *inslist = (void *)((char *)rawcode->rawcode + __RAWCODE_OFFSET_SIZE + cstpool_size); 
-
-    ck_assert_int_eq(__CST_COUNT(cstpool), cstnum);
-    ck_assert_int_eq(*(int *)__ACCESS_CONST(cstpool, 0), constant);
-
-    ck_assert_int_eq(__INS_LENGTH(inslist), 0);
-
-    RawcodeGen_Delete(codegen);
-    Rawcode_Delete(rawcode);
-}
-END_TEST
-
 START_TEST(test_rawcode_generate_2) /* one instruction and no constant */
 {
     RawcodeGen *codegen = RawcodeGen_Init();
@@ -409,41 +382,6 @@ START_TEST(test_rawcode_generate_3) /* three instructions and no constant */
 }
 END_TEST
 
-
-START_TEST(test_rawcode_generate_4) /* no instructions and two constant */
-{
-    RawcodeGen *codegen = RawcodeGen_Init();
-    
-    int cst1 = 10;
-    double cst2 = 100.13;
-    int cstnum = 2;
-    int cstpool_size = __CST_COUNT_SIZE + __CST_OFFSET_SIZE * 2  + sizeof(int) + sizeof(double);
-
-    RawcodeGen_AddIntConst(codegen, cst1);
-    RawcodeGen_AddFloatConst(codegen, cst2);
-    Rawcode *rawcode = RawcodeGen_Generate(codegen);
-
-    int cstpool_start_pos = __RAWCODE_OFFSET(rawcode->rawcode)->cstpool;
-    int inslist_start_pos = __RAWCODE_OFFSET(rawcode->rawcode)->inslist;
-    
-    ck_assert_int_eq(cstpool_start_pos, __RAWCODE_OFFSET_SIZE);
-    ck_assert_int_eq(inslist_start_pos, __RAWCODE_OFFSET_SIZE + cstpool_size);
-    void *cstpool = (void *)((char *)rawcode->rawcode + __RAWCODE_OFFSET_SIZE);
-    void *inslist = (void *)((char *)rawcode->rawcode + __RAWCODE_OFFSET_SIZE + cstpool_size); 
-
-    
-    int    actual_cst1 = *(int *)__ACCESS_CONST(cstpool, 0); 
-    double actual_cst2 = *(double *)__ACCESS_CONST(cstpool, 1);  /* FIXME: SegmentFault here */
-                                                                 /* BUG FOUND: index[2] not initialized */
-    ck_assert_int_eq(__CST_COUNT(cstpool), cstnum);
-
-    ck_assert_int_eq(actual_cst1, cst1);
-    ck_assert_double_eq(actual_cst2, cst2);
-    ck_assert_int_eq(__INS_LENGTH(inslist), 0);
-    RawcodeGen_Delete(codegen);
-    Rawcode_Delete(rawcode);
-}
-END_TEST
 
 /* TEST ADD CONSTANT TO RAWCODE GENERATOR
   Permise:
@@ -811,10 +749,8 @@ Suite *test_rawcode_generator() {
     tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_3);
     tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_4);
 
-    tcase_add_test(test_generate, test_rawcode_generate_1);
     tcase_add_test(test_generate, test_rawcode_generate_2);
     tcase_add_test(test_generate, test_rawcode_generate_3);
-    tcase_add_test(test_generate, test_rawcode_generate_4);
 
     suite_add_tcase(s, test_add_constant);
     suite_add_tcase(s, test_add_iconst);

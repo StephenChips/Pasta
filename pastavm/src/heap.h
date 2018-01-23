@@ -24,8 +24,12 @@ void *Heap_Allocate(Heap *self, size_t data_size);
 
 void Heap_DeleteAll(Heap *self);
 
-void Heap_Gc(Heap *self);
+void Heap_GC(Heap *self);
 
 void *AllocateHeapItem(struct heap_item_info info);
+
+void __Heap_MarkHeapItem(void *heap_item);
+
+void __Heap_Sweep();
 
 #endif /* INCLUDED_HEAP_H */

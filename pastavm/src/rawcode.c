@@ -65,21 +65,6 @@ void *__RawcodeGen_AddConst(RawcodeGen *self, size_t size) {
     return new_cst_item->ref;
 }
 
-void RawcodeGen_AddFloatConst(RawcodeGen *self, double fval) {
-    void *constant = __RawcodeGen_AddConst(self, sizeof(double));
-    memcpy(constant, &fval, sizeof(double));
-}
-
-void RawcodeGen_AddIntConst(RawcodeGen *self, int ival) {
-    void *constant = __RawcodeGen_AddConst(self, sizeof(int));
-    memcpy(constant, &ival, sizeof(int));
-}
-
-void RawcodeGen_AddCharConst(RawcodeGen *self, char cval) {
-    void *constant = __RawcodeGen_AddConst(self, sizeof(char));
-    memcpy(constant, &cval, sizeof(char));
-}
-
 /* ASSUME STRING TERMIATED WITH '\0' */
 /* need to be changed */
 void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval) {
@@ -97,7 +82,7 @@ void RawcodeGen_AddStringConst(RawcodeGen *self, const char *sval) {
         abort();
     }
 
-    info.gcflag = !GC_IGNORE_FLAG;
+    info.gcflag = GC_IGNORE_FLAG;
     info.item_count = slen + 1;
 
     new_cst_item->ref = AllocateHeapItem(info);
