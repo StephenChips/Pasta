@@ -1,4 +1,4 @@
-#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
 
 #IncludeRegexScan: ^.*$
 
@@ -6,17 +6,53 @@
 
 #IncludeRegexTransform: 
 
+/home/dongcai/Documents/pasta/pastavm/src/heap.c
+stdlib.h
+-
+stdio.h
+-
+positions.h
+/home/dongcai/Documents/pasta/pastavm/src/positions.h
+heap.h
+/home/dongcai/Documents/pasta/pastavm/src/heap.h
+
+/home/dongcai/Documents/pasta/pastavm/src/heap.h
+
 /home/dongcai/Documents/pasta/pastavm/src/instr.h
+
+/home/dongcai/Documents/pasta/pastavm/src/positions.h
+rawcode.h
+/home/dongcai/Documents/pasta/pastavm/src/rawcode.h
 
 /home/dongcai/Documents/pasta/pastavm/src/rawcode.c
 stdio.h
 -
 stdlib.h
 -
-rawcode.h
-/home/dongcai/Documents/pasta/pastavm/src/rawcode.h
-
-/home/dongcai/Documents/pasta/pastavm/src/rawcode.h
+string.h
+-
 instr.h
 /home/dongcai/Documents/pasta/pastavm/src/instr.h
+positions.h
+/home/dongcai/Documents/pasta/pastavm/src/positions.h
+rawcode.h
+/home/dongcai/Documents/pasta/pastavm/src/rawcode.h
+heap.h
+/home/dongcai/Documents/pasta/pastavm/src/heap.h
+
+/home/dongcai/Documents/pasta/pastavm/src/rawcode.h
+positions.h
+/home/dongcai/Documents/pasta/pastavm/src/positions.h
+instr.h
+/home/dongcai/Documents/pasta/pastavm/src/instr.h
+vm.h
+/home/dongcai/Documents/pasta/pastavm/src/vm.h
+
+/home/dongcai/Documents/pasta/pastavm/src/vm.h
+stdio.h
+-
+positions.h
+/home/dongcai/Documents/pasta/pastavm/src/positions.h
+heap.h
+/home/dongcai/Documents/pasta/pastavm/src/heap.h
 

@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/vmcore.dir/vm.c.o"
+  "CMakeFiles/vmcore.dir/heap.c.o"
   "libvmcore.pdb"
   "libvmcore.a"
 )

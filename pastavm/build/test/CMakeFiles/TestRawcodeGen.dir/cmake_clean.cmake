@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o"
+  "CMakeFiles/TestRawcodeGen.dir/testhelper.c.o"
   "TestRawcodeGen.pdb"
   "TestRawcodeGen"
 )

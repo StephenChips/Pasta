@@ -1,8 +1,11 @@
 #include <check.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "instr.h"
 #include "rawcode.h"
+#include "positions.h"
+#include "testhelper.h"
 
 #define CHECK_ADD_CONSTANT_TO_RAWCODE_GENERATOR($size) \
 do { \
@@ -14,13 +17,14 @@ do { \
 \
     old_cstpool_size = codegen->cst_pool_size; \
 \
-    mem = RawcodeGen_AddConstant(codegen, allocate_size); \
+    mem = __RawcodeGen_AddConst(codegen, allocate_size); \
 \
     constant = codegen->cst_queue; \
 \
     ck_assert_ptr_nonnull(constant->ref); \
     ck_assert_ptr_nonnull(mem); \
     ck_assert_int_eq(constant->size, allocate_size); \
+\
     /* cstqueue is a cycle list */ \
     ck_assert_ptr_nonnull(constant->next); \
     ck_assert_int_eq(codegen->cst_pool_size - old_cstpool_size, allocate_size); \
@@ -34,7 +38,7 @@ do { \
     RawcodeGen *codegen = RawcodeGen_Init(); \
     size_t old_cstpool_size = codegen->cst_pool_size, allocate_size = ($size); \
 \
-    mem = RawcodeGen_AddConstant(codegen, allocate_size); \
+    mem = __RawcodeGen_AddConst(codegen, allocate_size); \
 \
     ck_assert_ptr_null(mem); \
     ck_assert_int_eq(codegen->cst_pool_size - old_cstpool_size, 0); \
@@ -47,7 +51,7 @@ do { \
  *   $codegen : RawcodeGen *
  *   $insptr  : struct ins *
  */
-#define CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(_codegen, _insptr) \
+#define CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(_codegen, _ins) \
 do { \
     size_t actual_inslen;\
     int ret = 0, old_inslist_size; \
@@ -55,15 +59,15 @@ do { \
 \
     old_inslist_size = (_codegen)->ins_list_size;\
 \
-    ret = RawcodeGen_AddInstruction((_codegen), (_insptr));\
+    ret = RawcodeGen_AddInstruction((_codegen), (_ins));\
 \
     ins_queue_item = (_codegen)->ins_queue;\
     actual_inslen = (_codegen)->ins_list_size - old_inslist_size;\
 \
     ck_assert_int_eq(ret, 0); /* no error */ \
-    ck_assert_int_eq((_insptr)->id, ins_queue_item->ins.id); \
+    ck_assert_int_eq(_ins.id, ins_queue_item->ins.id); \
 \
-    ck_assert_int_eq(__GetInsSize((_insptr)->id), actual_inslen); \
+    ck_assert_int_eq(__GetInsSize(_ins), actual_inslen); \
  \
 } while (0) 
 
@@ -74,12 +78,12 @@ do { \
     struct insqueue *ins_queue_item;\
 \
     ins.id = ICONST;\
-    ins.args.iconst = (_intval);\
+    ins.args.iconst.val = (_intval);\
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins);\
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins);\
     \
     ins_queue_item = codegen->ins_queue;\
-    ck_assert_int_eq(ins_queue_item->ins.args.iconst, ins.args.iconst);\
+    ck_assert_int_eq(ins_queue_item->ins.args.iconst.val, ins.args.iconst.val);\
 \
     RawcodeGen_Delete(codegen); \
 } while (0)
@@ -91,12 +95,12 @@ do { \
     struct insqueue *ins_queue_item;\
 \
     ins.id = FCONST;\
-    ins.args.fconst = (_floatval);\
+    ins.args.fconst.val = (_floatval);\
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins);\
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins);\
     \
     ins_queue_item = codegen->ins_queue;\
-    ck_assert_float_eq(ins_queue_item->ins.args.fconst, ins.args.fconst);\
+    ck_assert_float_eq(ins_queue_item->ins.args.fconst.val, ins.args.fconst.val);\
 \
     RawcodeGen_Delete(codegen); \
 } while (0)
@@ -108,12 +112,12 @@ do { \
     struct insqueue *ins_queue_item;\
 \
     ins.id = CCONST;\
-    ins.args.cconst = (_charval);\
+    ins.args.cconst.val = (_charval);\
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins);\
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins);\
     \
     ins_queue_item = codegen->ins_queue;\
-    ck_assert_float_eq(ins_queue_item->ins.args.cconst, ins.args.cconst);\
+    ck_assert_int_eq(ins_queue_item->ins.args.cconst.val, ins.args.cconst.val);\
 \
     RawcodeGen_Delete(codegen); \
 } while (0)
@@ -125,12 +129,12 @@ do { \
     struct insqueue *ins_queue_item;\
 \
     ins.id = JUMP; \
-    ins.args.jump.addr = (_addr); \
+    ins.args.jxxx.addr = (_addr); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
-    ck_assert_int_eq(ins_queue_item->ins.args.jump.addr, ins.args.jump.addr); \
+    ck_assert_int_eq(ins_queue_item->ins.args.jxxx.addr, ins.args.jxxx.addr); \
     RawcodeGen_Delete(codegen); \
 } while (0) 
 
@@ -141,12 +145,12 @@ do { \
     struct insqueue *ins_queue_item;\
 \
     ins.id = JPZ; \
-    ins.args.jpz.addr = (_addr); \
+    ins.args.jxxx.addr = (_addr); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
-    ck_assert_int_eq(ins_queue_item->ins.args.jpz.addr, ins.args.jpz.addr); \
+    ck_assert_int_eq(ins_queue_item->ins.args.jxxx.addr, ins.args.jxxx.addr); \
     RawcodeGen_Delete(codegen); \
 } while (0) 
 
@@ -157,12 +161,12 @@ do { \
     struct insqueue *ins_queue_item;\
 \
     ins.id = JPNZ; \
-    ins.args.jpz.addr = (_addr); \
+    ins.args.jxxx.addr = (_addr); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
-    ck_assert_int_eq(ins_queue_item->ins.args.jpnz.addr, ins.args.jpnz.addr); \
+    ck_assert_int_eq(ins_queue_item->ins.args.jxxx.addr, ins.args.jxxx.addr); \
     RawcodeGen_Delete(codegen); \
 } while (0) 
 
@@ -175,7 +179,7 @@ do { \
     ins.id = ALTSP; \
     ins.args.altsp.m = (_m); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
     ck_assert_int_eq(ins_queue_item->ins.args.altsp.m, ins.args.altsp.m); \
@@ -192,7 +196,7 @@ do { \
     ins.args.call.argnum = (_argnum); \
     ins.args.call.addr = (_addr); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
     ck_assert_int_eq(ins_queue_item->ins.args.call.argnum, ins.args.call.argnum); \
@@ -200,39 +204,21 @@ do { \
     RawcodeGen_Delete(codegen); \
 } while (0) 
 
-#define CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(_new_argnum, _old_argnum, _addr)  \
+#define CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(_argnum, _addr)  \
 do { \
     RawcodeGen *codegen = RawcodeGen_Init(); \
     struct ins ins;\
     struct insqueue *ins_queue_item;\
 \
     ins.id = TCALL; \
-    ins.args.tcall.old_argnum = (_old_argnum); \
-    ins.args.tcall.new_argnum = (_new_argnum); \
-    ins.args.tcall.addr = (_addr); \
+    ins.args.call.argnum = (_argnum); \
+    ins.args.call.addr = (_addr); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
-    ck_assert_int_eq(ins_queue_item->ins.args.tcall.old_argnum, ins.args.tcall.old_argnum); \
-    ck_assert_int_eq(ins_queue_item->ins.args.tcall.new_argnum, ins.args.tcall.new_argnum); \
+    ck_assert_int_eq(ins_queue_item->ins.args.tcall.argnum, ins.args.tcall.argnum); \
     ck_assert_int_eq(ins_queue_item->ins.args.tcall.addr, ins.args.tcall.addr); \
-    RawcodeGen_Delete(codegen); \
-} while (0) 
-
-#define CHECK_ADD_SYSCALL_TO_RAWCODE_GENERATOR(_sysfuncid)  \
-do { \
-    RawcodeGen *codegen = RawcodeGen_Init(); \
-    struct ins ins;\
-    struct insqueue *ins_queue_item;\
-\
-    ins.id = TCALL; \
-    ins.args.syscall.sysfuncid = (_sysfuncid); \
-\
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
-\
-    ins_queue_item = codegen->ins_queue; \
-    ck_assert_int_eq(ins_queue_item->ins.args.syscall.sysfuncid, ins.args.syscall.sysfuncid); \
     RawcodeGen_Delete(codegen); \
 } while (0) 
 
@@ -245,7 +231,7 @@ do { \
     ins.id = PUSHEXN; \
     ins.args.pushexn.exn = (_exn); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
     ck_assert_int_eq(ins_queue_item->ins.args.pushexn.exn, ins.args.pushexn.exn); \
@@ -262,7 +248,7 @@ do { \
     ins.args.popexn.exn = (_exn); \
     ins.args.popexn.addr = (_addr); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
     ck_assert_int_eq(ins_queue_item->ins.args.popexn.exn, ins.args.popexn.exn); \
@@ -271,19 +257,19 @@ do { \
     RawcodeGen_Delete(codegen); \
 } while (0) 
 
-#define CHECK_ADD_LDC_TO_RAWCODE_GENERATOR(_idx)  \
+#define CHECK_ADD_ILDC_TO_RAWCODE_GENERATOR(_idx)  \
 do { \
     RawcodeGen *codegen = RawcodeGen_Init(); \
     struct ins ins;\
     struct insqueue *ins_queue_item;\
 \
-    ins.id = LDC; \
+    ins.id = ILDC; \
     ins.args.ldc.idx = (_idx); \
 \
-    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, &ins); \
+    CHECK_ADD_INS_TO_RAWCODE_GENERATOR_BASE(codegen, ins); \
 \
     ins_queue_item = codegen->ins_queue; \
-    ck_assert_int_eq(ins_queue_item->ins.args.ldc.idx, ins.args.ldc.idx); \
+    ck_assert_int_eq(ins_queue_item->ins.args.xldc.idx, ins.args.xldc.idx); \
 \
     RawcodeGen_Delete(codegen); \
 } while (0) 
@@ -298,7 +284,7 @@ do { \
 \
     old_inslist_size = codegen->ins_list_size;\
 \
-    ret = RawcodeGen_AddInstruction(codegen, &ins);\
+    ret = RawcodeGen_AddInstruction(codegen, ins);\
 \
     ck_assert_int_eq(ret, -1); /* error */ \
     ck_assert_int_eq(old_inslist_size, codegen->ins_list_size) \
@@ -306,8 +292,99 @@ do { \
     Rawcode_Delete(codegen); \
 } while (0) 
 
+#define ASSERT_INS_EQ(_expect, _actual, _size)  ck_assert_mem_eq(&(_expect), &(_actual), (_size));
+
+/*
+ * inslist: char *
+ * expectlen: int
+ * expectlist: struct ins []
+ */
+
+START_TEST(test_rawcode_generate_2) /* one instruction and no constant */
+{
+    RawcodeGen *codegen = RawcodeGen_Init();
+    
+    struct ins ins, instr;
+    int insnum = 1;
+    int inslist_len = 5;
+
+    int cstpool_size = __CST_COUNT_SIZE;
+
+    ins.id = ICONST;
+    ins.args.iconst.val = 10;
+
+    RawcodeGen_AddInstruction(codegen, ins);
+    Rawcode *rawcode = RawcodeGen_Generate(codegen);
+
+    ck_assert_int_eq(__RAWCODE_OFFSET(rawcode->rawcode)->cstpool, __RAWCODE_OFFSET_SIZE);
+    ck_assert_int_eq(__RAWCODE_OFFSET(rawcode->rawcode)->inslist, __RAWCODE_OFFSET_SIZE + cstpool_size);
+
+    void *cstpool = (void *)((char *)rawcode->rawcode + __RAWCODE_OFFSET_SIZE);
+    void *inslist = (void *)((char *)rawcode->rawcode + __RAWCODE_OFFSET_SIZE + cstpool_size); 
+
+    ck_assert_int_eq(__INS_LENGTH(inslist), inslist_len);
+   
+    size_t size = __GetInsSize(ins); 
+
+    TestHelper_ReadIns(__INS_ARRAY(inslist), &instr);
+
+    ck_assert_int_eq(is_instr_eq(ins, instr), 1);
+
+    RawcodeGen_Delete(codegen);
+    Rawcode_Delete(rawcode);
+}
+END_TEST
+
+START_TEST(test_rawcode_generate_3) /* three instructions and no constant */
+{
+    RawcodeGen *codegen = RawcodeGen_Init();
+    
+    struct ins ins[3];
+    int insnum = 3;
+
+    ins[0].id = ICONST;
+    ins[0].args.iconst.val = 10;
+    ins[1].id = ICONST;
+    ins[1].args.iconst.val = 100;
+    ins[2].id = IADD;
+
+    int inslist_len = __GetInsSize(ins[0]) + __GetInsSize(ins[1]) + __GetInsSize(ins[2]);
+    int cstpool_size = __CST_COUNT_SIZE;
+
+
+    RawcodeGen_AddInstruction(codegen, ins[0]);
+    RawcodeGen_AddInstruction(codegen, ins[1]);
+    RawcodeGen_AddInstruction(codegen, ins[2]);
+
+    Rawcode *rawcode = RawcodeGen_Generate(codegen);
+
+    ck_assert_int_eq(__RAWCODE_OFFSET(rawcode->rawcode)->cstpool, __RAWCODE_OFFSET_SIZE);
+    ck_assert_int_eq(__RAWCODE_OFFSET(rawcode->rawcode)->inslist, __RAWCODE_OFFSET_SIZE + cstpool_size);
+
+    void *cstpool = (void *)((char *)rawcode->rawcode + __RAWCODE_OFFSET_SIZE);
+    void *inslist = (void *)((char *)rawcode->rawcode + __RAWCODE_OFFSET_SIZE + cstpool_size);
+
+    ck_assert_int_eq(__INS_LENGTH(inslist), inslist_len);
+  
+    int i;
+    unsigned char *cursor = __INS_ARRAY(inslist);
+    printf("%ld\n", cursor - (unsigned char *)rawcode->rawcode);
+    for (i = 0; i < insnum; i++) {
+        struct ins instr;
+        size_t size = __GetInsSize(ins[i]); 
+        TestHelper_ReadIns(cursor, &instr);
+        ck_assert_int_eq(is_instr_eq(ins[i], instr), 1);
+        cursor += size;
+    } 
+
+    RawcodeGen_Delete(codegen);
+    Rawcode_Delete(rawcode);
+}
+END_TEST
+
+
 /* TEST ADD CONSTANT TO RAWCODE GENERATOR
- * Permise:
+  Permise:
  *   1. The Function `RawcodeGen_Init`, `RawcodeGen_Delete` should work correctly.
  */
 START_TEST(test_rawcode_gen_init) 
@@ -427,12 +504,24 @@ START_TEST(Test_RawcodeGen_AddFConst_6)
 }
 END_TEST
 
+
 START_TEST(Test_RawcodeGen_AddFConst_7)
 {
     CHECK_ADD_FCONST_TO_RAWCODE_GENERATOR(- 10141234123352343.4331);
 }
 END_TEST
 
+START_TEST(Test_RawcodeGen_AddFConst_8)
+{
+    CHECK_ADD_FCONST_TO_RAWCODE_GENERATOR(- 1E30l);
+}
+END_TEST
+
+START_TEST(Test_RawcodeGen_AddFConst_9)
+{
+    CHECK_ADD_FCONST_TO_RAWCODE_GENERATOR(1E30l);
+}
+END_TEST
 
 START_TEST(Test_RawcodeGen_AddCConst_1)
 {
@@ -562,59 +651,26 @@ END_TEST
 
 START_TEST(Test_RawcodeGen_AddTcall_1)
 {
-   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(0, 0, 0x00000000);
+   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(0, 0x00000000);
 }
 END_TEST
 
 START_TEST(Test_RawcodeGen_AddTcall_2)
 {
-   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(10000, 0, 0x00000000);
+   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(10000, 0x00000000);
 }
 END_TEST
+
 
 START_TEST(Test_RawcodeGen_AddTcall_3)
 {
-   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(0, 10000, 0x00000000);
+   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(0, 0xABCDEFAB);
 }
 END_TEST
+
 START_TEST(Test_RawcodeGen_AddTcall_4)
 {
-   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(10000, 10000, 0x00000000);
-}
-END_TEST
-
-START_TEST(Test_RawcodeGen_AddTcall_5)
-{
-   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(0, 0, 0xABCDEFAB);
-}
-END_TEST
-START_TEST(Test_RawcodeGen_AddTcall_6)
-{
-   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(10000, 0, 0xABCDEFAB);
-}
-END_TEST
-
-START_TEST(Test_RawcodeGen_AddTcall_7)
-{
-   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(0, 10000, 0xABCDEFAB);
-}
-END_TEST
-
-START_TEST(Test_RawcodeGen_AddTcall_8)
-{
-   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(10000, 10000, 0xABCDEFAB);
-}
-END_TEST
-
-START_TEST(Test_RawcodeGen_AddSyscall_1)
-{
-   CHECK_ADD_SYSCALL_TO_RAWCODE_GENERATOR(1);
-}
-END_TEST
-
-START_TEST(Test_RawcodeGen_AddSyscall_2)
-{
-   CHECK_ADD_SYSCALL_TO_RAWCODE_GENERATOR(1 << 31);
+   CHECK_ADD_TCALL_TO_RAWCODE_GENERATOR(10000, 0xABCDEFAB);
 }
 END_TEST
 
@@ -629,7 +685,7 @@ Suite *test_rawcode_generator() {
           *test_add_altsp = tcase_create("Altsp"),
           *test_add_call = tcase_create("Call"),
           *test_add_tcall = tcase_create("TCall"),
-          *test_add_syscall = tcase_create("Syscall");
+          *test_generate = tcase_create("Generate");
 
     /* test add cosntants */
     tcase_add_test(test_add_constant, Test_RawcodeGen_AddConstant_1);
@@ -654,6 +710,7 @@ Suite *test_rawcode_generator() {
     tcase_add_test(test_add_fconst, Test_RawcodeGen_AddFConst_5);
     tcase_add_test(test_add_fconst, Test_RawcodeGen_AddFConst_6);
     tcase_add_test(test_add_fconst, Test_RawcodeGen_AddFConst_7);
+    tcase_add_test(test_add_fconst, Test_RawcodeGen_AddFConst_8);
 
     /* test add cconst instruction */
     tcase_add_test(test_add_cconst, Test_RawcodeGen_AddCConst_1);
@@ -691,10 +748,9 @@ Suite *test_rawcode_generator() {
     tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_2);
     tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_3);
     tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_4);
-    tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_5);
-    tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_6);
-    tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_7);
-    tcase_add_test(test_add_tcall, Test_RawcodeGen_AddTcall_8);
+
+    tcase_add_test(test_generate, test_rawcode_generate_2);
+    tcase_add_test(test_generate, test_rawcode_generate_3);
 
     suite_add_tcase(s, test_add_constant);
     suite_add_tcase(s, test_add_iconst);
@@ -703,6 +759,8 @@ Suite *test_rawcode_generator() {
     suite_add_tcase(s, test_add_jxxx);
     suite_add_tcase(s, test_add_altsp);
     suite_add_tcase(s, test_add_call);
+    suite_add_tcase(s, test_generate);
+
     return s;
 }
 

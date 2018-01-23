@@ -1,2 +1,2 @@
-/usr/bin/ar qc libvmcore.a  CMakeFiles/vmcore.dir/vm.c.o
+/usr/bin/ar qc libvmcore.a  CMakeFiles/vmcore.dir/vm.c.o CMakeFiles/vmcore.dir/heap.c.o
 /usr/bin/ranlib libvmcore.a

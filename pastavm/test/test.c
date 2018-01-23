@@ -17,12 +17,29 @@
  * 3. stack pointer register `sp` should point to the base of the stack
  * 4. program counter register `pc` should point to the start of the instruction list
  */
-#define CHECK_REG(pcval) \
+#define CHECK_RAWCODE(_vm) \
 do { \
-    ck_assert_ptr_null(vm.registers.hr); \
-    ck_assert_ptr_null(vm.registers.bp); \
-    ck_assert_ptr_eq(vm.registers.sp, vm.stack.stack); \
-    ck_assert_ptr_eq(vm.registers.pc, vm.instructions.inslist); \
+    ck_assert_ptr_nonnull((_vm).rawcode);\
+} while (0) /* FUCK !! */
+
+#define CHECK_STACK(_vm) \
+do { \
+    ck_assert_int_eq((_vm).stack.capacity,  TEST_STACK_CAPACITY); \
+    ck_assert_ptr_nonnull((_vm).stack.stack); \
+} while (0)
+
+#define CHECK_REG(_vm) \
+do { \
+    ck_assert_ptr_null((_vm).registers.hr); \
+    ck_assert_ptr_null((_vm).registers.bp); \
+    ck_assert_ptr_eq((_vm).registers.sp, (_vm).stack.stack);\
+    ck_assert_ptr_eq((_vm).registers.pc, (_vm).instructions.inslist); \
+} while (0)
+
+#define CHECK_CSTPOOL(_vm, _cstpool) \
+do { \
+    ck_assert_int_eq((_vm).constant_pool.count, __CST_COUNT(_cstpool)); \
+    ck_assert_ptr_eq((_vm).constant_pool.offsets, __CST_OFFSET_ARRAY(_cstpool)); \
 } while (0)
 
 /* NOTE: 
@@ -33,27 +50,30 @@ do { \
       set as configure file discribed, in here is DEFAULT_HEAP_CAPACITY
  * 3. The survive flag for GC program is set to DEFAULT_SURVIVE_FLAG
  */
-#define CHECK_HEAP() \
+#define CHECK_HEAP(_vm) \
 do {\
-    ck_assert_ptr_null(vm.heap.list); \
-    ck_assert_int_eq(vm.heap.capacity, TEST_HEAP_CAPACITY); \
-    ck_assert_int_eq(vm.heap.survive_flag, DEFAULT_SURVIVE_FLAG); \
-    ck_assert_int_eq(vm.heap.current_size, 0); \
+    ck_assert_ptr_null((_vm).heap.list); \
+    ck_assert_int_eq((_vm).heap.capacity, TEST_HEAP_CAPACITY); \
+    ck_assert_int_eq((_vm).heap.survive_flag, GC_DEFAULT_SURVIVE_FLAG); \
+    ck_assert_int_eq((_vm).heap.current_size, 0); \
 } while (0) 
 
-#define CHECK_STACK() \
-do { \
-    ck_assert_int_eq(vm.stack.capacity,  TEST_STACK_CAPACITY); \
-    ck_assert_ptr_nonnull(vm.stack.stack); \
+
+#define CHECK_INSLIST(_vm, _inslist) \
+do {\
+    ck_assert_int_eq((_vm).instructions.length, __INS_LENGTH(_inslist)); \
+    ck_assert_ptr_eq((_vm).instructions.inslist, __INS_ARRAY(_inslist)); \
 } while (0)
 
-#define CHECK_RAWCODE() \
-do { \
-    ck_assert_int_eq(vm.constant_pool.count, __CST_COUNT(vm.rawcode)); \
-    ck_assert_int_eq(vm.instructions.length, __INS_LENGTH(vm.rawcode)); \
-    ck_assert_ptr_eq(vm.constant_pool.positions, __ARRAY_OF_PTR_TO_CONSTANTS(vm.rawcode)); \
-    ck_assert_ptr_eq(vm.instructions.inslist, __ARRAY_OF_INSTRUCTION(vm.rawcode)); \
-} while (0) 
+#define CHECK_VM_LOAD(_vm) \
+do {\
+    CHECK_STACK(_vm); \
+    CHECK_REG(_vm); \
+    CHECK_CSTPOOL(_vm, __RAWCODE_CSTPOOL_ADDR((_vm).rawcode));\
+    CHECK_HEAP(_vm);\
+    CHECK_INSLIST(_vm, __RAWCODE_INSLIST_ADDR((_vm).rawcode));\
+    CHECK_RAWCODE(_vm); \
+} while (0)
 
 /* The Index and real data is ommited */
 struct sample_rawcode {
@@ -128,14 +148,11 @@ START_TEST(test_load_rawcode_1)
     setup_sample_rawcode_file(constant_number = 10, ins_area_length = 100);
     load(SAMPLE_RAWCODE_FILE_NAME);
 
-    CHECK_REG(); 
-    CHECK_HEAP();
-    CHECK_STACK();
-    CHECK_RAWCODE();
+    CHECK_VM_LOAD(vm);
 
     ck_assert_int_eq(error_logger.err, NO_ERROR);
     ck_assert_str_eq(error_logger.msg, OK);
-    teardown_sample_rawcode_file(); 
+    teardown_sample_rawcode_file();
 }
 END_TEST
 
@@ -146,10 +163,7 @@ START_TEST(test_load_rawcode_2)
     setup_sample_rawcode_file(constant_number = 100, ins_area_length = 100000);
     load(SAMPLE_RAWCODE_FILE_NAME);
 
-    CHECK_REG(); 
-    CHECK_HEAP();
-    CHECK_STACK();
-    CHECK_RAWCODE();
+    CHECK_VM_LOAD(vm);
 
     teardown_sample_rawcode_file(); 
 }
@@ -162,10 +176,7 @@ START_TEST(test_load_rawcode_3)
     setup_sample_rawcode_file(constant_number = 1 << 32 - 1, ins_area_length = 1 << 32 - 1);
     load(SAMPLE_RAWCODE_FILE_NAME);
 
-    CHECK_REG(); 
-    CHECK_HEAP();
-    CHECK_STACK();
-    CHECK_RAWCODE();
+    CHECK_VM_LOAD(vm);
 
     teardown_sample_rawcode_file(); 
 }
@@ -178,10 +189,7 @@ START_TEST(test_load_rawcode_4)
     setup_sample_rawcode_file(constant_number = 0, ins_area_length = 10);
     load(SAMPLE_RAWCODE_FILE_NAME);
 
-    CHECK_REG(); 
-    CHECK_HEAP();
-    CHECK_STACK();
-    CHECK_RAWCODE();
+    CHECK_VM_LOAD(vm);
 
     teardown_sample_rawcode_file(); 
 }
@@ -194,10 +202,7 @@ START_TEST(test_load_rawcode_5)
     setup_sample_rawcode_file(constant_number = 1, ins_area_length = 1);
     load(SAMPLE_RAWCODE_FILE_NAME);
 
-    CHECK_REG(); 
-    CHECK_HEAP();
-    CHECK_STACK();
-    CHECK_RAWCODE();
+    CHECK_VM_LOAD(vm);
 
     teardown_sample_rawcode_file(); 
 }
@@ -210,10 +215,7 @@ START_TEST(test_load_rawcode_6)
     setup_sample_rawcode_file(constant_number = 1 << 32 - 10, ins_area_length = 1 << 32 - 10);
     load(SAMPLE_RAWCODE_FILE_NAME);
 
-    CHECK_REG(); 
-    CHECK_HEAP();
-    CHECK_STACK();
-    CHECK_RAWCODE();
+    CHECK_VM_LOAD(vm);
 
     teardown_sample_rawcode_file(); 
 }

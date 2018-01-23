@@ -1,4 +1,4 @@
-#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
 
 #IncludeRegexScan: ^.*$
 
@@ -6,11 +6,29 @@
 
 #IncludeRegexTransform: 
 
+../src/heap.h
+
 ../src/instr.h
 
+../src/positions.h
+rawcode.h
 ../src/rawcode.h
+
+../src/rawcode.h
+positions.h
+../src/positions.h
 instr.h
 ../src/instr.h
+vm.h
+../src/vm.h
+
+../src/vm.h
+stdio.h
+-
+positions.h
+../src/positions.h
+heap.h
+../src/heap.h
 
 ../test/check.h
 stddef.h
@@ -41,4 +59,18 @@ instr.h
 /home/dongcai/Documents/pasta/pastavm/test/instr.h
 rawcode.h
 /home/dongcai/Documents/pasta/pastavm/test/rawcode.h
+positions.h
+/home/dongcai/Documents/pasta/pastavm/test/positions.h
+testhelper.h
+/home/dongcai/Documents/pasta/pastavm/test/testhelper.h
+
+/home/dongcai/Documents/pasta/pastavm/test/testhelper.c
+testhelper.h
+/home/dongcai/Documents/pasta/pastavm/test/testhelper.h
+instr.h
+/home/dongcai/Documents/pasta/pastavm/test/instr.h
+
+/home/dongcai/Documents/pasta/pastavm/test/testhelper.h
+instr.h
+/home/dongcai/Documents/pasta/pastavm/test/instr.h
 

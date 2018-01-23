@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/codegen.dir/rawcode.c.o"
+  "CMakeFiles/codegen.dir/heap.c.o"
   "libcodegen.pdb"
   "libcodegen.a"
 )

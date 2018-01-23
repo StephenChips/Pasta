@@ -1,1 +1,1 @@
-/usr/bin/cc   -rdynamic CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o  -o TestRawcodeGen  -L/home/dongcai/Documents/pasta/pastavm/lib/check -Wl,-rpath,/home/dongcai/Documents/pasta/pastavm/lib/check ../src/libcodegen.a -lcheck 
+/usr/bin/cc     CMakeFiles/TestRawcodeGen.dir/test_rawcode_gen.c.o CMakeFiles/TestRawcodeGen.dir/testhelper.c.o  -o TestRawcodeGen  -L/home/dongcai/Documents/pasta/pastavm/lib/check -rdynamic ../src/libcodegen.a -lcheck -Wl,-rpath,/home/dongcai/Documents/pasta/pastavm/lib/check 

@@ -1,2 +1,0 @@
-/usr/bin/ar qc libvmrawcodegen.a  CMakeFiles/vmrawcodegen.dir/rawcode.c.o
-/usr/bin/ranlib libvmrawcodegen.a
